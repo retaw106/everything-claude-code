@@ -1,173 +1,171 @@
 ---
-description: Fix C++ build errors, CMake issues, and linker problems incrementally. Invokes the cpp-build-resolver agent for minimal, surgical fixes.
+description: 增量式修复 C++ 构建错误、CMake 问题和链接器问题。调用 cpp-build-resolver Agent 进行最小化、精确的修复。
 ---
 
-# C++ Build and Fix
+# C++ 构建和修复
 
-This command invokes the **cpp-build-resolver** agent to incrementally fix C++ build errors with minimal changes.
+此命令调用 **cpp-build-resolver** Agent 以最小化更改增量式修复 C++ 构建错误。
 
-## What This Command Does
+## 本命令的作用
 
-1. **Run Diagnostics**: Execute `cmake --build`, `clang-tidy`, `cppcheck`
-2. **Parse Errors**: Group by file and sort by severity
-3. **Fix Incrementally**: One error at a time
-4. **Verify Each Fix**: Re-run build after each change
-5. **Report Summary**: Show what was fixed and what remains
+1. **运行诊断**：执行 `cmake --build`、编译器检查
+2. **解析错误**：按文件分组，按严重性排序
+3. **增量修复**：一次修复一个错误
+4. **验证每个修复**：每次更改后重新构建
+5. **报告摘要**：显示已修复和剩余内容
 
-## When to Use
+## 何时使用
 
-Use `/cpp-build` when:
-- `cmake --build build` fails with errors
-- Linker errors (undefined references, multiple definitions)
-- Template instantiation failures
-- Include/dependency issues
-- After pulling changes that break the build
+在以下场景使用 `/cpp-build`：
+- `cmake --build` 失败并出现错误
+- C++ 编译器报告错误
+- 链接器报告未定义引用
+- 模块依赖问题
+- 拉取更改导致构建失败后
 
-## Diagnostic Commands Run
+## 诊断命令运行
 
 ```bash
-# CMake configure
-cmake -B build -S .
+# 主要构建检查
+cmake --build build 2>&1
 
-# Build
-cmake --build build 2>&1 | head -100
+# 静态分析（如果配置）
+clang-tidy -p build src/*.cpp 2>&1 || echo "clang-tidy not configured"
 
-# Static analysis (if available)
-clang-tidy src/*.cpp -- -std=c++17
-cppcheck --enable=all src/
+# 其他分析
+cppcheck --enable=all --suppress=missingIncludeSystem src/ 2>&1
+
+# 模块问题
+cmake --build build --target help 2>&1 | head -50
 ```
 
-## Example Session
+## 示例会话
 
 ```text
-User: /cpp-build
+用户: /cpp-build
 
 Agent:
-# C++ Build Resolution
+# C++ 构建解决方案
 
-## Initial Diagnostics
+## 初始诊断
 
 ```bash
 $ cmake --build build
-src/service/user.cpp:25:15: error: use of undeclared identifier 'UserRepository'
-src/handler/api.cpp:42:9: error: no matching function for call to 'process'
-src/handler/api.cpp:58:1: error: non-void function does not return a value
+internal/service/user.cpp:25:15 error: 'UserRepository' was not declared
+internal/handler/api.cpp:42:9 error: cannot convert 'std::string' to 'int'
+internal/handler/api.cpp:58:2 error: expected ';' before 'return'
 ```
 
-Errors found: 3
+发现错误：3 个
 
-## Fix 1: Undeclared Identifier
+## 修复 1：未声明的标识符
 
-File: src/service/user.cpp:25
-Error: use of undeclared identifier 'UserRepository'
-Cause: Missing include
+文件：internal/service/user.cpp:25
+错误：'UserRepository' was not declared
+原因：缺少 include 或命名空间
 
 ```cpp
-// Added include
-#include "repository/user_repository.hpp"
+// 添加 include
+#include "repository/UserRepository.hpp"
+
+// 或使用完整命名空间
+auto repo = repository::UserRepository();
 ```
 
 ```bash
 $ cmake --build build
-# 2 errors remaining
+# 剩余 2 个错误
 ```
 
-## Fix 2: No Matching Function
+## 修复 2：类型不匹配
 
-File: src/handler/api.cpp:42
-Error: no matching function for call to 'process'
+文件：internal/handler/api.cpp:42
+错误：cannot convert 'std::string' to 'int'
 
 ```cpp
-// Changed
-process(params.get("count"));
-// To
-process(std::stoi(params.get("count")));
+// 修改
+int count = params.get("count");
+// 改为
+std::string countStr = params.get("count");
+int count = std::stoi(countStr);
 ```
 
 ```bash
 $ cmake --build build
-# 1 error remaining
+# 剩余 1 个错误
 ```
 
-## Fix 3: Missing Return
+## 修复 3：缺少分号
 
-File: src/handler/api.cpp:58
-Error: non-void function does not return a value
+文件：internal/handler/api.cpp:58
+错误：expected ';' before 'return'
 
 ```cpp
-std::optional<User> getUser(const std::string& id) {
-    if (id.empty()) {
-        return std::nullopt;
-    }
-    auto user = findUser(id);
-    // Added missing return
-    return user;
-}
+// 添加缺少的分号
+std::cout << "Debug: " << value << std::endl;
+return result;
 ```
 
 ```bash
 $ cmake --build build
-# Build successful!
+# 构建成功！
 ```
 
-## Final Verification
+## 最终验证
 
 ```bash
 $ ctest --test-dir build --output-on-failure
-Test project build
-    1/5 Test #1: unit_tests ........   Passed    0.02 sec
-    2/5 Test #2: integration_tests    Passed    0.15 sec
-All tests passed.
+100% tests passed
 ```
 
-## Summary
+## 摘要
 
-| Metric | Count |
-|--------|-------|
-| Build errors fixed | 3 |
-| Linker errors fixed | 0 |
-| Files modified | 2 |
-| Remaining issues | 0 |
+| 指标 | 数量 |
+|------|------|
+| 已修复的构建错误 | 3 |
+| 已修复的警告 | 0 |
+| 已修改的文件 | 2 |
+| 剩余问题 | 0 |
 
-Build Status: ✅ SUCCESS
+构建状态：✅ 成功
 ```
 
-## Common Errors Fixed
+## 常见错误修复
 
-| Error | Typical Fix |
-|-------|-------------|
-| `undeclared identifier` | Add `#include` or fix typo |
-| `no matching function` | Fix argument types or add overload |
-| `undefined reference` | Link library or add implementation |
-| `multiple definition` | Use `inline` or move to .cpp |
-| `incomplete type` | Replace forward decl with `#include` |
-| `no member named X` | Fix member name or include |
-| `cannot convert X to Y` | Add appropriate cast |
-| `CMake Error` | Fix CMakeLists.txt configuration |
+| 错误 | 典型修复 |
+|------|----------|
+| `undeclared identifier` | 添加 `#include` 或修复拼写错误 |
+| `no matching function` | 修复参数类型或添加重载 |
+| `undefined reference` | 链接库或添加实现 |
+| `multiple definition` | 使用 `inline` 或移至 .cpp |
+| `incomplete type` | 将前向声明替换为 `#include` |
+| `no member named X` | 修复成员名称或 include |
+| `cannot convert X to Y` | 添加适当的转换 |
+| `CMake Error` | 修复 CMakeLists.txt 配置 |
 
-## Fix Strategy
+## 修复策略
 
-1. **Compilation errors first** - Code must compile
-2. **Linker errors second** - Resolve undefined references
-3. **Warnings third** - Fix with `-Wall -Wextra`
-4. **One fix at a time** - Verify each change
-5. **Minimal changes** - Don't refactor, just fix
+1. **先编译错误** - 代码必须能编译
+2. **后链接器错误** - 解决未定义引用
+3. **最后警告** - 使用 `-Wall -Wextra` 修复
+4. **一次修复一个** - 验证每个更改
+5. **最小化更改** - 不要重构，只修复
 
-## Stop Conditions
+## 停止条件
 
-The agent will stop and report if:
-- Same error persists after 3 attempts
-- Fix introduces more errors
-- Requires architectural changes
-- Missing external dependencies
+Agent 将停止并报告如果：
+- 同一错误在 3 次尝试后仍然存在
+- 修复引入更多错误
+- 需要架构更改
+- 缺少外部依赖
 
-## Related Commands
+## 相关命令
 
-- `/cpp-test` - Run tests after build succeeds
-- `/cpp-review` - Review code quality
-- `/verify` - Full verification loop
+- `/cpp-test` - 构建成功后运行测试
+- `/cpp-review` - 审查代码质量
+- `/verify` - 完整验证循环
 
-## Related
+## 相关
 
 - Agent: `agents/cpp-build-resolver.md`
 - Skill: `skills/cpp-coding-standards/`

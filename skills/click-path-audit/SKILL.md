@@ -1,65 +1,65 @@
 ---
 name: click-path-audit
-description: "Trace every user-facing button/touchpoint through its full state change sequence to find bugs where functions individually work but cancel each other out, produce wrong final state, or leave the UI in an inconsistent state. Use when: systematic debugging found no bugs but users report broken buttons, or after any major refactor touching shared state stores."
+description: "追踪每个面向用户的按钮/触点通过其完整状态变化序列，以发现函数单独工作但相互抵消、产生错误最终状态或使 UI 处于不一致状态的 bug。使用时机：系统调试未发现 bug 但用户报告按钮损坏，或在任何触及共享状态存储的重大重构之后。"
 origin: community
 ---
 
-# /click-path-audit — Behavioural Flow Audit
+# /click-path-audit — 行为流程审计
 
-Find bugs that static code reading misses: state interaction side effects, race conditions between sequential calls, and handlers that silently undo each other.
+发现静态代码阅读遗漏的 bug：状态交互副作用、顺序调用之间的竞态条件，以及相互静默撤销的处理程序。
 
-## The Problem This Solves
+## 解决的问题
 
-Traditional debugging checks:
-- Does the function exist? (missing wiring)
-- Does it crash? (runtime errors)
-- Does it return the right type? (data flow)
+传统调试检查：
+- 函数是否存在？（缺少连接）
+- 是否崩溃？（运行时错误）
+- 是否返回正确的类型？（数据流）
 
-But it does NOT check:
-- **Does the final UI state match what the button label promises?**
-- **Does function B silently undo what function A just did?**
-- **Does shared state (Zustand/Redux/context) have side effects that cancel the intended action?**
+但它不检查：
+- **最终 UI 状态是否与按钮标签承诺的匹配？**
+- **函数 B 是否静默撤销了函数 A 刚刚做的事？**
+- **共享状态（Zustand/Redux/context）是否有抵消预期操作的副作用？**
 
-Real example: A "New Email" button called `setComposeMode(true)` then `selectThread(null)`. Both worked individually. But `selectThread` had a side effect resetting `composeMode: false`. The button did nothing. 54 bugs were found by systematic debugging — this one was missed.
-
----
-
-## How It Works
-
-For EVERY interactive touchpoint in the target area:
-
-```
-1. IDENTIFY the handler (onClick, onSubmit, onChange, etc.)
-2. TRACE every function call in the handler, IN ORDER
-3. For EACH function call:
-   a. What state does it READ?
-   b. What state does it WRITE?
-   c. Does it have SIDE EFFECTS on shared state?
-   d. Does it reset/clear any state as a side effect?
-4. CHECK: Does any later call UNDO a state change from an earlier call?
-5. CHECK: Is the FINAL state what the user expects from the button label?
-6. CHECK: Are there race conditions (async calls that resolve in wrong order)?
-```
+真实案例：一个"新邮件"按钮调用 `setComposeMode(true)` 然后调用 `selectThread(null)`。两者单独都工作。但 `selectThread` 有一个副作用重置 `composeMode: false`。按钮什么也没做。系统调试发现了 54 个 bug — 这个被遗漏了。
 
 ---
 
-## Execution Steps
+## 工作原理
 
-### Step 1: Map State Stores
-
-Before auditing any touchpoint, build a side-effect map of every state store action:
+对于目标区域中的每个交互触点：
 
 ```
-For each Zustand store / React context in scope:
-  For each action/setter:
-    - What fields does it set?
-    - Does it RESET other fields as a side effect?
-    - Document: actionName → {sets: [...], resets: [...]}
+1. 识别处理程序（onClick、onSubmit、onChange 等）
+2. 按顺序追踪处理程序中的每个函数调用
+3. 对于每个函数调用：
+   a. 它读取什么状态？
+   b. 它写入什么状态？
+   c. 它对共享状态有副作用吗？
+   d. 它作为副作用重置/清除任何状态吗？
+4. 检查：任何后续调用是否撤销了早期调用的状态更改？
+5. 检查：最终状态是否是用户从按钮标签期望的？
+6. 检查：是否有竞态条件（以错误顺序解析的异步调用）？
 ```
 
-This is the critical reference. The "New Email" bug was invisible without knowing that `selectThread` resets `composeMode`.
+---
 
-**Output format:**
+## 执行步骤
+
+### 步骤 1：映射状态存储
+
+在审计任何触点之前，构建每个状态存储操作的副作用映射：
+
+```
+对于范围内的每个 Zustand store / React context：
+  对于每个 action/setter：
+    - 它设置什么字段？
+    - 它是否作为副作用重置其他字段？
+    - 文档：actionName → {sets: [...], resets: [...]}
+```
+
+这是关键的参考。不知道 `selectThread` 重置 `composeMode`，"新邮件" bug 是不可见的。
+
+**输出格式：**
 ```
 STORE: emailStore
   setComposeMode(bool) → sets: {composeMode}
@@ -67,157 +67,157 @@ STORE: emailStore
   setDraftGenerating(bool) → sets: {draftGenerating}
   ...
 
-DANGEROUS RESETS (actions that clear state they don't own):
-  selectThread → resets composeMode (owned by setComposeMode)
-  reset → resets everything
+危险重置（清除它们不拥有的状态的操作）：
+  selectThread → 重置 composeMode（由 setComposeMode 拥有）
+  reset → 重置一切
 ```
 
-### Step 2: Audit Each Touchpoint
+### 步骤 2：审计每个触点
 
-For each button/toggle/form submit in the target area:
+对于目标区域中的每个按钮/切换/表单提交：
 
 ```
-TOUCHPOINT: [Button label] in [Component:line]
+TOUCHPOINT: [按钮标签] 在 [Component:line]
   HANDLER: onClick → {
-    call 1: functionA() → sets {X: true}
-    call 2: functionB() → sets {Y: null} RESETS {X: false}  ← CONFLICT
+    调用 1: functionA() → 设置 {X: true}
+    调用 2: functionB() → 设置 {Y: null} 重置 {X: false}  ← 冲突
   }
-  EXPECTED: User sees [description of what button label promises]
-  ACTUAL: X is false because functionB reset it
-  VERDICT: BUG — [description]
+  预期：用户看到 [按钮标签承诺的描述]
+  实际：X 是 false 因为 functionB 重置了它
+  结论：BUG — [描述]
 ```
 
-**Check each of these bug patterns:**
+**检查这些 bug 模式：**
 
-#### Pattern 1: Sequential Undo
+#### 模式 1：顺序撤销
 ```
 handler() {
-  setState_A(true)     // sets X = true
-  setState_B(null)     // side effect: resets X = false
+  setState_A(true)     // 设置 X = true
+  setState_B(null)     // 副作用：重置 X = false
 }
-// Result: X is false. First call was pointless.
+// 结果：X 是 false。第一次调用毫无意义。
 ```
 
-#### Pattern 2: Async Race
+#### 模式 2：异步竞态
 ```
 handler() {
   fetchA().then(() => setState({ loading: false }))
   fetchB().then(() => setState({ loading: true }))
 }
-// Result: final loading state depends on which resolves first
+// 结果：最终 loading 状态取决于哪个先解析
 ```
 
-#### Pattern 3: Stale Closure
+#### 模式 3：过期闭包
 ```
 const [count, setCount] = useState(0)
 const handler = useCallback(() => {
-  setCount(count + 1)  // captures stale count
-  setCount(count + 1)  // same stale count — increments by 1, not 2
+  setCount(count + 1)  // 捕获过期的 count
+  setCount(count + 1)  // 相同的过期 count — 增加 1，不是 2
 }, [count])
 ```
 
-#### Pattern 4: Missing State Transition
+#### 模式 4：缺少状态转换
 ```
-// Button says "Save" but handler only validates, never actually saves
-// Button says "Delete" but handler sets a flag without calling the API
-// Button says "Send" but the API endpoint is removed/broken
+// 按钮说"保存"但处理程序只验证，从不实际保存
+// 按钮说"删除"但处理程序设置标志而不调用 API
+// 按钮说"发送"但 API 端点已移除/损坏
 ```
 
-#### Pattern 5: Conditional Dead Path
+#### 模式 5：条件死路径
 ```
 handler() {
-  if (someState) {        // someState is ALWAYS false at this point
-    doTheActualThing()    // never reached
+  if (someState) {        // someState 在此时总是 false
+    doTheActualThing()    // 永远不会到达
   }
 }
 ```
 
-#### Pattern 6: useEffect Interference
+#### 模式 6：useEffect 干扰
 ```
-// Button sets stateX = true
-// A useEffect watches stateX and resets it to false
-// User sees nothing happen
+// 按钮设置 stateX = true
+// 一个 useEffect 监视 stateX 并将其重置为 false
+// 用户看到什么也没发生
 ```
 
-### Step 3: Report
+### 步骤 3：报告
 
-For each bug found:
+对于发现的每个 bug：
 
 ```
-CLICK-PATH-NNN: [severity: CRITICAL/HIGH/MEDIUM/LOW]
-  Touchpoint: [Button label] in [file:line]
-  Pattern: [Sequential Undo / Async Race / Stale Closure / Missing Transition / Dead Path / useEffect Interference]
-  Handler: [function name or inline]
-  Trace:
-    1. [call] → sets {field: value}
-    2. [call] → RESETS {field: value}  ← CONFLICT
-  Expected: [what user expects]
-  Actual: [what actually happens]
-  Fix: [specific fix]
+CLICK-PATH-NNN: [严重性：CRITICAL/HIGH/MEDIUM/LOW]
+  触点：[按钮标签] 在 [file:line]
+  模式：[Sequential Undo / Async Race / Stale Closure / Missing Transition / Dead Path / useEffect Interference]
+  处理程序：[函数名或内联]
+  追踪：
+    1. [调用] → 设置 {field: value}
+    2. [调用] → 重置 {field: value}  ← 冲突
+  预期：[用户期望什么]
+  实际：[实际发生什么]
+  修复：[具体修复]
 ```
 
 ---
 
-## Scope Control
+## 范围控制
 
-This audit is expensive. Scope it appropriately:
+此审计成本较高。适当限定范围：
 
-- **Full app audit:** Use when launching or after major refactor. Launch parallel agents per page.
-- **Single page audit:** Use after building a new page or after a user reports a broken button.
-- **Store-focused audit:** Use after modifying a Zustand store — audit all consumers of the changed actions.
+- **完整应用审计：** 启动或重大重构后使用。每页启动并行代理。
+- **单页审计：** 构建新页面或用户报告按钮损坏后使用。
+- **存储聚焦审计：** 修改 Zustand store 后使用 — 审计更改操作的所有消费者。
 
-### Recommended agent split for full app:
+### 完整应用的推荐代理分割：
 
 ```
-Agent 1: Map ALL state stores (Step 1) — this is shared context for all other agents
-Agent 2: Dashboard (Tasks, Notes, Journal, Ideas)
-Agent 3: Chat (DanteChatColumn, JustChatPage)
-Agent 4: Emails (ThreadList, DraftArea, EmailsPage)
-Agent 5: Projects (ProjectsPage, ProjectOverviewTab, NewProjectWizard)
-Agent 6: CRM (all sub-tabs)
-Agent 7: Profile, Settings, Vault, Notifications
-Agent 8: Management Suite (all pages)
+Agent 1：映射所有状态存储（步骤 1）— 这是所有其他代理的共享上下文
+Agent 2：Dashboard（Tasks, Notes, Journal, Ideas）
+Agent 3：Chat（DanteChatColumn, JustChatPage）
+Agent 4：Emails（ThreadList, DraftArea, EmailsPage）
+Agent 5：Projects（ProjectsPage, ProjectOverviewTab, NewProjectWizard）
+Agent 6：CRM（所有子标签）
+Agent 7：Profile, Settings, Vault, Notifications
+Agent 8：Management Suite（所有页面）
 ```
 
-Agent 1 MUST complete first. Its output is input for all other agents.
+Agent 1 必须先完成。它的输出是所有其他代理的输入。
 
 ---
 
-## When to Use
+## 何时使用
 
-- After systematic debugging finds "no bugs" but users report broken UI
-- After modifying any Zustand store action (check all callers)
-- After any refactor that touches shared state
-- Before release, on critical user flows
-- When a button "does nothing" — this is THE tool for that
+- 系统调试发现"没有 bug"但用户报告 UI 损坏后
+- 修改任何 Zustand store 操作后（检查所有调用者）
+- 任何触及共享状态的重构后
+- 发布前，在关键用户流程上
+- 当按钮"什么也不做"时 — 这是针对那个的工具
 
-## When NOT to Use
+## 何时不使用
 
-- For API-level bugs (wrong response shape, missing endpoint) — use systematic-debugging
-- For styling/layout issues — visual inspection
-- For performance issues — profiling tools
-
----
-
-## Integration with Other Skills
-
-- Run AFTER `/superpowers:systematic-debugging` (which finds the other 54 bug types)
-- Run BEFORE `/superpowers:verification-before-completion` (which verifies fixes work)
-- Feeds into `/superpowers:test-driven-development` — every bug found here should get a test
+- 对于 API 级别的 bug（错误的响应形状、缺少端点）— 使用 systematic-debugging
+- 对于样式/布局问题 — 视觉检查
+- 对于性能问题 — 性能分析工具
 
 ---
 
-## Example: The Bug That Inspired This Skill
+## 与其他技能的集成
 
-**ThreadList.tsx "New Email" button:**
+- 在 `/superpowers:systematic-debugging` 之后运行（它发现其他 54 种 bug 类型）
+- 在 `/superpowers:verification-before-completion` 之前运行（它验证修复有效）
+- 输入到 `/superpowers:test-driven-development` — 这里发现的每个 bug 都应该有一个测试
+
+---
+
+## 示例：启发此技能的 Bug
+
+**ThreadList.tsx "新邮件"按钮：**
 ```
 onClick={() => {
-  useEmailStore.getState().setComposeMode(true)   // ✓ sets composeMode = true
-  useEmailStore.getState().selectThread(null)      // ✗ RESETS composeMode = false
+  useEmailStore.getState().setComposeMode(true)   // ✓ 设置 composeMode = true
+  useEmailStore.getState().selectThread(null)      // ✗ 重置 composeMode = false
 }}
 ```
 
-Store definition:
+存储定义：
 ```
 selectThread: (thread) => set({
   selectedThread: thread,
@@ -226,19 +226,19 @@ selectThread: (thread) => set({
   drafts: [],
   selectedDraft: null,
   summary: null,
-  composeMode: false,     // ← THIS silent reset killed the button
+  composeMode: false,     // ← 这个静默重置杀死了按钮
   composeData: null,
   redraftOpen: false,
 })
 ```
 
-**Systematic debugging missed it** because:
-- The button has an onClick handler (not dead)
-- Both functions exist (no missing wiring)
-- Neither function crashes (no runtime error)
-- The data types are correct (no type mismatch)
+**系统调试错过了它**，因为：
+- 按钮有 onClick 处理程序（不是死的）
+- 两个函数都存在（没有缺少连接）
+- 两个函数都不崩溃（没有运行时错误）
+- 数据类型正确（没有类型不匹配）
 
-**Click-path audit catches it** because:
-- Step 1 maps `selectThread` resets `composeMode`
-- Step 2 traces the handler: call 1 sets true, call 2 resets false
-- Verdict: Sequential Undo — final state contradicts button intent
+**点击路径审计捕获它**，因为：
+- 步骤 1 映射 `selectThread` 重置 `composeMode`
+- 步骤 2 追踪处理程序：调用 1 设置 true，调用 2 重置 false
+- 结论：Sequential Undo — 最终状态与按钮意图矛盾

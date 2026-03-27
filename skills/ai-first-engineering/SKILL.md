@@ -1,51 +1,51 @@
 ---
 name: ai-first-engineering
-description: Engineering operating model for teams where AI agents generate a large share of implementation output.
+description: AI Agent 生成大部分实现产出的团队的工程运营模式。
 origin: ECC
 ---
 
-# AI-First Engineering
+# AI 优先工程
 
-Use this skill when designing process, reviews, and architecture for teams shipping with AI-assisted code generation.
+当为使用 AI 辅助代码生成的团队设计流程、审查和架构时使用此技能。
 
-## Process Shifts
+## 流程转变
 
-1. Planning quality matters more than typing speed.
-2. Eval coverage matters more than anecdotal confidence.
-3. Review focus shifts from syntax to system behavior.
+1. 规划质量比打字速度更重要。
+2. Eval 覆盖率比轶事信心更重要。
+3. 审查重点从语法转向系统行为。
 
-## Architecture Requirements
+## 架构要求
 
-Prefer architectures that are agent-friendly:
-- explicit boundaries
-- stable contracts
-- typed interfaces
-- deterministic tests
+偏好对 Agent 友好的架构：
+- 显式边界
+- 稳定的契约
+- 类型化接口
+- 确定性测试
 
-Avoid implicit behavior spread across hidden conventions.
+避免分散在隐藏约定中的隐式行为。
 
-## Code Review in AI-First Teams
+## AI 优先团队中的代码审查
 
-Review for:
-- behavior regressions
-- security assumptions
-- data integrity
-- failure handling
-- rollout safety
+审查：
+- 行为回归
+- 安全假设
+- 数据完整性
+- 故障处理
+- 发布安全
 
-Minimize time spent on style issues already covered by automation.
+减少花在自动化已覆盖的风格问题上的时间。
 
-## Hiring and Evaluation Signals
+## 招聘和评估信号
 
-Strong AI-first engineers:
-- decompose ambiguous work cleanly
-- define measurable acceptance criteria
-- produce high-signal prompts and evals
-- enforce risk controls under delivery pressure
+强大的 AI 优先工程师：
+- 清晰分解模糊工作
+- 定义可测量的验收标准
+- 产生高信号提示和 eval
+- 在交付压力下执行风险控制
 
-## Testing Standard
+## 测试标准
 
-Raise testing bar for generated code:
-- required regression coverage for touched domains
-- explicit edge-case assertions
-- integration checks for interface boundaries
+提高生成代码的测试标准：
+- 涉及领域需要回归覆盖
+- 显式边缘情况断言
+- 接口边界的集成检查

@@ -1,233 +1,233 @@
 ---
 name: codebase-onboarding
-description: Analyze an unfamiliar codebase and generate a structured onboarding guide with architecture map, key entry points, conventions, and a starter CLAUDE.md. Use when joining a new project or setting up Claude Code for the first time in a repo.
+description: 分析陌生代码库并生成结构化的入门指南, 包含架构图、关键入口点、约定和启动器 CLAUDE.md。 在加入新项目或首次在仓库中设置 Claude Code 时使用。
 origin: ECC
 ---
 
-# Codebase Onboarding
+# 代码库入门
 
-Systematically analyze an unfamiliar codebase and produce a structured onboarding guide. Designed for developers joining a new project or setting up Claude Code in an existing repo for the first time.
+系统分析陌生代码库并生成结构化的入门指南。 为首次加入新项目或首次在现有仓库中设置 Claude Code 的开发人员设计。
 
-## When to Use
+## 何时使用
 
-- First time opening a project with Claude Code
-- Joining a new team or repository
-- User asks "help me understand this codebase"
-- User asks to generate a CLAUDE.md for a project
-- User says "onboard me" or "walk me through this repo"
+- 首次使用 Claude Code 打开项目
+- 加入新团队或仓库
+- 用户问"帮我理解这个代码库"
+- 用户要求为项目生成 CLAUDE.md
+- 用户说"带我入门"或"带我过一遍这个仓库"
 
-## How It Works
+## 工作原理
 
-### Phase 1: Reconnaissance
+### 阶段 1: 侦察
 
-Gather raw signals about the project without reading every file. Run these checks in parallel:
+在不阅读每个文件的情况下收集项目的原始信号。 并行运行这些检查
 
 ```
-1. Package manifest detection
+1. 包清单检测
    → package.json, go.mod, Cargo.toml, pyproject.toml, pom.xml, build.gradle,
-     Gemfile, composer.json, mix.exs, pubspec.yaml
+      Gemfile, composer.json, mix.exs, pubspec.yaml
 
-2. Framework fingerprinting
+2. 框架指纹识别
    → next.config.*, nuxt.config.*, angular.json, vite.config.*,
-     django settings, flask app factory, fastapi main, rails config
+      django 设置, flask 应用工厂, fastapi 主, rails 配置
 
-3. Entry point identification
+3. 入口点识别
    → main.*, index.*, app.*, server.*, cmd/, src/main/
 
-4. Directory structure snapshot
-   → Top 2 levels of the directory tree, ignoring node_modules, vendor,
-     .git, dist, build, __pycache__, .next
+4. 目录结构快照
+   → 顶层 2 级目录树, 忽略 node_modules, vendor,
+      .git, dist, build, __pycache__, .next
 
-5. Config and tooling detection
+5. 配置和工具检测
    → .eslintrc*, .prettierrc*, tsconfig.json, Makefile, Dockerfile,
-     docker-compose*, .github/workflows/, .env.example, CI configs
+      docker-compose*, .github/workflows/, .env.example, CI 配置
 
-6. Test structure detection
+6. 测试结构检测
    → tests/, test/, __tests__/, *_test.go, *.spec.ts, *.test.js,
-     pytest.ini, jest.config.*, vitest.config.*
+      pytest.ini, jest.config.*, vitest.config.*
 ```
 
-### Phase 2: Architecture Mapping
+### 阶段 2: 架构映射
 
-From the reconnaissance data, identify:
+从侦察数据中识别
 
-**Tech Stack**
-- Language(s) and version constraints
-- Framework(s) and major libraries
-- Database(s) and ORMs
-- Build tools and bundlers
-- CI/CD platform
+**技术栈**
+- 语言和版本约束
+- 框架和主要库
+- 数据库和 ORM
+- 构建工具和打包器
+- CI/CD 平台
 
-**Architecture Pattern**
-- Monolith, monorepo, microservices, or serverless
-- Frontend/backend split or full-stack
-- API style: REST, GraphQL, gRPC, tRPC
+**架构模式**
+- 单体、单体仓库、微服务或无服务器
+- 前端/后端分离或全栈
+- API 风格: REST、GraphQL、gRPC、tRPC
 
-**Key Directories**
-Map the top-level directories to their purpose:
+**关键目录**
+映射顶级目录及其用途
 
-<!-- Example for a React project — replace with detected directories -->
+<!-- React 项目示例 — 替换为检测到的目录 -->
 ```
-src/components/  → React UI components
-src/api/         → API route handlers
-src/lib/         → Shared utilities
-src/db/          → Database models and migrations
-tests/           → Test suites
-scripts/         → Build and deployment scripts
+src/components/  → React UI 组件
+src/api/         → API 路由处理
+src/lib/         → 共享工具
+src/db/          → 数据库模型和迁移
+tests/           → 测试套件
+scripts/         → 构建和部署脚本
 ```
 
-**Data Flow**
-Trace one request from entry to response:
-- Where does a request enter? (router, handler, controller)
-- How is it validated? (middleware, schemas, guards)
-- Where is business logic? (services, models, use cases)
-- How does it reach the database? (ORM, raw queries, repositories)
+**数据流**
+追踪一个请求从入口到响应
+- 请求在哪里进入? (路由器、处理器、控制器)
+- 如何验证? (中间件、模式、守卫)
+- 业务逻辑在哪里? (服务、模型、用例)
+- 如何到达数据库? (ORM、原始查询、仓库)
 
-### Phase 3: Convention Detection
+### 阶段 3: 约定检测
 
-Identify patterns the codebase already follows:
+识别代码库已经遵循的模式
 
-**Naming Conventions**
-- File naming: kebab-case, camelCase, PascalCase, snake_case
-- Component/class naming patterns
-- Test file naming: `*.test.ts`, `*.spec.ts`, `*_test.go`
+**命名约定**
+- 文件命名: kebab-case、camelCase、PascalCase、snake_case
+- 组件/类命名模式
+- 测试文件命名: `*.test.ts`、`*.spec.ts`、`*_test.go`
 
-**Code Patterns**
-- Error handling style: try/catch, Result types, error codes
-- Dependency injection or direct imports
-- State management approach
-- Async patterns: callbacks, promises, async/await, channels
+**代码模式**
+- 错误处理风格: try/catch、Result 类型、错误码
+- 依赖注入风格
+- 状态管理方式
+- 异步模式: 回调、Promise、async/await、channel
 
-**Git Conventions**
-- Branch naming from recent branches
-- Commit message style from recent commits
-- PR workflow (squash, merge, rebase)
-- If the repo has no commits yet or only a shallow history (e.g. `git clone --depth 1`), skip this section and note "Git history unavailable or too shallow to detect conventions"
+**Git 约定**
+- 从最近分支判断分支命名
+- 从最近提交判断提交消息风格
+- PR 工作流(squash、merge、rebase)
+- 如果仓库没有提交历史, 只有一个浅的历史记录(例如 `git clone --depth 1`), 跳过此部分并注明"Git 历史太浅, 无法检测约定"
 
-### Phase 4: Generate Onboarding Artifacts
+### 阶段 4: 生成入门制品
 
-Produce two outputs:
+产生两个输出
 
-#### Output 1: Onboarding Guide
+#### 输出 1: 入门指南
 
 ```markdown
-# Onboarding Guide: [Project Name]
+# 入门指南: [项目名称]
 
-## Overview
-[2-3 sentences: what this project does and who it serves]
+## 概述
+[2-3 句话说明这个项目做什么, 服务谁]
 
-## Tech Stack
-<!-- Example for a Next.js project — replace with detected stack -->
-| Layer | Technology | Version |
+## 技术栈
+<!-- Next.js 项目示例 — 替换为检测到的技术栈 -->
+| 层 | 技术 | 版本 |
 |-------|-----------|---------|
-| Language | TypeScript | 5.x |
-| Framework | Next.js | 14.x |
-| Database | PostgreSQL | 16 |
+| 语言 | TypeScript | 5.x |
+| 框架 | Next.js | 14.x |
+| 数据库 | PostgreSQL | 16 |
 | ORM | Prisma | 5.x |
-| Testing | Jest + Playwright | - |
+| 测试 | Jest + Playwright | - |
 
-## Architecture
-[Diagram or description of how components connect]
+## 架构
+[组件如何连接的图表或描述]
 
-## Key Entry Points
-<!-- Example for a Next.js project — replace with detected paths -->
-- **API routes**: `src/app/api/` — Next.js route handlers
-- **UI pages**: `src/app/(dashboard)/` — authenticated pages
-- **Database**: `prisma/schema.prisma` — data model source of truth
-- **Config**: `next.config.ts` — build and runtime config
+## 关键入口点
+<!-- Next.js 项目示例 — 替换为检测到的路径 -->
+- **API 路由**: `src/app/api/` — Next.js 路由处理
+- **UI 页面**: `src/app/(dashboard)/` — 认证页面
+- **数据库**: `prisma/schema.prisma` — 数据模型事实来源
+- **配置**: `next.config.ts` — 构建和运行时配置
 
-## Directory Map
-[Top-level directory → purpose mapping]
+## 目录映射
+[顶级目录 → 用途映射]
 
-## Request Lifecycle
-[Trace one API request from entry to response]
+## 请求生命周期
+[追踪一个 API 请求从入口到响应]
 
-## Conventions
-- [File naming pattern]
-- [Error handling approach]
-- [Testing patterns]
-- [Git workflow]
+## 约定
+- [文件命名模式]
+- [错误处理方式]
+- [测试模式]
+- [Git 工作流]
 
-## Common Tasks
-<!-- Example for a Node.js project — replace with detected commands -->
-- **Run dev server**: `npm run dev`
-- **Run tests**: `npm test`
-- **Run linter**: `npm run lint`
-- **Database migrations**: `npx prisma migrate dev`
-- **Build for production**: `npm run build`
+## 常用任务
+<!-- Node.js 项目示例 — 替换为检测到的命令 -->
+- **运行开发服务器**: `npm run dev`
+- **运行测试**: `npm test`
+- **运行 linter**: `npm run lint`
+- **数据库迁移**: `npx prisma migrate dev`
+- **生产构建**: `npm run build`
 
-## Where to Look
-<!-- Example for a Next.js project — replace with detected paths -->
-| I want to... | Look at... |
+## 去哪里找
+<!-- Next.js 项目示例 — 替换为检测到的路径 -->
+| 我想要... | 去哪里... |
 |--------------|-----------|
-| Add an API endpoint | `src/app/api/` |
-| Add a UI page | `src/app/(dashboard)/` |
-| Add a database table | `prisma/schema.prisma` |
-| Add a test | `tests/` matching the source path |
-| Change build config | `next.config.ts` |
+| 添加 API 端点 | `src/app/api/` |
+| 添加 UI 页面 | `src/app/(dashboard)/` |
+| 添加数据库表 | `prisma/schema.prisma` |
+| 添加测试 | `tests/` 匹配源路径 |
+| 修改构建配置 | `next.config.ts` |
 ```
 
-#### Output 2: Starter CLAUDE.md
+#### 输出 2: 启动器 CLAUDE.md
 
-Generate or update a project-specific CLAUDE.md based on detected conventions. If `CLAUDE.md` already exists, read it first and enhance it — preserve existing project-specific instructions and clearly call out what was added or changed.
+基于检测到的约定生成或更新项目特定的 CLAUDE.md。 如果 `CLAUDE.md` 已存在, 先读取然后增强 — 清楚标记新增或更改的内容, 保留现有项目特定的指令。
 
 ```markdown
-# Project Instructions
+# 项目指令
 
-## Tech Stack
-[Detected stack summary]
+## 技术栈
+[检测到的技术栈摘要]
 
-## Code Style
-- [Detected naming conventions]
-- [Detected patterns to follow]
+## 代码风格
+- [检测到的命名约定]
+- [要遵循的检测模式]
 
-## Testing
-- Run tests: `[detected test command]`
-- Test pattern: [detected test file convention]
-- Coverage: [if configured, the coverage command]
+## 测试
+- 运行测试: `[检测到的测试命令]`
+- 测试模式: [检测到的测试文件约定]
+- 覆盖率: [如果配置了覆盖率命令]
 
-## Build & Run
-- Dev: `[detected dev command]`
-- Build: `[detected build command]`
-- Lint: `[detected lint command]`
+## 构建和运行
+- 开发: `[检测到的开发命令]`
+- 构建: `[检测到的构建命令]`
+- Lint: `[检测到的 lint 命令]`
 
-## Project Structure
-[Key directory → purpose map]
+## 项目结构
+[关键目录 → 用途映射]
 
-## Conventions
-- [Commit style if detectable]
-- [PR workflow if detectable]
-- [Error handling patterns]
+## 约定
+- [提交风格, 如果可检测]
+- [PR 工作流, 如果可检测]
+- [错误处理模式]
 ```
 
-## Best Practices
+## 最佳实践
 
-1. **Don't read everything** — reconnaissance should use Glob and Grep, not Read on every file. Read selectively only for ambiguous signals.
-2. **Verify, don't guess** — if a framework is detected from config but the actual code uses something different, trust the code.
-3. **Respect existing CLAUDE.md** — if one already exists, enhance it rather than replacing it. Call out what's new vs existing.
-4. **Stay concise** — the onboarding guide should be scannable in 2 minutes. Details belong in the code, not the guide.
-5. **Flag unknowns** — if a convention can't be confidently detected, say so rather than guessing. "Could not determine test runner" is better than a wrong answer.
+1. **不要阅读所有内容** — 侦察应该使用 Glob 和 Grep, 而不是读取每个文件。 仅对模糊信号进行选择性读取。
+2. **验证, 不要猜测** — 如果从配置检测到框架但实际代码使用不同的东西, 信任代码。
+3. **尊重现有 CLAUDE.md** — 如果已存在, 增强而不是替换。 清楚标记新增与现有内容。
+4. **保持简洁** — 入门指南应该在 2 分钟内可扫描。 细节在代码中, 不在指南中。
+5. **标记未知** — 如果无法自信地检测约定, 说明而不是猜测。"无法确定测试运行器" 比错误答案好。
 
-## Anti-Patterns to Avoid
+## 要避免的反模式
 
-- Generating a CLAUDE.md that's longer than 100 lines — keep it focused
-- Listing every dependency — highlight only the ones that shape how you write code
-- Describing obvious directory names — `src/` doesn't need an explanation
-- Copying the README — the onboarding guide adds structural insight the README lacks
+- 生成超过 100 行的 CLAUDE.md — 保持专注
+- 列出每个依赖 — 只突出那些影响你编写代码方式的
+- 描述明显的目录名 — `src/` 不需要解释
+- 复制 README — 入门指南添加 README 缺少的结构洞察
 
-## Examples
+## 示例
 
-### Example 1: First time in a new repo
-**User**: "Onboard me to this codebase"
-**Action**: Run full 4-phase workflow → produce Onboarding Guide + Starter CLAUDE.md
-**Output**: Onboarding Guide printed directly to the conversation, plus a `CLAUDE.md` written to the project root
+### 示例 1: 首次在新仓库中
+**用户**: "带我入门这个代码库"
+**操作**: 运行完整的 4 阶段工作流 → 生成入门指南 + 启动器 CLAUDE.md
+**输出**: 入门指南直接打印到对话中, 加上写入项目根目录的 `CLAUDE.md`
 
-### Example 2: Generate CLAUDE.md for existing project
-**User**: "Generate a CLAUDE.md for this project"
-**Action**: Run Phases 1-3, skip Onboarding Guide, produce only CLAUDE.md
-**Output**: Project-specific `CLAUDE.md` with detected conventions
+### 示例 2: 为现有项目生成 CLAUDE.md
+**用户**: "为这个项目生成一个 CLAUDE.md"
+**操作**: 运行阶段 1-3, 跳过入门指南, 只产生 CLAUDE.md
+**输出**: 带有检测约定的项目特定 `CLAUDE.md`
 
-### Example 3: Enhance existing CLAUDE.md
-**User**: "Update the CLAUDE.md with current project conventions"
-**Action**: Read existing CLAUDE.md, run Phases 1-3, merge new findings
-**Output**: Updated `CLAUDE.md` with additions clearly marked
+### 示例 3: 增强现有 CLAUDE.md
+**用户**: "用当前项目约定更新 CLAUDE.md"
+**操作**: 读取现有 CLAUDE.md, 运行阶段 1-3, 合并新发现
+**输出**: 清楚标记新增内容的更新 `CLAUDE.md`

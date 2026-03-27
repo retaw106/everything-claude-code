@@ -1,161 +1,161 @@
 ---
 name: search-first
-description: Research-before-coding workflow. Search for existing tools, libraries, and patterns before writing custom code. Invokes the researcher agent.
+description: 编码前研究工作流。在编写自定义代码之前搜索现有工具、库和模式。调用研究员代理。
 origin: ECC
 ---
 
-# /search-first — Research Before You Code
+# /search-first — 编码前先研究
 
-Systematizes the "search for existing solutions before implementing" workflow.
+将"在实现之前搜索现有解决方案"工作流系统化。
 
-## Trigger
+## 触发条件
 
-Use this skill when:
-- Starting a new feature that likely has existing solutions
-- Adding a dependency or integration
-- The user asks "add X functionality" and you're about to write code
-- Before creating a new utility, helper, or abstraction
+在以下情况下使用此技能：
+- 启动一个可能有现有解决方案的新功能
+- 添加依赖或集成
+- 用户要求"添加 X 功能"而你正要编写代码
+- 在创建新的工具函数、助手或抽象之前
 
-## Workflow
+## 工作流
 
 ```
 ┌─────────────────────────────────────────────┐
-│  1. NEED ANALYSIS                           │
-│     Define what functionality is needed      │
-│     Identify language/framework constraints  │
+│  1. 需求分析                                 │
+│     定义需要什么功能                          │
+│     识别语言/框架约束                         │
 ├─────────────────────────────────────────────┤
-│  2. PARALLEL SEARCH (researcher agent)      │
+│  2. 并行搜索（研究员代理）                     │
 │     ┌──────────┐ ┌──────────┐ ┌──────────┐  │
 │     │  npm /   │ │  MCP /   │ │  GitHub / │  │
 │     │  PyPI    │ │  Skills  │ │  Web      │  │
 │     └──────────┘ └──────────┘ └──────────┘  │
 ├─────────────────────────────────────────────┤
-│  3. EVALUATE                                │
-│     Score candidates (functionality, maint, │
-│     community, docs, license, deps)         │
+│  3. 评估                                     │
+│     为候选评分（功能、维护、社区、文档、      │
+│     许可证、依赖）                            │
 ├─────────────────────────────────────────────┤
-│  4. DECIDE                                  │
+│  4. 决策                                     │
 │     ┌─────────┐  ┌──────────┐  ┌─────────┐  │
-│     │  Adopt  │  │  Extend  │  │  Build   │  │
-│     │ as-is   │  │  /Wrap   │  │  Custom  │  │
+│     │  直接   │  │  扩展    │  │  自建   │  │
+│     │  采用   │  │  /包装   │  │  自定义  │  │
 │     └─────────┘  └──────────┘  └─────────┘  │
 ├─────────────────────────────────────────────┤
-│  5. IMPLEMENT                               │
-│     Install package / Configure MCP /       │
-│     Write minimal custom code               │
+│  5. 实现                                     │
+│     安装包 / 配置 MCP /                       │
+│     编写最小自定义代码                        │
 └─────────────────────────────────────────────┘
 ```
 
-## Decision Matrix
+## 决策矩阵
 
-| Signal | Action |
-|--------|--------|
-| Exact match, well-maintained, MIT/Apache | **Adopt** — install and use directly |
-| Partial match, good foundation | **Extend** — install + write thin wrapper |
-| Multiple weak matches | **Compose** — combine 2-3 small packages |
-| Nothing suitable found | **Build** — write custom, but informed by research |
+| 信号 | 行动 |
+|------|------|
+| 完全匹配，维护良好，MIT/Apache | **采用** — 直接安装使用 |
+| 部分匹配，良好基础 | **扩展** — 安装 + 编写薄包装层 |
+| 多个弱匹配 | **组合** — 结合 2-3 个小包 |
+| 未找到合适的 | **自建** — 编写自定义代码，但基于研究 |
 
-## How to Use
+## 如何使用
 
-### Quick Mode (inline)
+### 快速模式（内联）
 
-Before writing a utility or adding functionality, mentally run through:
+在编写工具函数或添加功能之前，心里过一遍：
 
-0. Does this already exist in the repo? → `rg` through relevant modules/tests first
-1. Is this a common problem? → Search npm/PyPI
-2. Is there an MCP for this? → Check `~/.claude/settings.json` and search
-3. Is there a skill for this? → Check `~/.claude/skills/`
-4. Is there a GitHub implementation/template? → Run GitHub code search for maintained OSS before writing net-new code
+0. 仓库中是否已存在？→ 先用 `rg` 搜索相关模块/测试
+1. 这是常见问题吗？→ 搜索 npm/PyPI
+2. 有 MCP 吗？→ 检查 `~/.claude/settings.json` 并搜索
+3. 有技能吗？→ 检查 `~/.claude/skills/`
+4. 有 GitHub 实现/模板吗？→ 在编写全新代码前运行 GitHub 代码搜索查找维护良好的 OSS
 
-### Full Mode (agent)
+### 完整模式（代理）
 
-For non-trivial functionality, launch the researcher agent:
+对于非平凡功能，启动研究员代理：
 
 ```
 Task(subagent_type="general-purpose", prompt="
-  Research existing tools for: [DESCRIPTION]
-  Language/framework: [LANG]
-  Constraints: [ANY]
+  研究现有工具用于: [描述]
+  语言/框架: [语言]
+  约束: [任何]
 
-  Search: npm/PyPI, MCP servers, Claude Code skills, GitHub
-  Return: Structured comparison with recommendation
+  搜索: npm/PyPI, MCP 服务器, Claude Code 技能, GitHub
+  返回: 带建议的结构化比较
 ")
 ```
 
-## Search Shortcuts by Category
+## 按类别搜索快捷方式
 
-### Development Tooling
+### 开发工具
 - Linting → `eslint`, `ruff`, `textlint`, `markdownlint`
-- Formatting → `prettier`, `black`, `gofmt`
-- Testing → `jest`, `pytest`, `go test`
-- Pre-commit → `husky`, `lint-staged`, `pre-commit`
+- 格式化 → `prettier`, `black`, `gofmt`
+- 测试 → `jest`, `pytest`, `go test`
+- 预提交 → `husky`, `lint-staged`, `pre-commit`
 
-### AI/LLM Integration
-- Claude SDK → Context7 for latest docs
-- Prompt management → Check MCP servers
-- Document processing → `unstructured`, `pdfplumber`, `mammoth`
+### AI/LLM 集成
+- Claude SDK → 使用 Context7 获取最新文档
+- 提示管理 → 检查 MCP 服务器
+- 文档处理 → `unstructured`, `pdfplumber`, `mammoth`
 
-### Data & APIs
-- HTTP clients → `httpx` (Python), `ky`/`got` (Node)
-- Validation → `zod` (TS), `pydantic` (Python)
-- Database → Check for MCP servers first
+### 数据和 API
+- HTTP 客户端 → `httpx` (Python), `ky`/`got` (Node)
+- 验证 → `zod` (TS), `pydantic` (Python)
+- 数据库 → 先检查 MCP 服务器
 
-### Content & Publishing
-- Markdown processing → `remark`, `unified`, `markdown-it`
-- Image optimization → `sharp`, `imagemin`
+### 内容和发布
+- Markdown 处理 → `remark`, `unified`, `markdown-it`
+- 图片优化 → `sharp`, `imagemin`
 
-## Integration Points
+## 集成点
 
-### With planner agent
-The planner should invoke researcher before Phase 1 (Architecture Review):
-- Researcher identifies available tools
-- Planner incorporates them into the implementation plan
-- Avoids "reinventing the wheel" in the plan
+### 与 planner 代理
+规划器应在 Phase 1（架构审查）之前调用研究员：
+- 研究员识别可用工具
+- 规划器将它们纳入实现计划
+- 避免在计划中"重新发明轮子"
 
-### With architect agent
-The architect should consult researcher for:
-- Technology stack decisions
-- Integration pattern discovery
-- Existing reference architectures
+### 与 architect 代理
+架构师应向研究员咨询：
+- 技术栈决策
+- 集成模式发现
+- 现有参考架构
 
-### With iterative-retrieval skill
-Combine for progressive discovery:
-- Cycle 1: Broad search (npm, PyPI, MCP)
-- Cycle 2: Evaluate top candidates in detail
-- Cycle 3: Test compatibility with project constraints
+### 与 iterative-retrieval 技能
+结合使用进行渐进式发现：
+- 周期 1：广泛搜索（npm、PyPI、MCP）
+- 周期 2：详细评估顶级候选
+- 周期 3：测试与项目约束的兼容性
 
-## Examples
+## 示例
 
-### Example 1: "Add dead link checking"
+### 示例 1："添加死链接检查"
 ```
-Need: Check markdown files for broken links
-Search: npm "markdown dead link checker"
-Found: textlint-rule-no-dead-link (score: 9/10)
-Action: ADOPT — npm install textlint-rule-no-dead-link
-Result: Zero custom code, battle-tested solution
-```
-
-### Example 2: "Add HTTP client wrapper"
-```
-Need: Resilient HTTP client with retries and timeout handling
-Search: npm "http client retry", PyPI "httpx retry"
-Found: got (Node) with retry plugin, httpx (Python) with built-in retry
-Action: ADOPT — use got/httpx directly with retry config
-Result: Zero custom code, production-proven libraries
+需求: 检查 markdown 文件中的断链
+搜索: npm "markdown dead link checker"
+发现: textlint-rule-no-dead-link (评分: 9/10)
+行动: 采用 — npm install textlint-rule-no-dead-link
+结果: 零自定义代码，经实战检验的解决方案
 ```
 
-### Example 3: "Add config file linter"
+### 示例 2："添加 HTTP 客户端包装器"
 ```
-Need: Validate project config files against a schema
-Search: npm "config linter schema", "json schema validator cli"
-Found: ajv-cli (score: 8/10)
-Action: ADOPT + EXTEND — install ajv-cli, write project-specific schema
-Result: 1 package + 1 schema file, no custom validation logic
+需求: 带重试和超时处理的弹性 HTTP 客户端
+搜索: npm "http client retry", PyPI "httpx retry"
+发现: got (Node) 带重试插件, httpx (Python) 内置重试
+行动: 采用 — 直接使用 got/httpx 配置重试
+结果: 零自定义代码，生产验证的库
 ```
 
-## Anti-Patterns
+### 示例 3："添加配置文件 linter"
+```
+需求: 根据 schema 验证项目配置文件
+搜索: npm "config linter schema", "json schema validator cli"
+发现: ajv-cli (评分: 8/10)
+行动: 采用 + 扩展 — 安装 ajv-cli，编写项目特定 schema
+结果: 1 个包 + 1 个 schema 文件，无自定义验证逻辑
+```
 
-- **Jumping to code**: Writing a utility without checking if one exists
-- **Ignoring MCP**: Not checking if an MCP server already provides the capability
-- **Over-customizing**: Wrapping a library so heavily it loses its benefits
-- **Dependency bloat**: Installing a massive package for one small feature
+## 反模式
+
+- **直接写代码**：不检查是否存在就编写工具函数
+- **忽略 MCP**：不检查 MCP 服务器是否已提供该能力
+- **过度定制**：过重地包装库以至于失去其优势
+- **依赖膨胀**：为了一个小功能安装巨大的包

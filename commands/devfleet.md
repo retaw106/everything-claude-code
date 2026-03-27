@@ -1,92 +1,92 @@
 ---
-description: Orchestrate parallel Claude Code agents via Claude DevFleet — plan projects from natural language, dispatch agents in isolated worktrees, monitor progress, and read structured reports.
+description: 通过 Claude DevFleet 编排并行 Claude Code agents — 从自然语言规划项目，在隔离的 worktrees 中调度 agents，监控进度，并阅读结构化报告。
 ---
 
-# DevFleet — Multi-Agent Orchestration
+# DevFleet — 多 Agent 编排
 
-Orchestrate parallel Claude Code agents via Claude DevFleet. Each agent runs in an isolated git worktree with full tooling.
+通过 Claude DevFleet 编排并行 Claude Code agents。每个 agent 在隔离的 git worktree 中运行，拥有完整的工具集。
 
-Requires the DevFleet MCP server: `claude mcp add devfleet --transport http http://localhost:18801/mcp`
+需要 DevFleet MCP server：`claude mcp add devfleet --transport http http://localhost:18801/mcp`
 
-## Flow
-
-```
-User describes project
-  → plan_project(prompt) → mission DAG with dependencies
-  → Show plan, get approval
-  → dispatch_mission(M1) → Agent spawns in worktree
-  → M1 completes → auto-merge → M2 auto-dispatches (depends_on M1)
-  → M2 completes → auto-merge
-  → get_report(M2) → files_changed, what_done, errors, next_steps
-  → Report summary to user
-```
-
-## Workflow
-
-1. **Plan the project** from the user's description:
+## 流程
 
 ```
-mcp__devfleet__plan_project(prompt="<user's description>")
+用户描述项目
+  → plan_project(prompt) → 带依赖关系的任务 DAG
+  → 展示计划，获取批准
+  → dispatch_mission(M1) → Agent 在 worktree 中启动
+  → M1 完成 → 自动合并 → M2 自动调度（依赖 M1）
+  → M2 完成 → 自动合并
+  → get_report(M2) → files_changed、what_done、errors、next_steps
+  → 向用户报告摘要
 ```
 
-This returns a project with chained missions. Show the user:
-- Project name and ID
-- Each mission: title, type, dependencies
-- The dependency DAG (which missions block which)
+## 工作流
 
-2. **Wait for user approval** before dispatching. Show the plan clearly.
-
-3. **Dispatch the first mission** (the one with empty `depends_on`):
+1. **规划项目** 从用户的描述：
 
 ```
-mcp__devfleet__dispatch_mission(mission_id="<first_mission_id>")
+mcp__devfleet__plan_project(prompt="<用户的描述>")
 ```
 
-The remaining missions auto-dispatch as their dependencies complete (because `plan_project` creates them with `auto_dispatch=true`). When manually creating missions with `create_mission`, you must explicitly set `auto_dispatch=true` for this behavior.
+这将返回带有链式任务的项目。向用户展示：
+- 项目名称和 ID
+- 每个任务：标题、类型、依赖关系
+- 依赖关系 DAG（哪些任务阻塞哪些）
 
-4. **Monitor progress** — check what's running:
+2. **等待用户批准** 在调度前。清晰展示计划。
+
+3. **调度第一个任务**（`depends_on` 为空的那个）：
+
+```
+mcp__devfleet__dispatch_mission(mission_id="<第一个任务 ID>")
+```
+
+剩余任务在其依赖项完成时自动调度（因为 `plan_project` 以 `auto_dispatch=true` 创建它们）。当使用 `create_mission` 手动创建任务时，必须显式设置 `auto_dispatch=true` 才能获得此行为。
+
+4. **监控进度** — 检查运行状态：
 
 ```
 mcp__devfleet__get_dashboard()
 ```
 
-Or check a specific mission:
+或检查特定任务：
 
 ```
 mcp__devfleet__get_mission_status(mission_id="<id>")
 ```
 
-Prefer polling with `get_mission_status` over `wait_for_mission` for long-running missions, so the user sees progress updates.
+对于长时间运行的任务，优先使用 `get_mission_status` 轮询而非 `wait_for_mission`，以便用户看到进度更新。
 
-5. **Read the report** for each completed mission:
+5. **阅读报告** 为每个完成的任务：
 
 ```
-mcp__devfleet__get_report(mission_id="<mission_id>")
+mcp__devfleet__get_report(mission_id="<任务 ID>")
 ```
 
-Call this for every mission that reached a terminal state. Reports contain: files_changed, what_done, what_open, what_tested, what_untested, next_steps, errors_encountered.
+为每个达到终端状态的任务调用此方法。报告包含：files_changed、what_done、what_open、what_tested、what_untested、next_steps、errors_encountered。
 
-## All Available Tools
+## 所有可用工具
 
-| Tool | Purpose |
-|------|---------|
-| `plan_project(prompt)` | AI breaks description into chained missions with `auto_dispatch=true` |
-| `create_project(name, path?, description?)` | Create a project manually, returns `project_id` |
-| `create_mission(project_id, title, prompt, depends_on?, auto_dispatch?)` | Add a mission. `depends_on` is a list of mission ID strings. |
-| `dispatch_mission(mission_id, model?, max_turns?)` | Start an agent |
-| `cancel_mission(mission_id)` | Stop a running agent |
-| `wait_for_mission(mission_id, timeout_seconds?)` | Block until done (prefer polling for long tasks) |
-| `get_mission_status(mission_id)` | Check progress without blocking |
-| `get_report(mission_id)` | Read structured report |
-| `get_dashboard()` | System overview |
-| `list_projects()` | Browse projects |
-| `list_missions(project_id, status?)` | List missions |
+| 工具 | 用途 |
+|------|------|
+| `plan_project(prompt)` | AI 将描述分解为带 `auto_dispatch=true` 的链式任务 |
+| `create_project(name, path?, description?)` | 手动创建项目，返回 `project_id` |
+| `create_mission(project_id, title, prompt, depends_on?, auto_dispatch?)` | 添加任务。`depends_on` 是任务 ID 字符串列表。 |
+| `dispatch_mission(mission_id, model?, max_turns?)` | 启动 agent |
+| `cancel_mission(mission_id)` | 停止运行中的 agent |
+| `wait_for_mission(mission_id, timeout_seconds?)` | 阻塞直到完成（长时间任务优先轮询） |
+| `get_mission_status(mission_id)` | 检查进度而不阻塞 |
+| `get_report(mission_id)` | 阅读结构化报告 |
+| `get_dashboard()` | 系统概览 |
+| `list_projects()` | 浏览项目 |
+| `list_missions(project_id, status?)` | 列出任务 |
 
-## Guidelines
+## 指南
 
-- Always confirm the plan before dispatching unless the user said "go ahead"
-- Include mission titles and IDs when reporting status
-- If a mission fails, read its report to understand errors before retrying
-- Agent concurrency is configurable (default: 3). Excess missions queue and auto-dispatch as slots free up. Check `get_dashboard()` for slot availability.
-- Dependencies form a DAG — never create circular dependencies
-- Each agent auto-merges its worktree on completion. If a merge conflict occurs, the changes remain on the worktree branch for manual resolution.
+- 除非用户说"继续"，否则在调度前始终确认计划
+- 报告状态时包含任务标题和 ID
+- 如果任务失败，在重试前阅读其报告以了解错误
+- Agent 并发是可配置的（默认：3）。多余的任务排队，并在槽位空闲时自动调度。检查 `get_dashboard()` 了解槽位可用性。
+- 依赖关系形成 DAG — 永远不要创建循环依赖
+- 每个 agent 完成后自动合并其 worktree。如果发生合并冲突，更改保留在 worktree 分支中供手动解决。

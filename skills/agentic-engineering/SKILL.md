@@ -1,63 +1,63 @@
 ---
 name: agentic-engineering
-description: Operate as an agentic engineer using eval-first execution, decomposition, and cost-aware model routing.
+description: 作为 Agentic 工程师操作，使用评估优先执行、分解和成本感知的模型路由
 origin: ECC
 ---
 
 # Agentic Engineering
 
-Use this skill for engineering workflows where AI agents perform most implementation work and humans enforce quality and risk controls.
+在 AI Agent 扌大部分实现工作而人类执行质量和风险的工程工作流中使用此技能
 
-## Operating Principles
+## 操作原则
 
-1. Define completion criteria before execution.
-2. Decompose work into agent-sized units.
-3. Route model tiers by task complexity.
-4. Measure with evals and regression checks.
+1. 在执行前定义完成标准
+2. 将工作分解为 Agent 大小的单元
+3. 按任务复杂度路由模型层级
+4. 用评估,回归检查进行测量
 
-## Eval-First Loop
+## 评估优先循环
 
-1. Define capability eval and regression eval.
-2. Run baseline and capture failure signatures.
-3. Execute implementation.
-4. Re-run evals and compare deltas.
+1. 定义能力评估和回归评估
+2. 运行基线并捕获失败特征
+3. 执行实现
+4. 重新运行评估并比较差异
 
-## Task Decomposition
+## 任务分解
 
-Apply the 15-minute unit rule:
-- each unit should be independently verifiable
-- each unit should have a single dominant risk
-- each unit should expose a clear done condition
+应用 15 分钟单元规则：
+- 每个单元应可独立验证
+- 每个单元应有单一主导风险
+- 每个单元应暴露清晰的完成条件
 
-## Model Routing
+## 模型路由
 
-- Haiku: classification, boilerplate transforms, narrow edits
-- Sonnet: implementation and refactors
-- Opus: architecture, root-cause analysis, multi-file invariants
+- Haiku：分类、样板转换、窄编辑
+- Sonnet：实现、重构
+- Opus：架构、根因分析、多文件不变量
 
-## Session Strategy
+## 会话策略
 
-- Continue session for closely-coupled units.
-- Start fresh session after major phase transitions.
-- Compact after milestone completion, not during active debugging.
+- 为紧密耦合的单元继续会话
+- 在主要阶段转换后开始新会话
+- 在里程碑完成后压缩，而不是在主动调试期间
 
-## Review Focus for AI-Generated Code
+## AI 生成代码的审查重点
 
-Prioritize:
-- invariants and edge cases
-- error boundaries
-- security and auth assumptions
-- hidden coupling and rollout risk
+优先考虑:
+- 不变量和边界情况
+- 错误边界
+- 安全和认证假设
+- 隐藏耦合和发布风险
 
-Do not waste review cycles on style-only disagreements when automated format/lint already enforce style.
+当自动格式化/lint 已经强制执行时,不要在仅样式分歧上浪费审查周期
 
-## Cost Discipline
+## 成本纪律
 
-Track per task:
-- model
-- token estimate
-- retries
-- wall-clock time
-- success/failure
+每个任务跟踪:
+- 模型
+- Token 估算
+- 重试次数
+- 实际耗时
+- 成功/失败
 
-Escalate model tier only when lower tier fails with a clear reasoning gap.
+只有在低层级因明确的推理差距失败时才升级模型层级

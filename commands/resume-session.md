@@ -1,156 +1,157 @@
 ---
-description: Load the most recent session file from ~/.claude/session-data/ and resume work with full context from where the last session ended.
+description: 从 ~/.claude/session-data/ 加载最近的会话文件，并在上次会话结束的位置恢复带有完整上下文的工作。
 ---
 
-# Resume Session Command
+# Resume Session 命令
 
-Load the last saved session state and orient fully before doing any work.
-This command is the counterpart to `/save-session`.
+加载上次保存的会话状态，并在进行任何工作之前完全定位。
+此命令是 `/save-session` 的对应命令。
 
-## When to Use
+## 何时使用
 
-- Starting a new session to continue work from a previous day
-- After starting a fresh session due to context limits
-- When handing off a session file from another source (just provide the file path)
-- Any time you have a session file and want Claude to fully absorb it before proceeding
+- 开始新会话以继续前几天的工作
+- 由于上下文限制而开始新会话后
+- 从其他来源移交会话文件时（只需提供文件路径）
+- 任何时候你有一个会话文件并希望 Claude 在继续之前完全吸收它
 
-## Usage
+## 用法
 
 ```
-/resume-session                                                      # loads most recent file in ~/.claude/session-data/
-/resume-session 2024-01-15                                           # loads most recent session for that date
-/resume-session ~/.claude/session-data/2024-01-15-abc123de-session.tmp  # loads a current short-id session file
-/resume-session ~/.claude/sessions/2024-01-15-session.tmp               # loads a specific legacy-format file
+/resume-session                                                      # 加载 ~/.claude/session-data/ 中最近的文件
+/resume-session 2024-01-15                                           # 加载该日期最近的会话
+/resume-session ~/.claude/session-data/2024-01-15-abc123de-session.tmp  # 加载特定的 short-id 会话文件
+/resume-session ~/.claude/sessions/2024-01-15-session.tmp               # 加载特定的 legacy 格式文件
 ```
 
-## Process
+## 流程
 
-### Step 1: Find the session file
+### 步骤 1：查找会话文件
 
-If no argument provided:
+如果未提供参数：
 
-1. Check `~/.claude/session-data/`
-2. Pick the most recently modified `*-session.tmp` file
-3. If the folder does not exist or has no matching files, tell the user:
+1. 检查 `~/.claude/session-data/`
+2. 选择最近修改的 `*-session.tmp` 文件
+3. 如果文件夹不存在或没有匹配的文件，告诉用户：
    ```
-   No session files found in ~/.claude/session-data/
-   Run /save-session at the end of a session to create one.
+   在 ~/.claude/session-data/ 中未找到会话文件
+   在会话结束时运行 /save-session 来创建一个。
    ```
-   Then stop.
+   然后停止。
 
-If an argument is provided:
+如果提供了参数：
 
-- If it looks like a date (`YYYY-MM-DD`), search `~/.claude/session-data/` first, then the legacy
-  `~/.claude/sessions/`, for files matching `YYYY-MM-DD-session.tmp` (legacy format) or
-  `YYYY-MM-DD-<shortid>-session.tmp` (current format)
-  and load the most recently modified variant for that date
-- If it looks like a file path, read that file directly
-- If not found, report clearly and stop
+- 如果看起来像日期（`YYYY-MM-DD`），先搜索 `~/.claude/session-data/`，然后是 legacy
+  `~/.claude/sessions/`，查找匹配 `YYYY-MM-DD-session.tmp`（legacy 格式）或
+  `YYYY-MM-DD-<shortid>-session.tmp`（当前格式）的文件
+  并加载该日期最近修改的变体
+- 如果看起来像文件路径，直接读取该文件
+- 如果未找到，清楚报告并停止
 
-### Step 2: Read the entire session file
+### 步骤 2：读取整个会话文件
 
-Read the complete file. Do not summarize yet.
+读取完整文件。暂不要摘要。
 
-### Step 3: Confirm understanding
+### 步骤 3：确认理解
 
-Respond with a structured briefing in this exact format:
+以这种确切格式响应结构化简报：
 
 ```
-SESSION LOADED: [actual resolved path to the file]
+会话已加载：[文件的实际解析路径]
 ════════════════════════════════════════════════
 
-PROJECT: [project name / topic from file]
+项目：[文件中的项目名称 / 主题]
 
-WHAT WE'RE BUILDING:
-[2-3 sentence summary in your own words]
+我们在构建什么：
+[用你自己的话总结 2-3 句]
 
-CURRENT STATE:
-✅ Working: [count] items confirmed
-🔄 In Progress: [list files that are in progress]
-🗒️ Not Started: [list planned but untouched]
+当前状态：
+✅ 已工作：[数量] 项已确认
+🔄 进行中：[列出正在进行中的文件]
+🗒️ 未开始：[列出已计划但未触及的]
 
-WHAT NOT TO RETRY:
-[list every failed approach with its reason — this is critical]
+不要重试的：
+[列出每个失败的方法及其原因 — 这很关键]
 
-OPEN QUESTIONS / BLOCKERS:
-[list any blockers or unanswered questions]
+未解决的问题 / 阻塞：
+[列出任何阻塞或未回答的问题]
 
-NEXT STEP:
-[exact next step if defined in the file]
-[if not defined: "No next step defined — recommend reviewing 'What Has NOT Been Tried Yet' together before starting"]
+下一步：
+[如果文件中定义了确切下一步]
+[如果未定义："未定义下一步 — 建议在开始前一起审查'尚未尝试的方法'"]
 
 ════════════════════════════════════════════════
-Ready to continue. What would you like to do?
+准备继续。你想做什么？
 ```
 
-### Step 4: Wait for the user
+### 步骤 4：等待用户
 
-Do NOT start working automatically. Do NOT touch any files. Wait for the user to say what to do next.
+**不要**自动开始工作。**不要**触及任何文件。等待用户说接下来要做什么。
 
-If the next step is clearly defined in the session file and the user says "continue" or "yes" or similar — proceed with that exact next step.
+如果会话文件中明确定义了下一步，用户说"继续"或"是"或类似的 — 继续执行那个确切的下一步。
 
-If no next step is defined — ask the user where to start, and optionally suggest an approach from the "What Has NOT Been Tried Yet" section.
+如果未定义下一步 — 询问用户从哪里开始，并可选地从"尚未尝试的方法"部分建议一个方法。
 
 ---
 
-## Edge Cases
+## 边界情况
 
-**Multiple sessions for the same date** (`2024-01-15-session.tmp`, `2024-01-15-abc123de-session.tmp`):
-Load the most recently modified matching file for that date, regardless of whether it uses the legacy no-id format or the current short-id format.
+**同一日期的多个会话**（`2024-01-15-session.tmp`、`2024-01-15-abc123de-session.tmp`）：
+加载该日期最近修改的匹配文件，无论它使用的是 legacy no-id 格式还是当前 short-id 格式。
 
-**Session file references files that no longer exist:**
-Note this during the briefing — "⚠️ `path/to/file.ts` referenced in session but not found on disk."
+**会话文件引用的文件不再存在：**
+在简报期间注明 — "⚠️ 会话中引用了 `path/to/file.ts` 但在磁盘上未找到。"
 
-**Session file is from more than 7 days ago:**
-Note the gap — "⚠️ This session is from N days ago (threshold: 7 days). Things may have changed." — then proceed normally.
+**会话文件来自 7 天以上前：**
+注明差距 — "⚠️ 此会话来自 N 天前（阈值：7 天）。情况可能已改变。" — 然后正常继续。
 
-**User provides a file path directly (e.g., forwarded from a teammate):**
-Read it and follow the same briefing process — the format is the same regardless of source.
+**用户直接提供文件路径（例如，从队友转发）：**
+读取它并遵循相同的简报流程 — 无论来源如何格式都相同。
 
-**Session file is empty or malformed:**
-Report: "Session file found but appears empty or unreadable. You may need to create a new one with /save-session."
+**会话文件为空或格式错误：**
+报告："会话文件已找到但似乎为空或不可读。你可能需要用 /save-session 创建一个新的。"
 
 ---
 
-## Example Output
+## 示例输出
 
 ```
-SESSION LOADED: /Users/you/.claude/session-data/2024-01-15-abc123de-session.tmp
+会话已加载：/Users/you/.claude/session-data/2024-01-15-abc123de-session.tmp
 ════════════════════════════════════════════════
 
-PROJECT: my-app — JWT Authentication
+项目：my-app — JWT 认证
 
-WHAT WE'RE BUILDING:
-User authentication with JWT tokens stored in httpOnly cookies.
-Register and login endpoints are partially done. Route protection
-via middleware hasn't been started yet.
+我们在构建什么：
+使用存储在 httpOnly cookies 中的 JWT token 进行用户认证。
+注册和登录端点部分完成。通过 middleware 的路由保护
+还没有开始。
 
-CURRENT STATE:
-✅ Working: 3 items (register endpoint, JWT generation, password hashing)
-🔄 In Progress: app/api/auth/login/route.ts (token works, cookie not set yet)
-🗒️ Not Started: middleware.ts, app/login/page.tsx
+当前状态：
+✅ 已工作：3 项（注册端点、JWT 生成、密码哈希）
+🔄 进行中：app/api/auth/login/route.ts（token 工作正常，cookie 尚未设置）
+🗒️ 未开始：middleware.ts、app/login/page.tsx
 
-WHAT NOT TO RETRY:
-❌ Next-Auth — conflicts with custom Prisma adapter, threw adapter error on every request
-❌ localStorage for JWT — causes SSR hydration mismatch, incompatible with Next.js
+不要重试的：
+❌ Next-Auth — 与自定义 Prisma adapter 冲突，每个请求都抛出 adapter 错误
+❌ localStorage 存储 JWT — 导致 SSR hydration 不匹配，与 Next.js 不兼容
 
-OPEN QUESTIONS / BLOCKERS:
-- Does cookies().set() work inside a Route Handler or only Server Actions?
+未解决的问题 / 阻塞：
+- cookies().set() 在 Route Handler 内部工作还是只在 Server Actions 中？
 
-NEXT STEP:
-In app/api/auth/login/route.ts — set the JWT as an httpOnly cookie using
+下一步：
+在 app/api/auth/login/route.ts 中 — 使用
 cookies().set('token', jwt, { httpOnly: true, secure: true, sameSite: 'strict' })
-then test with Postman for a Set-Cookie header in the response.
+将 JWT 设置为 httpOnly cookie
+然后用 Postman 测试响应中的 Set-Cookie header。
 
 ════════════════════════════════════════════════
-Ready to continue. What would you like to do?
+准备继续。你想做什么？
 ```
 
 ---
 
-## Notes
+## 注意事项
 
-- Never modify the session file when loading it — it's a read-only historical record
-- The briefing format is fixed — do not skip sections even if they are empty
-- "What Not To Retry" must always be shown, even if it just says "None" — it's too important to miss
-- After resuming, the user may want to run `/save-session` again at the end of the new session to create a new dated file
+- 加载会话文件时永远不要修改它 — 它是只读的历史记录
+- 简报格式是固定的 — 即使为空也不要跳过部分
+- "不要重试的"必须始终显示，即使只说"无" — 它太重要了，不能错过
+- 恢复后，用户可能想在新会话结束时再次运行 `/save-session` 来创建新的带日期文件

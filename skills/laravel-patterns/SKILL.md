@@ -1,53 +1,53 @@
 ---
 name: laravel-patterns
-description: Laravel architecture patterns, routing/controllers, Eloquent ORM, service layers, queues, events, caching, and API resources for production apps.
+description: Laravel 架构模式、路由/控制器、Eloquent ORM、服务层、队列、事件、缓存，以及生产级应用的 API 资源。
 origin: ECC
 ---
 
-# Laravel Development Patterns
+# Laravel 开发模式
 
-Production-grade Laravel architecture patterns for scalable, maintainable applications.
+适用于可扩展、可维护应用的生产级 Laravel 架构模式。
 
-## When to Use
+## 何时使用
 
-- Building Laravel web applications or APIs
-- Structuring controllers, services, and domain logic
-- Working with Eloquent models and relationships
-- Designing APIs with resources and pagination
-- Adding queues, events, caching, and background jobs
+- 构建 Laravel Web 应用或 API
+- 构建控制器、服务和领域逻辑
+- 使用 Eloquent 模型和关系
+- 使用资源和分页设计 API
+- 添加队列、事件、缓存和后台任务
 
-## How It Works
+## 工作原理
 
-- Structure the app around clear boundaries (controllers -> services/actions -> models).
-- Use explicit bindings and scoped bindings to keep routing predictable; still enforce authorization for access control.
-- Favor typed models, casts, and scopes to keep domain logic consistent.
-- Keep IO-heavy work in queues and cache expensive reads.
-- Centralize config in `config/*` and keep environments explicit.
+- 围绕清晰边界构建应用（controllers -> services/actions -> models）。
+- 使用显式绑定和作用域绑定保持路由可预测；仍然强制授权进行访问控制。
+- 倾向于使用类型化模型、转换和作用域保持领域逻辑一致。
+- 将 IO 密集型工作放在队列中，缓存昂贵的读取。
+- 将配置集中在 `config/*` 并保持环境明确。
 
-## Examples
+## 示例
 
-### Project Structure
+### 项目结构
 
-Use a conventional Laravel layout with clear layer boundaries (HTTP, services/actions, models).
+使用传统的 Laravel 布局，具有清晰的层边界（HTTP、services/actions、models）。
 
-### Recommended Layout
+### 推荐布局
 
 ```
 app/
-├── Actions/            # Single-purpose use cases
+├── Actions/            # 单一目的用例
 ├── Console/
 ├── Events/
 ├── Exceptions/
 ├── Http/
 │   ├── Controllers/
 │   ├── Middleware/
-│   ├── Requests/       # Form request validation
-│   └── Resources/      # API resources
+│   ├── Requests/       # 表单请求验证
+│   └── Resources/      # API 资源
 ├── Jobs/
 ├── Models/
 ├── Policies/
 ├── Providers/
-├── Services/           # Coordinating domain services
+├── Services/           # 协调领域服务
 └── Support/
 config/
 database/
@@ -65,7 +65,7 @@ routes/
 
 ### Controllers -> Services -> Actions
 
-Keep controllers thin. Put orchestration in services and single-purpose logic in actions.
+保持控制器轻量。将协调放在服务中，将单一目的逻辑放在 actions 中。
 
 ```php
 final class CreateOrderAction
@@ -96,9 +96,9 @@ final class OrdersController extends Controller
 }
 ```
 
-### Routing and Controllers
+### 路由和控制器
 
-Prefer route-model binding and resource controllers for clarity.
+倾向于使用路由模型绑定和资源控制器以获得清晰性。
 
 ```php
 use Illuminate\Support\Facades\Route;
@@ -108,9 +108,9 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 ```
 
-### Route Model Binding (Scoped)
+### 路由模型绑定（作用域）
 
-Use scoped bindings to prevent cross-tenant access.
+使用作用域绑定防止跨租户访问。
 
 ```php
 Route::scopeBindings()->group(function () {
@@ -118,11 +118,11 @@ Route::scopeBindings()->group(function () {
 });
 ```
 
-### Nested Routes and Binding Names
+### 嵌套路由和绑定名称
 
-- Keep prefixes and paths consistent to avoid double nesting (e.g., `conversation` vs `conversations`).
-- Use a single parameter name that matches the bound model (e.g., `{conversation}` for `Conversation`).
-- Prefer scoped bindings when nesting to enforce parent-child relationships.
+- 保持前缀和路径一致以避免双重嵌套（例如 `conversation` vs `conversations`）。
+- 使用与绑定模型匹配的单个参数名（例如 `Conversation` 用 `{conversation}`）。
+- 嵌套时倾向于使用作用域绑定以强制父子关系。
 
 ```php
 use App\Http\Controllers\Api\ConversationController;
@@ -145,7 +145,7 @@ Route::middleware('auth:sanctum')->prefix('conversations')->group(function () {
 });
 ```
 
-If you want a parameter to resolve to a different model class, define explicit binding. For custom binding logic, use `Route::bind()` or implement `resolveRouteBinding()` on the model.
+如果希望参数解析为不同的模型类，定义显式绑定。对于自定义绑定逻辑，使用 `Route::bind()` 或在模型上实现 `resolveRouteBinding()`。
 
 ```php
 use App\Models\AiConversation;
@@ -154,9 +154,9 @@ use Illuminate\Support\Facades\Route;
 Route::model('conversation', AiConversation::class);
 ```
 
-### Service Container Bindings
+### 服务容器绑定
 
-Bind interfaces to implementations in a service provider for clear dependency wiring.
+在服务提供者中将接口绑定到实现，以获得清晰的依赖连接。
 
 ```php
 use App\Repositories\EloquentOrderRepository;
@@ -172,9 +172,9 @@ final class AppServiceProvider extends ServiceProvider
 }
 ```
 
-### Eloquent Model Patterns
+### Eloquent 模型模式
 
-### Model Configuration
+### 模型配置
 
 ```php
 final class Project extends Model
@@ -200,9 +200,9 @@ final class Project extends Model
 }
 ```
 
-### Custom Casts and Value Objects
+### 自定义转换和值对象
 
-Use enums or value objects for strict typing.
+使用枚举或值对象进行严格类型化。
 
 ```php
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -222,7 +222,7 @@ protected function budgetCents(): Attribute
 }
 ```
 
-### Eager Loading to Avoid N+1
+### 预加载避免 N+1
 
 ```php
 $orders = Order::query()
@@ -231,7 +231,7 @@ $orders = Order::query()
     ->paginate(25);
 ```
 
-### Query Objects for Complex Filters
+### 复杂过滤器的查询对象
 
 ```php
 final class ProjectQuery
@@ -259,10 +259,10 @@ final class ProjectQuery
 }
 ```
 
-### Global Scopes and Soft Deletes
+### 全局作用域和软删除
 
-Use global scopes for default filtering and `SoftDeletes` for recoverable records.
-Use either a global scope or a named scope for the same filter, not both, unless you intend layered behavior.
+使用全局作用域进行默认过滤，使用 `SoftDeletes` 进行可恢复记录。
+对同一过滤器使用全局作用域或命名作用域，不要同时使用两者，除非需要分层行为。
 
 ```php
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -281,7 +281,7 @@ final class Project extends Model
 }
 ```
 
-### Query Scopes for Reusable Filters
+### 可重用过滤器的查询作用域
 
 ```php
 use Illuminate\Database\Eloquent\Builder;
@@ -294,11 +294,11 @@ final class Project extends Model
     }
 }
 
-// In service, repository etc.
+// 在服务、仓储等中
 $projects = Project::ownedBy($user->id)->get();
 ```
 
-### Transactions for Multi-Step Updates
+### 多步更新的事务
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -309,15 +309,15 @@ DB::transaction(function (): void {
 });
 ```
 
-### Migrations
+### 迁移
 
-### Naming Convention
+### 命名约定
 
-- File names use timestamps: `YYYY_MM_DD_HHMMSS_create_users_table.php`
-- Migrations use anonymous classes (no named class); the filename communicates intent
-- Table names are `snake_case` and plural by default
+- 文件名使用时间戳：`YYYY_MM_DD_HHMMSS_create_users_table.php`
+- 迁移使用匿名类（无命名类）；文件名传达意图
+- 表名默认为 `snake_case` 和复数
 
-### Example Migration
+### 示例迁移
 
 ```php
 use Illuminate\Database\Migrations\Migration;
@@ -344,9 +344,9 @@ return new class extends Migration
 };
 ```
 
-### Form Requests and Validation
+### 表单请求和验证
 
-Keep validation in form requests and transform inputs to DTOs.
+将验证保持在表单请求中，并将输入转换为 DTO。
 
 ```php
 use App\Models\Order;
@@ -378,9 +378,9 @@ final class StoreOrderRequest extends FormRequest
 }
 ```
 
-### API Resources
+### API 资源
 
-Keep API responses consistent with resources and pagination.
+使用资源和分页保持 API 响应一致。
 
 ```php
 $projects = Project::query()->active()->paginate(25);
@@ -397,19 +397,19 @@ return response()->json([
 ]);
 ```
 
-### Events, Jobs, and Queues
+### 事件、任务和队列
 
-- Emit domain events for side effects (emails, analytics)
-- Use queued jobs for slow work (reports, exports, webhooks)
-- Prefer idempotent handlers with retries and backoff
+- 为副作用（邮件、分析）发出领域事件
+- 使用队列任务处理慢速工作（报告、导出、webhook）
+- 倾向于使用具有重试和退避的幂等处理器
 
-### Caching
+### 缓存
 
-- Cache read-heavy endpoints and expensive queries
-- Invalidate caches on model events (created/updated/deleted)
-- Use tags when caching related data for easy invalidation
+- 缓存读取密集型端点和昂贵查询
+- 在模型事件上使缓存失效
+- 缓存相关数据时使用标签以便轻松失效
 
-### Configuration and Environments
+### 配置和环境
 
-- Keep secrets in `.env` and config in `config/*.php`
-- Use per-environment config overrides and `config:cache` in production
+- 将机密保留在 `.env` 中，配置保留在 `config/*.php` 中
+- 使用每环境配置覆盖和生产中的 `config:cache`

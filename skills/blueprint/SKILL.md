@@ -1,105 +1,102 @@
 ---
 name: blueprint
 description: >-
-  Turn a one-line objective into a step-by-step construction plan for
-  multi-session, multi-agent engineering projects. Each step has a
-  self-contained context brief so a fresh agent can execute it cold.
-  Includes adversarial review gate, dependency graph, parallel step
-  detection, anti-pattern catalog, and plan mutation protocol.
-  TRIGGER when: user requests a plan, blueprint, or roadmap for a
-  complex multi-PR task, or describes work that needs multiple sessions.
-  DO NOT TRIGGER when: task is completable in a single PR or fewer
-  than 3 tool calls, or user says "just do it".
+  将一行目标转化为多会话、多 Agent 工程项目的分步构建计划。
+  每个步骤都有独立的上下文简报，使新 Agent 可以冷启动执行。
+  包含对抗性审查门控、依赖图、并行步骤检测、反模式目录和计划变更协议。
+  触发时机：用户请求复杂多 PR 任务的计划、蓝图或路线图，
+  或描述需要多个会话的工作。
+  不触发当：任务可在单个 PR 或少于 3 个工具调用内完成，或用户说"直接做"。
 origin: community
 ---
 
-# Blueprint — Construction Plan Generator
+# Blueprint — 构建计划生成器
 
-Turn a one-line objective into a step-by-step construction plan that any coding agent can execute cold.
+将一行目标转化为任何编码 Agent 都可以冷启动执行的分步构建计划。
 
-## When to Use
+## 何时使用
 
-- Breaking a large feature into multiple PRs with clear dependency order
-- Planning a refactor or migration that spans multiple sessions
-- Coordinating parallel workstreams across sub-agents
-- Any task where context loss between sessions would cause rework
+- 将大型功能拆分为多个 PR，并明确依赖顺序
+- 规划跨越多个会话的重构或迁移
+- 协调跨子 Agent 的并行工作流
+- 任何会话间上下文丢失会导致返工的任务
 
-**Do not use** for tasks completable in a single PR, fewer than 3 tool calls, or when the user says "just do it."
+**不适用于**可在单个 PR、少于 3 个工具调用内完成的任务，或用户说"直接做"时。
 
-## How It Works
+## 工作原理
 
-Blueprint runs a 5-phase pipeline:
+Blueprint 运行一个 5 阶段流水线：
 
-1. **Research** — Pre-flight checks (git, gh auth, remote, default branch), then reads project structure, existing plans, and memory files to gather context.
-2. **Design** — Breaks the objective into one-PR-sized steps (3–12 typical). Assigns dependency edges, parallel/serial ordering, model tier (strongest vs default), and rollback strategy per step.
-3. **Draft** — Writes a self-contained Markdown plan file to `plans/`. Every step includes a context brief, task list, verification commands, and exit criteria — so a fresh agent can execute any step without reading prior steps.
-4. **Review** — Delegates adversarial review to a strongest-model sub-agent (e.g., Opus) against a checklist and anti-pattern catalog. Fixes all critical findings before finalizing.
-5. **Register** — Saves the plan, updates memory index, and presents the step count and parallelism summary to the user.
+1. **研究** — 预检查（git、gh auth、remote、默认分支），然后读取项目结构、现有计划和记忆文件以收集上下文。
+2. **设计** — 将目标分解为单 PR 大小的步骤（通常 3-12 个）。分配依赖边、并行/串行排序、模型层级（最强 vs 默认）和每个步骤的回滚策略。
+3. **起草** — 将自包含的 Markdown 计划文件写入 `plans/`。每个步骤包括上下文简报、任务列表、验证命令和退出标准 — 使新 Agent 可以执行任何步骤而无需阅读之前的步骤。
+4. **审查** — 将对抗性审查委托给最强模型子 Agent（如 Opus），对照检查清单和反模式目录。在定稿前修复所有关键发现。
+5. **注册** — 保存计划，更新记忆索引，向用户呈现步骤计数和并行性摘要。
 
-Blueprint detects git/gh availability automatically. With git + GitHub CLI, it generates full branch/PR/CI workflow plans. Without them, it switches to direct mode (edit-in-place, no branches).
+Blueprint 自动检测 git/gh 可用性。有 git + GitHub CLI 时，生成完整的分支/PR/CI 工作流计划。没有时，切换到直接模式（原地编辑，无分支）。
 
-## Examples
+## 示例
 
-### Basic usage
-
-```
-/blueprint myapp "migrate database to PostgreSQL"
-```
-
-Produces `plans/myapp-migrate-database-to-postgresql.md` with steps like:
-- Step 1: Add PostgreSQL driver and connection config
-- Step 2: Create migration scripts for each table
-- Step 3: Update repository layer to use new driver
-- Step 4: Add integration tests against PostgreSQL
-- Step 5: Remove old database code and config
-
-### Multi-agent project
+### 基本用法
 
 ```
-/blueprint chatbot "extract LLM providers into a plugin system"
+/blueprint myapp "将数据库迁移到 PostgreSQL"
 ```
 
-Produces a plan with parallel steps where possible (e.g., "implement Anthropic plugin" and "implement OpenAI plugin" run in parallel after the plugin interface step is done), model tier assignments (strongest for the interface design step, default for implementation), and invariants verified after every step (e.g., "all existing tests pass", "no provider imports in core").
+生成 `plans/myapp-migrate-database-to-postgresql.md`，包含如下步骤：
+- 步骤 1：添加 PostgreSQL 驱动和连接配置
+- 步骤 2：为每个表创建迁移脚本
+- 步骤 3：更新仓储层以使用新驱动
+- 步骤 4：添加针对 PostgreSQL 的集成测试
+- 步骤 5：移除旧数据库代码和配置
 
-## Key Features
+### 多 Agent 项目
 
-- **Cold-start execution** — Every step includes a self-contained context brief. No prior context needed.
-- **Adversarial review gate** — Every plan is reviewed by a strongest-model sub-agent against a checklist covering completeness, dependency correctness, and anti-pattern detection.
-- **Branch/PR/CI workflow** — Built into every step. Degrades gracefully to direct mode when git/gh is absent.
-- **Parallel step detection** — Dependency graph identifies steps with no shared files or output dependencies.
-- **Plan mutation protocol** — Steps can be split, inserted, skipped, reordered, or abandoned with formal protocols and audit trail.
-- **Zero runtime risk** — Pure Markdown skill. The entire repository contains only `.md` files — no hooks, no shell scripts, no executable code, no `package.json`, no build step. Nothing runs on install or invocation beyond Claude Code's native Markdown skill loader.
+```
+/blueprint chatbot "将 LLM 提供商提取为插件系统"
+```
 
-## Installation
+生成一个计划，包含可能的并行步骤（例如，"实现 Anthropic 插件"和"实现 OpenAI 插件"在插件接口步骤完成后并行运行）、模型层级分配（接口设计步骤用最强模型，实现用默认模型），以及每个步骤后验证的不变量（例如，"所有现有测试通过"，"核心模块无提供商导入"）。
 
-This skill ships with Everything Claude Code. No separate installation is needed when ECC is installed.
+## 关键特性
 
-### Full ECC install
+- **冷启动执行** — 每个步骤包含独立的上下文简报。无需先前上下文。
+- **对抗性审查门控** — 每个计划由最强模型子 Agent 审查，对照覆盖完整性、依赖正确性和反模式检测的检查清单。
+- **分支/PR/CI 工作流** — 内置于每个步骤。在 git/gh 缺失时优雅降级为直接模式。
+- **并行步骤检测** — 依赖图识别无共享文件或输出依赖的步骤。
+- **计划变更协议** — 步骤可以拆分、插入、跳过、重新排序或放弃，带正式协议和审计跟踪。
+- **零运行时风险** — 纯 Markdown 技能。整个仓库只包含 `.md` 文件 — 无钩子、无 shell 脚本、无可执行代码、无 `package.json`、无构建步骤。安装或调用时不运行任何东西，只有 Claude Code 的原生 Markdown 技能加载器。
 
-If you are working from the ECC repository checkout, verify the skill is present with:
+## 安装
+
+此技能随 Everything Claude Code 一起发布。安装 ECC 时无需单独安装。
+
+### 完整 ECC 安装
+
+如果你是从 ECC 仓库检出版本工作，验证技能存在：
 
 ```bash
 test -f skills/blueprint/SKILL.md
 ```
 
-To update later, review the ECC diff before updating:
+以后要更新，在更新前查看 ECC 差异：
 
 ```bash
 cd /path/to/everything-claude-code
 git fetch origin main
-git log --oneline HEAD..origin/main       # review new commits before updating
-git checkout <reviewed-full-sha>          # pin to a specific reviewed commit
+git log --oneline HEAD..origin/main       # 更新前查看新提交
+git checkout <reviewed-full-sha>          # 固定到特定已审查提交
 ```
 
-### Vendored standalone install
+### 独立供应商安装
 
-If you are vendoring only this skill outside the full ECC install, copy the reviewed file from the ECC repository into `~/.claude/skills/blueprint/SKILL.md`. Vendored copies do not have a git remote, so update them by re-copying the file from a reviewed ECC commit rather than running `git pull`.
+如果你在完整 ECC 安装之外只供应商此技能，将已审查的文件从 ECC 仓库复制到 `~/.claude/skills/blueprint/SKILL.md`。供应商副本没有 git remote，所以通过从已审查的 ECC 提交重新复制文件来更新，而不是运行 `git pull`。
 
-## Requirements
+## 要求
 
-- Claude Code (for `/blueprint` slash command)
-- Git + GitHub CLI (optional — enables full branch/PR/CI workflow; Blueprint detects absence and auto-switches to direct mode)
+- Claude Code（用于 `/blueprint` 斜杠命令）
+- Git + GitHub CLI（可选 — 启用完整分支/PR/CI 工作流；Blueprint 检测缺失并自动切换到直接模式）
 
-## Source
+## 来源
 
-Inspired by antbotlab/blueprint — upstream project and reference design.
+受 antbotlab/blueprint 启发 — 上游项目和参考设计。

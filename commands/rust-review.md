@@ -1,142 +1,142 @@
 ---
-description: Comprehensive Rust code review for ownership, lifetimes, error handling, unsafe usage, and idiomatic patterns. Invokes the rust-reviewer agent.
+description: 全面性的 Rust 代码审查，涵盖所有权、生命周期、错误处理、unsafe 使用和惯用模式。调用 rust-reviewer Agent。
 ---
 
-# Rust Code Review
+# Rust 代码审查
 
-This command invokes the **rust-reviewer** agent for comprehensive Rust-specific code review.
+此命令调用 **rust-reviewer** Agent 进行全面的 Rust 特定代码审查。
 
-## What This Command Does
+## 本命令的作用
 
-1. **Verify Automated Checks**: Run `cargo check`, `cargo clippy -- -D warnings`, `cargo fmt --check`, and `cargo test` — stop if any fail
-2. **Identify Rust Changes**: Find modified `.rs` files via `git diff HEAD~1` (or `git diff main...HEAD` for PRs)
-3. **Run Security Audit**: Execute `cargo audit` if available
-4. **Security Scan**: Check for unsafe usage, command injection, hardcoded secrets
-5. **Ownership Review**: Analyze unnecessary clones, lifetime issues, borrowing patterns
-6. **Generate Report**: Categorize issues by severity
+1. **验证自动检查**：运行 `cargo check`、`cargo clippy -- -D warnings`、`cargo fmt --check` 和 `cargo test` — 如有失败则停止
+2. **识别 Rust 更改**：通过 `git diff HEAD~1`（或 PR 使用 `git diff main...HEAD`）找出修改的 `.rs` 文件
+3. **运行安全审计**：如果可用，执行 `cargo audit`
+4. **安全扫描**：检查 unsafe 使用、命令注入、硬编码机密
+5. **所有权审查**：分析不必要的 clone、生命周期问题、借用模式
+6. **生成报告**：按严重性对问题进行分类
 
-## When to Use
+## 何时使用
 
-Use `/rust-review` when:
-- After writing or modifying Rust code
-- Before committing Rust changes
-- Reviewing pull requests with Rust code
-- Onboarding to a new Rust codebase
-- Learning idiomatic Rust patterns
+在以下场景使用 `/rust-review`：
+- 编写或修改 Rust 代码后
+- 提交 Rust 更改前
+- 审查包含 Rust 代码的 PR
+- 接手新的 Rust 代码库
+- 学习惯用的 Rust 模式
 
-## Review Categories
+## 审查类别
 
-### CRITICAL (Must Fix)
-- Unchecked `unwrap()`/`expect()` in production code paths
-- `unsafe` without `// SAFETY:` comment documenting invariants
-- SQL injection via string interpolation in queries
-- Command injection via unvalidated input in `std::process::Command`
-- Hardcoded credentials
-- Use-after-free via raw pointers
+### CRITICAL（必须修复）
+- 生产代码路径中未检查的 `unwrap()`/`expect()`
+- 没有 `// SAFETY:` 注释记录不变量的 `unsafe`
+- 查询中通过字符串插值进行的 SQL 注入
+- `std::process::Command` 中通过未验证输入进行的命令注入
+- 硬编码凭据
+- 通过原始指针的释放后使用
 
-### HIGH (Should Fix)
-- Unnecessary `.clone()` to satisfy borrow checker
-- `String` parameter where `&str` or `impl AsRef<str>` suffices
-- Blocking in async context (`std::thread::sleep`, `std::fs`)
-- Missing `Send`/`Sync` bounds on shared types
-- Wildcard `_ =>` match on business-critical enums
-- Large functions (>50 lines)
+### HIGH（应当修复）
+- 为满足借用检查器而进行的不必要 `.clone()`
+- 可以使用 `&str` 或 `impl AsRef<str>` 时使用 `String` 参数
+- 在 async 上下文中阻塞（`std::thread::sleep`、`std::fs`）
+- 共享类型上缺少 `Send`/`Sync` 约束
+- 业务关键枚举上的通配符 `_ =>` match
+- 大函数（>50 行）
 
-### MEDIUM (Consider)
-- Unnecessary allocation in hot paths
-- Missing `with_capacity` when size is known
-- Suppressed clippy warnings without justification
-- Public API without `///` documentation
-- Consider `#[must_use]` on non-`must_use` return types where ignoring values is likely a bug
+### MEDIUM（需要考虑）
+- 热路径中不必要的分配
+- 已知大小时缺少 `with_capacity`
+- 没有正当理由抑制 clippy 警告
+- 公共 API 没有 `///` 文档
+- 在忽略值可能是 Bug 的非 `must_use` 返回类型上考虑 `#[must_use]`
 
-## Automated Checks Run
+## 自动检查运行
 
 ```bash
-# Build gate (must pass before review)
+# 构建门槛（审查前必须通过）
 cargo check
 
-# Lints and suggestions
+# Lint 和建议
 cargo clippy -- -D warnings
 
-# Formatting
+# 格式化
 cargo fmt --check
 
-# Tests
+# 测试
 cargo test
 
-# Security audit (if available)
+# 安全审计（如果可用）
 if command -v cargo-audit >/dev/null; then cargo audit; else echo "cargo-audit not installed"; fi
 ```
 
-## Example Usage
+## 示例用法
 
-````text
-User: /rust-review
+```text
+用户: /rust-review
 
 Agent:
-# Rust Code Review Report
+# Rust 代码审查报告
 
-## Files Reviewed
-- src/service/user.rs (modified)
-- src/handler/api.rs (modified)
+## 已审查的文件
+- src/service/user.rs（已修改）
+- src/handler/api.rs（已修改）
 
-## Static Analysis Results
-- Build: Successful
-- Clippy: No warnings
-- Formatting: Passed
-- Tests: All passing
+## 静态分析结果
+- 构建：成功
+- Clippy：无警告
+- 格式化：通过
+- 测试：全部通过
 
-## Issues Found
+## 发现的问题
 
-[CRITICAL] Unchecked unwrap in Production Path
-File: src/service/user.rs:28
-Issue: Using `.unwrap()` on database query result
+[CRITICAL] 生产路径中未检查的 unwrap
+文件：src/service/user.rs:28
+问题：在数据库查询结果上使用 `.unwrap()`
 ```rust
-let user = db.find_by_id(id).unwrap();  // Panics on missing user
+let user = db.find_by_id(id).unwrap();  // 缺少用户时会 panic
 ```
-Fix: Propagate error with context
+修复：带上下文传播错误
 ```rust
 let user = db.find_by_id(id)
     .context("failed to fetch user")?;
 ```
 
-[HIGH] Unnecessary Clone
-File: src/handler/api.rs:45
-Issue: Cloning String to satisfy borrow checker
+[HIGH] 不必要的 Clone
+文件：src/handler/api.rs:45
+问题：为满足借用检查器而克隆 String
 ```rust
 let name = user.name.clone();
 process(&user, &name);
 ```
-Fix: Restructure to avoid clone
+修复：重构以避免 clone
 ```rust
 let result = process_name(&user.name);
 use_user(&user, result);
 ```
 
-## Summary
+## 摘要
 - CRITICAL: 1
 - HIGH: 1
 - MEDIUM: 0
 
-Recommendation: Block merge until CRITICAL issue is fixed
-````
+建议：在 CRITICAL 问题修复前阻止合并
+```
 
-## Approval Criteria
+## 审批标准
 
-| Status | Condition |
-|--------|-----------|
-| Approve | No CRITICAL or HIGH issues |
-| Warning | Only MEDIUM issues (merge with caution) |
-| Block | CRITICAL or HIGH issues found |
+| 状态 | 条件 |
+|------|------|
+| 批准 | 无 CRITICAL 或 HIGH 问题 |
+| 警告 | 只有 MEDIUM 问题（谨慎合并） |
+| 阻止 | 发现 CRITICAL 或 HIGH 问题 |
 
-## Integration with Other Commands
+## 与其他命令的集成
 
-- Use `/rust-test` first to ensure tests pass
-- Use `/rust-build` if build errors occur
-- Use `/rust-review` before committing
-- Use `/code-review` for non-Rust-specific concerns
+- 先使用 `/rust-test` 确保测试通过
+- 如果发生构建错误，使用 `/rust-build`
+- 在提交前使用 `/rust-review`
+- 对于非 Rust 特定问题，使用 `/code-review`
 
-## Related
+## 相关
 
 - Agent: `agents/rust-reviewer.md`
-- Skills: `skills/rust-patterns/`, `skills/rust-testing/`
+- Skills: `skills/rust-patterns/`、`skills/rust-testing/`

@@ -1,26 +1,26 @@
 ---
 name: backend-patterns
-description: Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.
+description: 后端架构模式、API 设计、数据库优化，以及服务器端最佳实践，适用于 Node.js、Express 与 Next.js API 路由。
 origin: ECC
 ---
 
 # Backend Development Patterns
 
-Backend architecture patterns and best practices for scalable server-side applications.
+面向可扩展的服务端应用的后端架构模式与最佳实践。
 
-## When to Activate
+## 何时启用
 
-- Designing REST or GraphQL API endpoints
-- Implementing repository, service, or controller layers
-- Optimizing database queries (N+1, indexing, connection pooling)
-- Adding caching (Redis, in-memory, HTTP cache headers)
-- Setting up background jobs or async processing
-- Structuring error handling and validation for APIs
-- Building middleware (auth, logging, rate limiting)
+- 设计 REST 或 GraphQL API 端点
+- 实现仓储/服务/控制器层
+- 优化数据库查询（N+1、索引、连接池）
+- 添加缓存（Redis、内存缓存、HTTP 缓存头）
+- 设置后台作业或异步处理
+- 构建 API 的错误处理与验证结构
+- 构建中间件（认证、日志记录、速率限制）
 
-## API Design Patterns
+## API 设计模式
 
-### RESTful API Structure
+### RESTful API 结构
 
 ```typescript
 // ✅ Resource-based URLs
@@ -35,10 +35,10 @@ DELETE /api/markets/:id             # Delete resource
 GET /api/markets?status=active&sort=volume&limit=20&offset=0
 ```
 
-### Repository Pattern
+### 仓储模式
 
 ```typescript
-// Abstract data access logic
+// 抽象数据访问逻辑
 interface MarketRepository {
   findAll(filters?: MarketFilters): Promise<Market[]>
   findById(id: string): Promise<Market | null>
@@ -65,26 +65,26 @@ class SupabaseMarketRepository implements MarketRepository {
     return data
   }
 
-  // Other methods...
+  // 其他方法...
 }
 ```
 
-### Service Layer Pattern
+### 服务层模式
 
 ```typescript
-// Business logic separated from data access
+// 将业务逻辑与数据访问分离
 class MarketService {
   constructor(private marketRepo: MarketRepository) {}
 
   async searchMarkets(query: string, limit: number = 10): Promise<Market[]> {
-    // Business logic
+    // 业务逻辑
     const embedding = await generateEmbedding(query)
     const results = await this.vectorSearch(embedding, limit)
 
-    // Fetch full data
+    // 获取完整数据
     const markets = await this.marketRepo.findByIds(results.map(r => r.id))
 
-    // Sort by similarity
+    // 按相似度排序
     return markets.sort((a, b) => {
       const scoreA = results.find(r => r.id === a.id)?.score || 0
       const scoreB = results.find(r => r.id === b.id)?.score || 0
@@ -93,15 +93,15 @@ class MarketService {
   }
 
   private async vectorSearch(embedding: number[], limit: number) {
-    // Vector search implementation
+    // 向量搜索实现
   }
 }
 ```
 
-### Middleware Pattern
+### 中间件模式
 
 ```typescript
-// Request/response processing pipeline
+// 请求/响应处理流水线
 export function withAuth(handler: NextApiHandler): NextApiHandler {
   return async (req, res) => {
     const token = req.headers.authorization?.replace('Bearer ', '')
@@ -120,18 +120,18 @@ export function withAuth(handler: NextApiHandler): NextApiHandler {
   }
 }
 
-// Usage
+// 使用方式
 export default withAuth(async (req, res) => {
-  // Handler has access to req.user
+  // 处理程序可以访问 req.user
 })
 ```
 
-## Database Patterns
+## 数据库模式
 
-### Query Optimization
+### 查询优化
 
 ```typescript
-// ✅ GOOD: Select only needed columns
+// ✅ 好：仅选择需要的列
 const { data } = await supabase
   .from('markets')
   .select('id, name, status, volume')
@@ -139,25 +139,25 @@ const { data } = await supabase
   .order('volume', { ascending: false })
   .limit(10)
 
-// ❌ BAD: Select everything
+// ❌ 坏：选择所有列
 const { data } = await supabase
   .from('markets')
   .select('*')
 ```
 
-### N+1 Query Prevention
+### 防范 N+1 查询
 
 ```typescript
-// ❌ BAD: N+1 query problem
+// ❌ 不良：N+1 查询问题
 const markets = await getMarkets()
 for (const market of markets) {
-  market.creator = await getUser(market.creator_id)  // N queries
+  market.creator = await getUser(market.creator_id)  // N 次查询
 }
 
-// ✅ GOOD: Batch fetch
+// ✅ 好：批量查询
 const markets = await getMarkets()
 const creatorIds = markets.map(m => m.creator_id)
-const creators = await getUsers(creatorIds)  // 1 query
+const creators = await getUsers(creatorIds)  // 1 次查询
 const creatorMap = new Map(creators.map(c => [c.id, c]))
 
 markets.forEach(market => {
@@ -165,14 +165,14 @@ markets.forEach(market => {
 })
 ```
 
-### Transaction Pattern
+### 事务模式
 
 ```typescript
 async function createMarketWithPosition(
   marketData: CreateMarketDto,
   positionData: CreatePositionDto
 ) {
-  // Use Supabase transaction
+  // 使用 Supabase 事务
   const { data, error } = await supabase.rpc('create_market_with_position', {
     market_data: marketData,
     position_data: positionData
@@ -182,7 +182,7 @@ async function createMarketWithPosition(
   return data
 }
 
-// SQL function in Supabase
+// Supabase 的 SQL 函数
 CREATE OR REPLACE FUNCTION create_market_with_position(
   market_data jsonb,
   position_data jsonb

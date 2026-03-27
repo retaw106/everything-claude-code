@@ -1,24 +1,24 @@
 ---
 name: foundation-models-on-device
-description: Apple FoundationModels framework for on-device LLM — text generation, guided generation with @Generable, tool calling, and snapshot streaming in iOS 26+.
+description: Apple FoundationModels 框架用于设备端 LLM — 文本生成、配合 @Generable 的引导式生成、工具调用，以及 iOS 26+ 的快照流式传输。
 ---
 
-# FoundationModels: On-Device LLM (iOS 26)
+# FoundationModels: 设备端 LLM (iOS 26)
 
-Patterns for integrating Apple's on-device language model into apps using the FoundationModels framework. Covers text generation, structured output with `@Generable`, custom tool calling, and snapshot streaming — all running on-device for privacy and offline support.
+使用 FoundationModels 框架将 Apple 设备端语言模型集成到应用中的模式。涵盖文本生成、使用 `@Generable` 的结构化输出、自定义工具调用和快照流式传输 —— 全部在设备端运行，支持隐私和离线功能。
 
-## When to Activate
+## 何时激活
 
-- Building AI-powered features using Apple Intelligence on-device
-- Generating or summarizing text without cloud dependency
-- Extracting structured data from natural language input
-- Implementing custom tool calling for domain-specific AI actions
-- Streaming structured responses for real-time UI updates
-- Need privacy-preserving AI (no data leaves the device)
+- 使用 Apple Intelligence 设备端构建 AI 驱动的功能
+- 生成或总结文本而无需云依赖
+- 从自然语言输入中提取结构化数据
+- 为领域特定的 AI 操作实现自定义工具调用
+- 为实时 UI 更新流式传输结构化响应
+- 需要保护隐私的 AI（数据不离开设备）
 
-## Core Pattern — Availability Check
+## 核心模式 — 可用性检查
 
-Always check model availability before creating a session:
+始终在创建会话之前检查模型可用性：
 
 ```swift
 struct GenerativeView: View {
@@ -29,92 +29,92 @@ struct GenerativeView: View {
         case .available:
             ContentView()
         case .unavailable(.deviceNotEligible):
-            Text("Device not eligible for Apple Intelligence")
+            Text("设备不符合 Apple Intelligence 要求")
         case .unavailable(.appleIntelligenceNotEnabled):
-            Text("Please enable Apple Intelligence in Settings")
+            Text("请在设置中启用 Apple Intelligence")
         case .unavailable(.modelNotReady):
-            Text("Model is downloading or not ready")
+            Text("模型正在下载或未就绪")
         case .unavailable(let other):
-            Text("Model unavailable: \(other)")
+            Text("模型不可用: \(other)")
         }
     }
 }
 ```
 
-## Core Pattern — Basic Session
+## 核心模式 — 基本会话
 
 ```swift
-// Single-turn: create a new session each time
+// 单轮：每次创建新会话
 let session = LanguageModelSession()
-let response = try await session.respond(to: "What's a good month to visit Paris?")
+let response = try await session.respond(to: "哪个月份适合去巴黎？")
 print(response.content)
 
-// Multi-turn: reuse session for conversation context
+// 多轮：重用会话以保持对话上下文
 let session = LanguageModelSession(instructions: """
-    You are a cooking assistant.
-    Provide recipe suggestions based on ingredients.
-    Keep suggestions brief and practical.
+    你是一个烹饪助手。
+    根据食材提供食谱建议。
+    保持建议简洁实用。
     """)
 
-let first = try await session.respond(to: "I have chicken and rice")
-let followUp = try await session.respond(to: "What about a vegetarian option?")
+let first = try await session.respond(to: "我有鸡肉和米饭")
+let followUp = try await session.respond(to: "有什么素食选择？")
 ```
 
-Key points for instructions:
-- Define the model's role ("You are a mentor")
-- Specify what to do ("Help extract calendar events")
-- Set style preferences ("Respond as briefly as possible")
-- Add safety measures ("Respond with 'I can't help with that' for dangerous requests")
+指令的关键点：
+- 定义模型的角色（"你是一个导师"）
+- 指定要做什么（"帮助提取日历事件"）
+- 设置风格偏好（"尽可能简短回答"）
+- 添加安全措施（"对危险请求回复'我无法帮助你'"）
 
-## Core Pattern — Guided Generation with @Generable
+## 核心模式 — 配合 @Generable 的引导式生成
 
-Generate structured Swift types instead of raw strings:
+生成结构化的 Swift 类型而非原始字符串：
 
-### 1. Define a Generable Type
+### 1. 定义 Generable 类型
 
 ```swift
-@Generable(description: "Basic profile information about a cat")
+@Generable(description: "关于猫咪的基本档案信息")
 struct CatProfile {
     var name: String
 
-    @Guide(description: "The age of the cat", .range(0...20))
+    @Guide(description: "猫咪的年龄", .range(0...20))
     var age: Int
 
-    @Guide(description: "A one sentence profile about the cat's personality")
+    @Guide(description: "一句关于猫咪性格的描述")
     var profile: String
 }
 ```
 
-### 2. Request Structured Output
+### 2. 请求结构化输出
 
 ```swift
 let response = try await session.respond(
-    to: "Generate a cute rescue cat",
+    to: "生成一只可爱的救援猫",
     generating: CatProfile.self
 )
 
-// Access structured fields directly
-print("Name: \(response.content.name)")
-print("Age: \(response.content.age)")
-print("Profile: \(response.content.profile)")
+// 直接访问结构化字段
+print("名字: \(response.content.name)")
+print("年龄: \(response.content.age)")
+print("档案: \(response.content.profile)")
 ```
 
-### Supported @Guide Constraints
+### 支持的 @Guide 约束
 
-- `.range(0...20)` — numeric range
-- `.count(3)` — array element count
-- `description:` — semantic guidance for generation
+- `.range(0...20)` — 数字范围
+- `.count(3)` — 数组元素数量
+- `description:` — 生成的语义指导
 
-## Core Pattern — Tool Calling
+## 核心模式 — 工具调用
 
-Let the model invoke custom code for domain-specific tasks:
+让模型为领域特定任务调用自定义代码：
 
-### 1. Define a Tool
+### 1. 定义工具
 
 ```swift
 struct RecipeSearchTool: Tool {
     let name = "recipe_search"
-    let description = "Search for recipes matching a given term and return a list of results."
+    let description = "搜索匹配给定关键词的食谱并返回结果列表。"
 
     @Generable
     struct Arguments {
@@ -132,49 +132,49 @@ struct RecipeSearchTool: Tool {
 }
 ```
 
-### 2. Create Session with Tools
+### 2. 创建带工具的会话
 
 ```swift
 let session = LanguageModelSession(tools: [RecipeSearchTool()])
-let response = try await session.respond(to: "Find me some pasta recipes")
+let response = try await session.respond(to: "给我找一些意大利面食谱")
 ```
 
-### 3. Handle Tool Errors
+### 3. 处理工具错误
 
 ```swift
 do {
-    let answer = try await session.respond(to: "Find a recipe for tomato soup.")
+    let answer = try await session.respond(to: "找一个番茄汤食谱。")
 } catch let error as LanguageModelSession.ToolCallError {
     print(error.tool.name)
     if case .databaseIsEmpty = error.underlyingError as? RecipeSearchToolError {
-        // Handle specific tool error
+        // 处理特定工具错误
     }
 }
 ```
 
-## Core Pattern — Snapshot Streaming
+## 核心模式 — 快照流式传输
 
-Stream structured responses for real-time UI with `PartiallyGenerated` types:
+使用 `PartiallyGenerated` 类型为实时 UI 流式传输结构化响应：
 
 ```swift
 @Generable
 struct TripIdeas {
-    @Guide(description: "Ideas for upcoming trips")
+    @Guide(description: "即将到来的旅行想法")
     var ideas: [String]
 }
 
 let stream = session.streamResponse(
-    to: "What are some exciting trip ideas?",
+    to: "有什么激动人心的旅行想法？",
     generating: TripIdeas.self
 )
 
 for try await partial in stream {
-    // partial: TripIdeas.PartiallyGenerated (all properties Optional)
+    // partial: TripIdeas.PartiallyGenerated（所有属性为 Optional）
     print(partial)
 }
 ```
 
-### SwiftUI Integration
+### SwiftUI 集成
 
 ```swift
 @State private var partialResult: TripIdeas.PartiallyGenerated?
@@ -202,42 +202,42 @@ var body: some View {
 }
 ```
 
-## Key Design Decisions
+## 关键设计决策
 
-| Decision | Rationale |
+| 决策 | 理由 |
 |----------|-----------|
-| On-device execution | Privacy — no data leaves the device; works offline |
-| 4,096 token limit | On-device model constraint; chunk large data across sessions |
-| Snapshot streaming (not deltas) | Structured output friendly; each snapshot is a complete partial state |
-| `@Generable` macro | Compile-time safety for structured generation; auto-generates `PartiallyGenerated` type |
-| Single request per session | `isResponding` prevents concurrent requests; create multiple sessions if needed |
-| `response.content` (not `.output`) | Correct API — always access results via `.content` property |
+| 设备端执行 | 隐私 — 数据不离开设备；支持离线 |
+| 4,096 token 限制 | 设备端模型约束；将大数据分块到多个会话 |
+| 快照流式传输（非增量） | 结构化输出友好；每个快照是完整的部分状态 |
+| `@Generable` 宏 | 结构化生成的编译时安全；自动生成 `PartiallyGenerated` 类型 |
+| 每个会话单个请求 | `isResponding` 防止并发请求；如需要创建多个会话 |
+| `response.content`（非 `.output`） | 正确的 API — 始终通过 `.content` 属性访问结果 |
 
-## Best Practices
+## 最佳实践
 
-- **Always check `model.availability`** before creating a session — handle all unavailability cases
-- **Use `instructions`** to guide model behavior — they take priority over prompts
-- **Check `isResponding`** before sending a new request — sessions handle one request at a time
-- **Access `response.content`** for results — not `.output`
-- **Break large inputs into chunks** — 4,096 token limit applies to instructions + prompt + output combined
-- **Use `@Generable`** for structured output — stronger guarantees than parsing raw strings
-- **Use `GenerationOptions(temperature:)`** to tune creativity (higher = more creative)
-- **Monitor with Instruments** — use Xcode Instruments to profile request performance
+- **始终在创建会话之前检查 `model.availability`** — 处理所有不可用情况
+- **使用 `instructions`** 指导模型行为 — 它们优先于提示
+- **在发送新请求之前检查 `isResponding`** — 会话一次处理一个请求
+- **访问 `response.content`** 获取结果 — 不是 `.output`
+- **将大输入分成块** — 4,096 token 限制适用于指令 + 提示 + 输出的总和
+- **使用 `@Generable`** 获取结构化输出 — 比解析原始字符串有更强的保证
+- **使用 `GenerationOptions(temperature:)`** 调整创造性（更高 = 更有创意）
+- **使用 Instruments 监控** — 使用 Xcode Instruments 分析请求性能
 
-## Anti-Patterns to Avoid
+## 要避免的反模式
 
-- Creating sessions without checking `model.availability` first
-- Sending inputs exceeding the 4,096 token context window
-- Attempting concurrent requests on a single session
-- Using `.output` instead of `.content` to access response data
-- Parsing raw string responses when `@Generable` structured output would work
-- Building complex multi-step logic in a single prompt — break into multiple focused prompts
-- Assuming the model is always available — device eligibility and settings vary
+- 创建会话前不先检查 `model.availability`
+- 发送超过 4,096 token 上下文窗口的输入
+- 尝试在单个会话上并发请求
+- 使用 `.output` 而非 `.content` 访问响应数据
+- 当 `@Generable` 结构化输出可行时解析原始字符串响应
+- 在单个提示中构建复杂的多步逻辑 — 分解为多个专注的提示
+- 假设模型始终可用 — 设备资格和设置各不相同
 
-## When to Use
+## 何时使用
 
-- On-device text generation for privacy-sensitive apps
-- Structured data extraction from user input (forms, natural language commands)
-- AI-assisted features that must work offline
-- Streaming UI that progressively shows generated content
-- Domain-specific AI actions via tool calling (search, compute, lookup)
+- 用于隐私敏感应用的设备端文本生成
+- 从用户输入中提取结构化数据（表单、自然语言命令）
+- 必须离线工作的 AI 辅助功能
+- 逐步显示生成内容的流式 UI
+- 通过工具调用实现领域特定的 AI 操作（搜索、计算、查找）

@@ -1,79 +1,79 @@
-# Product Lens — Think Before You Build
+# Product Lens — 构建前先思考
 
-## When to Use
+## 何时使用
 
-- Before starting any feature — validate the "why"
-- Weekly product review — are we building the right thing?
-- When stuck choosing between features
-- Before a launch — sanity check the user journey
-- When converting a vague idea into a spec
+- 在开始任何功能之前 — 验证"为什么"
+- 每周产品审查 — 我们在构建正确的东西吗？
+- 当在选择功能之间卡住时
+- 发布前 — 检查用户旅程是否合理
+- 将模糊想法转化为规格时
 
-## How It Works
+## 工作原理
 
-### Mode 1: Product Diagnostic
+### 模式 1：产品诊断
 
-Like YC office hours but automated. Asks the hard questions:
-
-```
-1. Who is this for? (specific person, not "developers")
-2. What's the pain? (quantify: how often, how bad, what do they do today?)
-3. Why now? (what changed that makes this possible/necessary?)
-4. What's the 10-star version? (if money/time were unlimited)
-5. What's the MVP? (smallest thing that proves the thesis)
-6. What's the anti-goal? (what are you explicitly NOT building?)
-7. How do you know it's working? (metric, not vibes)
-```
-
-Output: a `PRODUCT-BRIEF.md` with answers, risks, and a go/no-go recommendation.
-
-### Mode 2: Founder Review
-
-Reviews your current project through a founder lens:
+像 YC 办公时间但自动化。提出尖锐的问题：
 
 ```
-1. Read README, CLAUDE.md, package.json, recent commits
-2. Infer: what is this trying to be?
-3. Score: product-market fit signals (0-10)
-   - Usage growth trajectory
-   - Retention indicators (repeat contributors, return users)
-   - Revenue signals (pricing page, billing code, Stripe integration)
-   - Competitive moat (what's hard to copy?)
-4. Identify: the one thing that would 10x this
-5. Flag: things you're building that don't matter
+1. 这是为谁做的？（具体的人，不是"开发者"）
+2. 痛点是什么？（量化：多频繁、多严重、他们现在做什么？）
+3. 为什么是现在？（什么变化使这成为可能/必要？）
+4. 10 星版本是什么？（如果金钱/时间无限）
+5. MVP 是什么？（证明论点的最小东西）
+6. 反目标是什么？（你明确不构建什么？）
+7. 你怎么知道它在起作用？（指标，不是感觉）
 ```
 
-### Mode 3: User Journey Audit
+输出：一个包含答案、风险和继续/不继续建议的 `PRODUCT-BRIEF.md`。
 
-Maps the actual user experience:
+### 模式 2：创始人审查
 
-```
-1. Clone/install the product as a new user
-2. Document every friction point (confusing steps, errors, missing docs)
-3. Time each step
-4. Compare to competitor onboarding
-5. Score: time-to-value (how long until the user gets their first win?)
-6. Recommend: top 3 fixes for onboarding
-```
-
-### Mode 4: Feature Prioritization
-
-When you have 10 ideas and need to pick 2:
+通过创始人视角审查你当前的项目：
 
 ```
-1. List all candidate features
-2. Score each on: impact (1-5) × confidence (1-5) ÷ effort (1-5)
-3. Rank by ICE score
-4. Apply constraints: runway, team size, dependencies
-5. Output: prioritized roadmap with rationale
+1. 阅读 README、CLAUDE.md、package.json、最近的提交
+2. 推断：这试图成为什么？
+3. 评分：产品市场契合信号 (0-10)
+   - 使用增长轨迹
+   - 留存指标（重复贡献者、回头用户）
+   - 收入信号（定价页面、账单代码、Stripe 集成）
+   - 竞争护城河（什么难以复制？）
+4. 识别：能让这 10 倍提升的一件事
+5. 标记：你在构建的不重要的事情
 ```
 
-## Output
+### 模式 3：用户旅程审计
 
-All modes output actionable docs, not essays. Every recommendation has a specific next step.
+映射实际的用户体验：
 
-## Integration
+```
+1. 作为新用户克隆/安装产品
+2. 记录每个摩擦点（令人困惑的步骤、错误、缺失的文档）
+3. 记时每个步骤
+4. 与竞争对手的入门流程比较
+5. 评分：价值实现时间（用户获得第一个成功需要多长时间？）
+6. 推荐：入门流程的前 3 个修复
+```
 
-Pair with:
-- `/browser-qa` to verify the user journey audit findings
-- `/design-system audit` for visual polish assessment
-- `/canary-watch` for post-launch monitoring
+### 模式 4：功能优先级
+
+当你有 10 个想法需要选 2 个时：
+
+```
+1. 列出所有候选功能
+2. 对每个评分：影响力 (1-5) × 置信度 (1-5) ÷ 工作量 (1-5)
+3. 按 ICE 分数排名
+4. 应用约束：跑道、团队规模、依赖关系
+5. 输出：带理由的优先路线图
+```
+
+## 输出
+
+所有模式输出可操作的文档，不是论文。每个建议都有一个具体的下一步。
+
+## 集成
+
+配对使用：
+- `/browser-qa` 验证用户旅程审计发现
+- `/design-system audit` 进行视觉打磨评估
+- `/canary-watch` 进行发布后监控

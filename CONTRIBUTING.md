@@ -1,79 +1,79 @@
-# Contributing to Everything Claude Code
+# 贡献指南
 
-Thanks for wanting to contribute! This repo is a community resource for Claude Code users.
+感谢您想要为 Everything Claude Code 做出贡献！本仓库是 Claude Code 用户的社区资源。
 
-## Table of Contents
+## 目录
 
-- [What We're Looking For](#what-were-looking-for)
-- [Quick Start](#quick-start)
-- [Contributing Skills](#contributing-skills)
-- [Contributing Agents](#contributing-agents)
-- [Contributing Hooks](#contributing-hooks)
-- [Contributing Commands](#contributing-commands)
-- [MCP and documentation (e.g. Context7)](#mcp-and-documentation-eg-context7)
-- [Cross-Harness and Translations](#cross-harness-and-translations)
-- [Pull Request Process](#pull-request-process)
+- [我们在寻找什么](#我们在寻找什么)
+- [快速开始](#快速开始)
+- [贡献 Skills](#贡献-skills)
+- [贡献 Agents](#贡献-agents)
+- [贡献 Hooks](#贡献-hooks)
+- [贡献 Commands](#贡献-commands)
+- [MCP 和文档（如 Context7）](#mcp-和文档如-context7)
+- [跨 Harness 和翻译](#跨-harness-和翻译)
+- [Pull Request 流程](#pull-request-流程)
 
 ---
 
-## What We're Looking For
+## 我们在寻找什么
 
 ### Agents
-New agents that handle specific tasks well:
-- Language-specific reviewers (Python, Go, Rust)
-- Framework experts (Django, Rails, Laravel, Spring)
-- DevOps specialists (Kubernetes, Terraform, CI/CD)
-- Domain experts (ML pipelines, data engineering, mobile)
+能够很好处理特定任务的新 Agent：
+- 语言特定的审查器（Python、Go、Rust）
+- 框架专家（Django、Rails、Laravel、Spring）
+- DevOps 专家（Kubernetes、Terraform、CI/CD）
+- 领域专家（ML 管道、数据工程、移动端）
 
 ### Skills
-Workflow definitions and domain knowledge:
-- Language best practices
-- Framework patterns
-- Testing strategies
-- Architecture guides
+工作流定义和领域知识：
+- 语言最佳实践
+- 框架模式
+- 测试策略
+- 架构指南
 
 ### Hooks
-Useful automations:
-- Linting/formatting hooks
-- Security checks
-- Validation hooks
-- Notification hooks
+有用的自动化：
+- Linting/格式化 hooks
+- 安全检查
+- 验证 hooks
+- 通知 hooks
 
 ### Commands
-Slash commands that invoke useful workflows:
-- Deployment commands
-- Testing commands
-- Code generation commands
+调用有用工作流的斜杠命令：
+- 部署命令
+- 测试命令
+- 代码生成命令
 
 ---
 
-## Quick Start
+## 快速开始
 
 ```bash
-# 1. Fork and clone
+# 1. Fork 并克隆
 gh repo fork affaan-m/everything-claude-code --clone
 cd everything-claude-code
 
-# 2. Create a branch
+# 2. 创建分支
 git checkout -b feat/my-contribution
 
-# 3. Add your contribution (see sections below)
+# 3. 添加您的贡献（见下方各节）
 
-# 4. Test locally
-cp -r skills/my-skill ~/.claude/skills/  # for skills
-# Then test with Claude Code
+# 4. 本地测试
+cp -r skills/my-skill ~/.claude/skills/  # 对于 skills
+# 然后用 Claude Code 测试
 
-# 5. Submit PR
+# 5. 提交 PR
 git add . && git commit -m "feat: add my-skill" && git push -u origin feat/my-contribution
 ```
 
 ---
 
-## Contributing Skills
+## 贡献 Skills
 
-Skills are knowledge modules that Claude Code loads based on context.
+Skills 是 Claude Code 基于上下文加载的知识模块。
 
-### Directory Structure
+### 目录结构
 
 ```
 skills/
@@ -81,153 +81,153 @@ skills/
     └── SKILL.md
 ```
 
-### SKILL.md Template
+### SKILL.md 模板
 
 ```markdown
 ---
 name: your-skill-name
-description: Brief description shown in skill list
+description: 技能列表中显示的简短描述
 origin: ECC
 ---
 
 # Your Skill Title
 
-Brief overview of what this skill covers.
+简要概述此技能涵盖的内容。
 
-## Core Concepts
+## 核心概念
 
-Explain key patterns and guidelines.
+解释关键模式和指南。
 
-## Code Examples
+## 代码示例
 
 \`\`\`typescript
-// Include practical, tested examples
+// 包含实用的、经过测试的示例
 function example() {
-  // Well-commented code
+  // 注释良好的代码
 }
 \`\`\`
 
-## Best Practices
+## 最佳实践
 
-- Actionable guidelines
-- Do's and don'ts
-- Common pitfalls to avoid
+- 可操作的指南
+- 应做和不应做的事
+- 需要避免的常见陷阱
 
-## When to Use
+## 何时使用
 
-Describe scenarios where this skill applies.
+描述此技能适用的场景。
 ```
 
-### Skill Checklist
+### Skill 检查清单
 
-- [ ] Focused on one domain/technology
-- [ ] Includes practical code examples
-- [ ] Under 500 lines
-- [ ] Uses clear section headers
-- [ ] Tested with Claude Code
+- [ ] 专注于一个领域/技术
+- [ ] 包含实用的代码示例
+- [ ] 少于 500 行
+- [ ] 使用清晰的章节标题
+- [ ] 已用 Claude Code 测试
 
-### Example Skills
+### 示例 Skills
 
-| Skill | Purpose |
-|-------|---------|
-| `coding-standards/` | TypeScript/JavaScript patterns |
-| `frontend-patterns/` | React and Next.js best practices |
-| `backend-patterns/` | API and database patterns |
-| `security-review/` | Security checklist |
+| Skill | 用途 |
+|-------|------|
+| `coding-standards/` | TypeScript/JavaScript 模式 |
+| `frontend-patterns/` | React 和 Next.js 最佳实践 |
+| `backend-patterns/` | API 和数据库模式 |
+| `security-review/` | 安全检查清单 |
 
 ---
 
-## Contributing Agents
+## 贡献 Agents
 
-Agents are specialized assistants invoked via the Task tool.
+Agents 是通过 Task 工具调用的专业助手。
 
-### File Location
+### 文件位置
 
 ```
 agents/your-agent-name.md
 ```
 
-### Agent Template
+### Agent 模板
 
 ```markdown
 ---
 name: your-agent-name
-description: What this agent does and when Claude should invoke it. Be specific!
+description: 这个 agent 做什么以及 Claude 何时应该调用它。要具体！
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 model: sonnet
 ---
 
-You are a [role] specialist.
+你是一个 [角色] 专家。
 
-## Your Role
+## 你的角色
 
-- Primary responsibility
-- Secondary responsibility
-- What you DO NOT do (boundaries)
+- 主要职责
+- 次要职责
+- 你不做的事情（边界）
 
-## Workflow
+## 工作流程
 
-### Step 1: Understand
-How you approach the task.
+### 步骤 1: 理解
+你如何处理任务。
 
-### Step 2: Execute
-How you perform the work.
+### 步骤 2: 执行
+你如何执行工作。
 
-### Step 3: Verify
-How you validate results.
+### 步骤 3: 验证
+你如何验证结果。
 
-## Output Format
+## 输出格式
 
-What you return to the user.
+你返回给用户的内容。
 
-## Examples
+## 示例
 
-### Example: [Scenario]
-Input: [what user provides]
-Action: [what you do]
-Output: [what you return]
+### 示例: [场景]
+输入: [用户提供的内容]
+操作: [你做什么]
+输出: [你返回什么]
 ```
 
-### Agent Fields
+### Agent 字段
 
-| Field | Description | Options |
-|-------|-------------|---------|
-| `name` | Lowercase, hyphenated | `code-reviewer` |
-| `description` | Used to decide when to invoke | Be specific! |
-| `tools` | Only what's needed | `Read, Write, Edit, Bash, Grep, Glob, WebFetch, Task`, or MCP tool names (e.g. `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`) when the agent uses MCP |
-| `model` | Complexity level | `haiku` (simple), `sonnet` (coding), `opus` (complex) |
+| 字段 | 描述 | 选项 |
+|------|------|------|
+| `name` | 小写，用连字符连接 | `code-reviewer` |
+| `description` | 用于决定何时调用 | 要具体！ |
+| `tools` | 只包含需要的工具 | `Read, Write, Edit, Bash, Grep, Glob, WebFetch, Task`，或 MCP 工具名称（如 `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`）当 agent 使用 MCP 时 |
+| `model` | 复杂度级别 | `haiku`（简单）、`sonnet`（编码）、`opus`（复杂） |
 
-### Example Agents
+### 示例 Agents
 
-| Agent | Purpose |
-|-------|---------|
-| `tdd-guide.md` | Test-driven development |
-| `code-reviewer.md` | Code review |
-| `security-reviewer.md` | Security scanning |
-| `build-error-resolver.md` | Fix build errors |
+| Agent | 用途 |
+|-------|------|
+| `tdd-guide.md` | 测试驱动开发 |
+| `code-reviewer.md` | 代码审查 |
+| `security-reviewer.md` | 安全扫描 |
+| `build-error-resolver.md` | 修复构建错误 |
 
 ---
 
-## Contributing Hooks
+## 贡献 Hooks
 
-Hooks are automatic behaviors triggered by Claude Code events.
+Hooks 是由 Claude Code 事件触发的自动行为。
 
-### File Location
+### 文件位置
 
 ```
 hooks/hooks.json
 ```
 
-### Hook Types
+### Hook 类型
 
-| Type | Trigger | Use Case |
-|------|---------|----------|
-| `PreToolUse` | Before tool runs | Validate, warn, block |
-| `PostToolUse` | After tool runs | Format, check, notify |
-| `SessionStart` | Session begins | Load context |
-| `Stop` | Session ends | Cleanup, audit |
+| 类型 | 触发器 | 用例 |
+|------|--------|------|
+| `PreToolUse` | 工具运行前 | 验证、警告、阻止 |
+| `PostToolUse` | 工具运行后 | 格式化、检查、通知 |
+| `SessionStart` | 会话开始时 | 加载上下文 |
+| `Stop` | 会话结束时 | 清理、审计 |
 
-### Hook Format
+### Hook 格式
 
 ```json
 {
@@ -241,152 +241,152 @@ hooks/hooks.json
             "command": "echo '[Hook] BLOCKED: Dangerous command' && exit 1"
           }
         ],
-        "description": "Block dangerous rm commands"
+        "description": "阻止危险的 rm 命令"
       }
     ]
   }
 }
 ```
 
-### Matcher Syntax
+### Matcher 语法
 
 ```javascript
-// Match specific tools
+// 匹配特定工具
 tool == "Bash"
 tool == "Edit"
 tool == "Write"
 
-// Match input patterns
+// 匹配输入模式
 tool_input.command matches "npm install"
 tool_input.file_path matches "\\.tsx?$"
 
-// Combine conditions
+// 组合条件
 tool == "Bash" && tool_input.command matches "git push"
 ```
 
-### Hook Examples
+### Hook 示例
 
 ```json
-// Block dev servers outside tmux
+// 在 tmux 外阻止开发服务器
 {
   "matcher": "tool == \"Bash\" && tool_input.command matches \"npm run dev\"",
   "hooks": [{"type": "command", "command": "echo 'Use tmux for dev servers' && exit 1"}],
-  "description": "Ensure dev servers run in tmux"
+  "description": "确保开发服务器在 tmux 中运行"
 }
 
-// Auto-format after editing TypeScript
+// 编辑 TypeScript 后自动格式化
 {
   "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.tsx?$\"",
   "hooks": [{"type": "command", "command": "npx prettier --write \"$file_path\""}],
-  "description": "Format TypeScript files after edit"
+  "description": "编辑后格式化 TypeScript 文件"
 }
 
-// Warn before git push
+// git push 前警告
 {
   "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
   "hooks": [{"type": "command", "command": "echo '[Hook] Review changes before pushing'"}],
-  "description": "Reminder to review before push"
+  "description": "提醒在推送前审查更改"
 }
 ```
 
-### Hook Checklist
+### Hook 检查清单
 
-- [ ] Matcher is specific (not overly broad)
-- [ ] Includes clear error/info messages
-- [ ] Uses correct exit codes (`exit 1` blocks, `exit 0` allows)
-- [ ] Tested thoroughly
-- [ ] Has description
+- [ ] Matcher 是具体的（不要过于宽泛）
+- [ ] 包含清晰的错误/信息消息
+- [ ] 使用正确的退出代码（`exit 1` 阻止，`exit 0` 允许）
+- [ ] 已充分测试
+- [ ] 有描述
 
 ---
 
-## Contributing Commands
+## 贡献 Commands
 
-Commands are user-invoked actions with `/command-name`.
+Commands 是用户通过 `/command-name` 调用的操作。
 
-### File Location
+### 文件位置
 
 ```
 commands/your-command.md
 ```
 
-### Command Template
+### Command 模板
 
 ```markdown
 ---
-description: Brief description shown in /help
+description: /help 中显示的简短描述
 ---
 
 # Command Name
 
-## Purpose
+## 用途
 
-What this command does.
+此命令的功能。
 
-## Usage
+## 用法
 
 \`\`\`
 /your-command [args]
 \`\`\`
 
-## Workflow
+## 工作流程
 
-1. First step
-2. Second step
-3. Final step
+1. 第一步
+2. 第二步
+3. 最后一步
 
-## Output
+## 输出
 
-What the user receives.
+用户收到的内容。
 ```
 
-### Example Commands
+### 示例 Commands
 
-| Command | Purpose |
-|---------|---------|
-| `commit.md` | Create git commits |
-| `code-review.md` | Review code changes |
-| `tdd.md` | TDD workflow |
-| `e2e.md` | E2E testing |
-
----
-
-## MCP and documentation (e.g. Context7)
-
-Skills and agents can use **MCP (Model Context Protocol)** tools to pull in up-to-date data instead of relying only on training data. This is especially useful for documentation.
-
-- **Context7** is an MCP server that exposes `resolve-library-id` and `query-docs`. Use it when the user asks about libraries, frameworks, or APIs so answers reflect current docs and code examples.
-- When contributing **skills** that depend on live docs (e.g. setup, API usage), describe how to use the relevant MCP tools (e.g. resolve the library ID, then query docs) and point to the `documentation-lookup` skill or Context7 as the pattern.
-- When contributing **agents** that answer docs/API questions, include the Context7 MCP tool names (e.g. `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`) in the agent's tools and document the resolve → query workflow.
-- **mcp-configs/mcp-servers.json** includes a Context7 entry; users enable it in their harness (e.g. Claude Code, Cursor) to use the documentation-lookup skill (in `skills/documentation-lookup/`) and the `/docs` command.
+| Command | 用途 |
+|---------|------|
+| `commit.md` | 创建 git 提交 |
+| `code-review.md` | 审查代码更改 |
+| `tdd.md` | TDD 工作流 |
+| `e2e.md` | E2E 测试 |
 
 ---
 
-## Cross-Harness and Translations
+## MCP 和文档（如 Context7）
 
-### Skill subsets (Codex and Cursor)
+Skills 和 agents 可以使用 **MCP（Model Context Protocol）** 工具来获取最新数据，而不是仅依赖训练数据。这对于文档特别有用。
 
-ECC ships skill subsets for other harnesses:
-
-- **Codex:** `.agents/skills/` — skills listed in `agents/openai.yaml` are loaded by Codex.
-- **Cursor:** `.cursor/skills/` — a subset of skills is bundled for Cursor.
-
-When you **add a new skill** that should be available on Codex or Cursor:
-
-1. Add the skill under `skills/your-skill-name/` as usual.
-2. If it should be available on **Codex**, add it to `.agents/skills/` (copy the skill directory or add a reference) and ensure it is referenced in `agents/openai.yaml` if required.
-3. If it should be available on **Cursor**, add it under `.cursor/skills/` per Cursor's layout.
-
-Check existing skills in those directories for the expected structure. Keeping these subsets in sync is manual; mention in your PR if you updated them.
-
-### Translations
-
-Translations live under `docs/` (e.g. `docs/zh-CN`, `docs/zh-TW`, `docs/ja-JP`). If you change agents, commands, or skills that are translated, consider updating the corresponding translation files or opening an issue so maintainers or translators can update them.
+- **Context7** 是一个 MCP 服务器，暴露了 `resolve-library-id` 和 `query-docs`。当用户询问库、框架或 API 时使用它，这样答案可以反映当前的文档和代码示例。
+- 当贡献依赖于实时文档的 **skills**（如设置、API 使用）时，描述如何使用相关的 MCP 工具（如解析库 ID，然后查询文档）并指向 `documentation-lookup` skill 或 Context7 作为模式。
+- 当贡献回答文档/API 问题的 **agents** 时，在 agent 的工具中包含 Context7 MCP 工具名称（如 `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`）并记录解析 → 查询的工作流程。
+- **mcp-configs/mcp-servers.json** 包含一个 Context7 条目；用户在他们的 harness（如 Claude Code、Cursor）中启用它以使用 documentation-lookup skill（在 `skills/documentation-lookup/` 中）和 `/docs` 命令。
 
 ---
 
-## Pull Request Process
+## 跨 Harness 和翻译
 
-### 1. PR Title Format
+### Skill 子集（Codex 和 Cursor）
+
+ECC 为其他 harness 提供了 skill 子集：
+
+- **Codex:** `.agents/skills/` — 在 `agents/openai.yaml` 中列出的 skills 会被 Codex 加载。
+- **Cursor:** `.cursor/skills/` — 为 Cursor 打包了一部分 skills。
+
+当您 **添加一个新 skill** 且它应该在 Codex 或 Cursor 上可用时：
+
+1. 像往常一样在 `skills/your-skill-name/` 下添加 skill。
+2. 如果它应该在 **Codex** 上可用，将其添加到 `.agents/skills/`（复制 skill 目录或添加引用）并确保在 `agents/openai.yaml` 中引用（如果需要）。
+3. 如果它应该在 **Cursor** 上可用，按照 Cursor 的布局将其添加到 `.cursor/skills/` 下。
+
+查看这些目录中的现有 skills 以了解预期结构。保持这些子集同步是手动的；如果在 PR 中更新了它们，请提及。
+
+### 翻译
+
+翻译文件位于 `docs/` 下（如 `docs/zh-CN`、`docs/zh-TW`、`docs/ja-JP`）。如果您更改了已翻译的 agents、commands 或 skills，请考虑更新相应的翻译文件或开启一个 issue，以便维护者或翻译人员可以更新它们。
+
+---
+
+## Pull Request 流程
+
+### 1. PR 标题格式
 
 ```
 feat(skills): add rust-patterns skill
@@ -396,66 +396,66 @@ fix(skills): update React patterns
 docs: improve contributing guide
 ```
 
-### 2. PR Description
+### 2. PR 描述
 
 ```markdown
-## Summary
-What you're adding and why.
+## 摘要
+您添加的内容及原因。
 
-## Type
+## 类型
 - [ ] Skill
 - [ ] Agent
 - [ ] Hook
 - [ ] Command
 
-## Testing
-How you tested this.
+## 测试
+您如何测试的。
 
-## Checklist
-- [ ] Follows format guidelines
-- [ ] Tested with Claude Code
-- [ ] No sensitive info (API keys, paths)
-- [ ] Clear descriptions
+## 检查清单
+- [ ] 遵循格式指南
+- [ ] 已用 Claude Code 测试
+- [ ] 无敏感信息（API 密钥、路径）
+- [ ] 描述清晰
 ```
 
-### 3. Review Process
+### 3. 审查流程
 
-1. Maintainers review within 48 hours
-2. Address feedback if requested
-3. Once approved, merged to main
-
----
-
-## Guidelines
-
-### Do
-- Keep contributions focused and modular
-- Include clear descriptions
-- Test before submitting
-- Follow existing patterns
-- Document dependencies
-
-### Don't
-- Include sensitive data (API keys, tokens, paths)
-- Add overly complex or niche configs
-- Submit untested contributions
-- Create duplicates of existing functionality
+1. 维护者在 48 小时内审查
+2. 如有要求，处理反馈
+3. 批准后，合并到 main
 
 ---
 
-## File Naming
+## 指南
 
-- Use lowercase with hyphens: `python-reviewer.md`
-- Be descriptive: `tdd-workflow.md` not `workflow.md`
-- Match name to filename
+### 应该做的
+- 保持贡献专注和模块化
+- 包含清晰的描述
+- 提交前测试
+- 遵循现有模式
+- 记录依赖关系
+
+### 不应该做的
+- 包含敏感数据（API 密钥、令牌、路径）
+- 添加过于复杂或小众的配置
+- 提交未经测试的贡献
+- 创建现有功能的重复项
 
 ---
 
-## Questions?
+## 文件命名
+
+- 使用小写和连字符：`python-reviewer.md`
+- 要有描述性：`tdd-workflow.md` 而不是 `workflow.md`
+- 名称与文件名匹配
+
+---
+
+## 有问题？
 
 - **Issues:** [github.com/affaan-m/everything-claude-code/issues](https://github.com/affaan-m/everything-claude-code/issues)
 - **X/Twitter:** [@affaanmustafa](https://x.com/affaanmustafa)
 
 ---
 
-Thanks for contributing! Let's build a great resource together.
+感谢您的贡献！让我们一起构建一个伟大的资源。

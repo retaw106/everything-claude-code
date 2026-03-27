@@ -1,81 +1,80 @@
-# Browser QA — Automated Visual Testing & Interaction
+# Browser QA — 自动化视觉测试与交互
 
-## When to Use
+## 何时使用
 
-- After deploying a feature to staging/preview
-- When you need to verify UI behavior across pages
-- Before shipping — confirm layouts, forms, interactions actually work
-- When reviewing PRs that touch frontend code
-- Accessibility audits and responsive testing
+- 部署功能到 staging/preview 后
+- 需要验证跨页面 UI 行为时
+- 发布前 — 确认布局、表单、交互确实正常工作
+- 官查涉及前端代码的 PR 时
+- 可访问性审计和响应式测试
+## 工作原理
 
-## How It Works
+使用浏览器自动化 MCP（claude-in-chrome、 Playwright 或 Puppeteer） 像真实用户一样与实时页面交互。
 
-Uses the browser automation MCP (claude-in-chrome, Playwright, or Puppeteer) to interact with live pages like a real user.
-
-### Phase 1: Smoke Test
+### 阶段 1: 烟雾测试
 ```
-1. Navigate to target URL
-2. Check for console errors (filter noise: analytics, third-party)
-3. Verify no 4xx/5xx in network requests
-4. Screenshot above-the-fold on desktop + mobile viewport
-5. Check Core Web Vitals: LCP < 2.5s, CLS < 0.1, INP < 200ms
-```
-
-### Phase 2: Interaction Test
-```
-1. Click every nav link — verify no dead links
-2. Submit forms with valid data — verify success state
-3. Submit forms with invalid data — verify error state
-4. Test auth flow: login → protected page → logout
-5. Test critical user journeys (checkout, onboarding, search)
+1. 导航到目标 URL
+2. 检查控制台错误（过滤噪音： 分析、第三方）
+3. 验证网络请求无 4xx/5xx
+4. 在桌面 + 移动视口上截取首屏
+5. 检查 Core Web Vitals: LCP < 2.5s, CLS < 0.1, INP < 200ms
 ```
 
-### Phase 3: Visual Regression
+### 阶段 2: 交互测试
 ```
-1. Screenshot key pages at 3 breakpoints (375px, 768px, 1440px)
-2. Compare against baseline screenshots (if stored)
-3. Flag layout shifts > 5px, missing elements, overflow
-4. Check dark mode if applicable
-```
-
-### Phase 4: Accessibility
-```
-1. Run axe-core or equivalent on each page
-2. Flag WCAG AA violations (contrast, labels, focus order)
-3. Verify keyboard navigation works end-to-end
-4. Check screen reader landmarks
+1. 点击每个导航链接 — 验证无死链接
+2. 用有效数据提交表单 — 验证成功状态
+3. 用无效数据提交表单 — 验证错误状态
+4. 测试认证流程: 登录 → 受保护页面 → 登出
+5. 测试关键用户旅程（结账, 注册, 搜索)
 ```
 
-## Output Format
+### 阶段 3: 视觉回归
+```
+1. 在 3 个断点截图关键页面(375px, 768px, 1440px)
+2. 与基线截图对比(如果已存储)
+3. 标记布局偏移 > 5px、 缺失元素、 溢出
+4. 如适用，检查深色模式
+```
+
+### 阶段 4: 可访问性
+```
+1. 在每个页面上运行 axe-core 或等效工具
+2. 标记 WCAG AA 进规违例(对比度, 标签, 焦点顺序)
+3. 验证键盘导航端到端工作
+4. 检查屏幕阅读器地标
+```
+
+## 输出格式
 
 ```markdown
-## QA Report — [URL] — [timestamp]
+## QA 报告 — [URL] — [时间戳]
 
-### Smoke Test
-- Console errors: 0 critical, 2 warnings (analytics noise)
-- Network: all 200/304, no failures
+### 烟雾测试
+- 控制台错误: 0 个关键, 2 个警告(分析噪音)
+- 网络: 全部 200/304, 无失败
 - Core Web Vitals: LCP 1.2s ✓, CLS 0.02 ✓, INP 89ms ✓
 
-### Interactions
-- [✓] Nav links: 12/12 working
-- [✗] Contact form: missing error state for invalid email
-- [✓] Auth flow: login/logout working
+### 交互
+- [✓] 导航链接: 12/12 正常
+- [✗] 联系表单: 无效邮箱缺少错误状态
+- [✓] 认证流程: 登录/登出正常
 
-### Visual
-- [✗] Hero section overflows on 375px viewport
-- [✓] Dark mode: all pages consistent
+### 视觉
+- [✗] 鷨图部分在 375px 视口溢出
+- [✓] 深色模式: 所有页面一致
 
-### Accessibility
-- 2 AA violations: missing alt text on hero image, low contrast on footer links
+### 可访问性
+- 2 个 AA 漭规: 超图缺少 alt 文, 页脚链接对比度低
 
-### Verdict: SHIP WITH FIXES (2 issues, 0 blockers)
+### 结论: 修复后发布(2 个问题, 0 个阻塞)
 ```
 
-## Integration
+## 集成
 
-Works with any browser MCP:
-- `mChild__claude-in-chrome__*` tools (preferred — uses your actual Chrome)
-- Playwright via `mcp__browserbase__*`
-- Direct Puppeteer scripts
+适用于任何浏览器 MCP:
+- `mChild__claude-in-chrome__*` 工具(推荐 — 使用真实 Chrome)
+- Playwright 通过 `mcp__browserbase__*`
+- 直接 Puppeteer 脚本
 
-Pair with `/canary-watch` for post-deploy monitoring.
+配合 `/canary-watch` 用于部署后监控。

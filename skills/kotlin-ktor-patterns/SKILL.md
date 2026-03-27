@@ -1,51 +1,51 @@
 ---
 name: kotlin-ktor-patterns
-description: Ktor server patterns including routing DSL, plugins, authentication, Koin DI, kotlinx.serialization, WebSockets, and testApplication testing.
+description: Ktor 服务端模式，包括路由 DSL、插件、认证、Koin DI、kotlinx.serialization、WebSockets 和 testApplication 测试。
 origin: ECC
 ---
 
-# Ktor Server Patterns
+# Ktor 服务端模式
 
-Comprehensive Ktor patterns for building robust, maintainable HTTP servers with Kotlin coroutines.
+使用 Kotlin 协程构建健壮、可维护 HTTP 服务器的综合 Ktor 模式。
 
-## When to Activate
+## 何时启用
 
-- Building Ktor HTTP servers
-- Configuring Ktor plugins (Auth, CORS, ContentNegotiation, StatusPages)
-- Implementing REST APIs with Ktor
-- Setting up dependency injection with Koin
-- Writing Ktor integration tests with testApplication
-- Working with WebSockets in Ktor
+- 构建 Ktor HTTP 服务器
+- 配置 Ktor 插件（Auth、CORS、ContentNegotiation、StatusPages）
+- 使用 Ktor 实现 REST API
+- 使用 Koin 设置依赖注入
+- 使用 testApplication 编写 Ktor 集成测试
+- 在 Ktor 中使用 WebSockets
 
-## Application Structure
+## 应用结构
 
-### Standard Ktor Project Layout
+### 标准 Ktor 项目布局
 
 ```text
 src/main/kotlin/
 ├── com/example/
-│   ├── Application.kt           # Entry point, module configuration
+│   ├── Application.kt           # 入口点、模块配置
 │   ├── plugins/
-│   │   ├── Routing.kt           # Route definitions
-│   │   ├── Serialization.kt     # Content negotiation setup
-│   │   ├── Authentication.kt    # Auth configuration
-│   │   ├── StatusPages.kt       # Error handling
-│   │   └── CORS.kt              # CORS configuration
+│   │   ├── Routing.kt           # 路由定义
+│   │   ├── Serialization.kt     # 内容协商设置
+│   │   ├── Authentication.kt    # 认证配置
+│   │   ├── StatusPages.kt       # 错误处理
+│   │   └── CORS.kt              # CORS 配置
 │   ├── routes/
-│   │   ├── UserRoutes.kt        # /users endpoints
-│   │   ├── AuthRoutes.kt        # /auth endpoints
-│   │   └── HealthRoutes.kt      # /health endpoints
+│   │   ├── UserRoutes.kt        # /users 端点
+│   │   ├── AuthRoutes.kt        # /auth 端点
+│   │   └── HealthRoutes.kt      # /health 端点
 │   ├── models/
-│   │   ├── User.kt              # Domain models
-│   │   └── ApiResponse.kt       # Response envelopes
+│   │   ├── User.kt              # 领域模型
+│   │   └── ApiResponse.kt       # 响应信封
 │   ├── services/
-│   │   ├── UserService.kt       # Business logic
-│   │   └── AuthService.kt       # Auth logic
+│   │   ├── UserService.kt       # 业务逻辑
+│   │   └── AuthService.kt       # 认证逻辑
 │   ├── repositories/
-│   │   ├── UserRepository.kt    # Data access interface
+│   │   ├── UserRepository.kt    # 数据访问接口
 │   │   └── ExposedUserRepository.kt
 │   └── di/
-│       └── AppModule.kt         # Koin modules
+│       └── AppModule.kt         # Koin 模块
 src/test/kotlin/
 ├── com/example/
 │   ├── routes/
@@ -54,7 +54,7 @@ src/test/kotlin/
 │       └── UserServiceTest.kt
 ```
 
-### Application Entry Point
+### 应用入口点
 
 ```kotlin
 // Application.kt
@@ -72,9 +72,9 @@ fun Application.module() {
 }
 ```
 
-## Routing DSL
+## 路由 DSL
 
-### Basic Routes
+### 基本路由
 
 ```kotlin
 // plugins/Routing.kt
@@ -130,28 +130,28 @@ fun Route.userRoutes() {
 }
 ```
 
-### Route Organization with Authenticated Routes
+### 带认证路由的路由组织
 
 ```kotlin
 fun Route.userRoutes() {
     route("/users") {
-        // Public routes
-        get { /* list users */ }
-        get("/{id}") { /* get user */ }
+        // 公开路由
+        get { /* 列出用户 */ }
+        get("/{id}") { /* 获取用户 */ }
 
-        // Protected routes
+        // 受保护路由
         authenticate("jwt") {
-            post { /* create user - requires auth */ }
-            put("/{id}") { /* update user - requires auth */ }
-            delete("/{id}") { /* delete user - requires auth */ }
+            post { /* 创建用户 - 需要认证 */ }
+            put("/{id}") { /* 更新用户 - 需要认证 */ }
+            delete("/{id}") { /* 删除用户 - 需要认证 */ }
         }
     }
 }
 ```
 
-## Content Negotiation & Serialization
+## 内容协商与序列化
 
-### kotlinx.serialization Setup
+### kotlinx.serialization 设置
 
 ```kotlin
 // plugins/Serialization.kt
@@ -168,7 +168,7 @@ fun Application.configureSerialization() {
 }
 ```
 
-### Serializable Models
+### 可序列化模型
 
 ```kotlin
 @Serializable
@@ -209,7 +209,7 @@ data class PaginatedResponse<T>(
 )
 ```
 
-### Custom Serializers
+### 自定义序列化器
 
 ```kotlin
 object InstantSerializer : KSerializer<Instant> {
@@ -221,9 +221,9 @@ object InstantSerializer : KSerializer<Instant> {
 }
 ```
 
-## Authentication
+## 认证
 
-### JWT Authentication
+### JWT 认证
 
 ```kotlin
 // plugins/Authentication.kt
@@ -256,7 +256,7 @@ fun Application.configureAuthentication() {
     }
 }
 
-// Extracting user from JWT
+// 从 JWT 提取用户
 fun ApplicationCall.userId(): String =
     principal<JWTPrincipal>()
         ?.payload
@@ -265,7 +265,7 @@ fun ApplicationCall.userId(): String =
         ?: throw AuthenticationException("No userId in token")
 ```
 
-### Auth Routes
+### 认证路由
 
 ```kotlin
 fun Route.authRoutes() {
@@ -299,7 +299,7 @@ fun Route.authRoutes() {
 }
 ```
 
-## Status Pages (Error Handling)
+## 状态页面（错误处理）
 
 ```kotlin
 // plugins/StatusPages.kt
@@ -355,7 +355,7 @@ fun Application.configureStatusPages() {
 }
 ```
 
-## CORS Configuration
+## CORS 配置
 
 ```kotlin
 // plugins/CORS.kt
@@ -374,9 +374,9 @@ fun Application.configureCORS() {
 }
 ```
 
-## Koin Dependency Injection
+## Koin 依赖注入
 
-### Module Definition
+### 模块定义
 
 ```kotlin
 // di/AppModule.kt
@@ -402,7 +402,7 @@ fun Application.configureDI() {
 }
 ```
 
-### Using Koin in Routes
+### 在路由中使用 Koin
 
 ```kotlin
 fun Route.userRoutes() {
@@ -417,7 +417,7 @@ fun Route.userRoutes() {
 }
 ```
 
-### Koin for Testing
+### 用于测试的 Koin
 
 ```kotlin
 class UserServiceTest : FunSpec(), KoinTest {
@@ -440,17 +440,17 @@ class UserServiceTest : FunSpec(), KoinTest {
 }
 ```
 
-## Request Validation
+## 请求验证
 
 ```kotlin
-// Validate request data in routes
+// 在路由中验证请求数据
 fun Route.userRoutes() {
     val userService by inject<UserService>()
 
     post("/users") {
         val request = call.receive<CreateUserRequest>()
 
-        // Validate
+        // 验证
         require(request.name.isNotBlank()) { "Name is required" }
         require(request.name.length <= 100) { "Name must be 100 characters or less" }
         require(request.email.matches(Regex(".+@.+\\..+"))) { "Invalid email format" }
@@ -460,7 +460,7 @@ fun Route.userRoutes() {
     }
 }
 
-// Or use a validation extension
+// 或使用验证扩展
 fun CreateUserRequest.validate() {
     require(name.isNotBlank()) { "Name is required" }
     require(name.length <= 100) { "Name must be 100 characters or less" }
@@ -475,8 +475,8 @@ fun Application.configureWebSockets() {
     install(WebSockets) {
         pingPeriod = 15.seconds
         timeout = 15.seconds
-        maxFrameSize = 64 * 1024 // 64 KiB — increase only if your protocol requires larger frames
-        masking = false // Server-to-client frames are unmasked per RFC 6455; client-to-server are always masked by Ktor
+        maxFrameSize = 64 * 1024 // 64 KiB — 仅在协议需要更大帧时增加
+        masking = false // 根据 RFC 6455，服务器到客户端帧不掩码；Ktor 总是对客户端到服务器掩码
     }
 }
 
@@ -495,7 +495,7 @@ fun Route.chatRoutes() {
                 val text = frame.readText()
                 val message = ChatMessage(thisConnection.name, text)
 
-                // Snapshot under lock to avoid ConcurrentModificationException
+                // 在锁下快照以避免 ConcurrentModificationException
                 val snapshot = synchronized(connections) { connections.toList() }
                 snapshot.forEach { conn ->
                     conn.session.send(Json.encodeToString(message))
@@ -518,9 +518,9 @@ data class Connection(val session: DefaultWebSocketSession) {
 }
 ```
 
-## testApplication Testing
+## testApplication 测试
 
-### Basic Route Testing
+### 基本路由测试
 
 ```kotlin
 class UserRoutesTest : FunSpec({
@@ -582,7 +582,7 @@ class UserRoutesTest : FunSpec({
 })
 ```
 
-### Testing Authenticated Routes
+### 测试认证路由
 
 ```kotlin
 class AuthenticatedRoutesTest : FunSpec({
@@ -631,7 +631,7 @@ class AuthenticatedRoutesTest : FunSpec({
 })
 ```
 
-## Configuration
+## 配置
 
 ### application.yaml
 
@@ -655,7 +655,7 @@ database:
   maxPoolSize: 10
 ```
 
-### Reading Config
+### 读取配置
 
 ```kotlin
 fun Application.configureDI() {
@@ -672,18 +672,18 @@ fun Application.configureDI() {
 }
 ```
 
-## Quick Reference: Ktor Patterns
+## 快速参考：Ktor 模式
 
-| Pattern | Description |
+| 模式 | 描述 |
 |---------|-------------|
-| `route("/path") { get { } }` | Route grouping with DSL |
-| `call.receive<T>()` | Deserialize request body |
-| `call.respond(status, body)` | Send response with status |
-| `call.parameters["id"]` | Read path parameters |
-| `call.request.queryParameters["q"]` | Read query parameters |
-| `install(Plugin) { }` | Install and configure plugin |
-| `authenticate("name") { }` | Protect routes with auth |
-| `by inject<T>()` | Koin dependency injection |
-| `testApplication { }` | Integration testing |
+| `route("/path") { get { } }` | 使用 DSL 分组路由 |
+| `call.receive<T>()` | 反序列化请求体 |
+| `call.respond(status, body)` | 发送带状态的响应 |
+| `call.parameters["id"]` | 读取路径参数 |
+| `call.request.queryParameters["q"]` | 读取查询参数 |
+| `install(Plugin) { }` | 安装和配置插件 |
+| `authenticate("name") { }` | 使用认证保护路由 |
+| `by inject<T>()` | Koin 依赖注入 |
+| `testApplication { }` | 集成测试 |
 
-**Remember**: Ktor is designed around Kotlin coroutines and DSLs. Keep routes thin, push logic to services, and use Koin for dependency injection. Test with `testApplication` for full integration coverage.
+**记住**：Ktor 围绕 Kotlin 协程和 DSL 设计。保持路由轻量，将逻辑推到服务中，使用 Koin 进行依赖注入。使用 `testApplication` 进行完整集成覆盖。

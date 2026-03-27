@@ -1,80 +1,80 @@
 # Refactor Clean
 
-Safely identify and remove dead code with test verification at every step.
+安全地识别和删除死代码，并在每一步进行测试验证。
 
-## Step 1: Detect Dead Code
+## 步骤 1：检测死代码
 
-Run analysis tools based on project type:
+根据项目类型运行分析工具：
 
-| Tool | What It Finds | Command |
-|------|--------------|---------|
-| knip | Unused exports, files, dependencies | `npx knip` |
-| depcheck | Unused npm dependencies | `npx depcheck` |
-| ts-prune | Unused TypeScript exports | `npx ts-prune` |
-| vulture | Unused Python code | `vulture src/` |
-| deadcode | Unused Go code | `deadcode ./...` |
-| cargo-udeps | Unused Rust dependencies | `cargo +nightly udeps` |
+| 工具 | 发现内容 | 命令 |
+|-----|---------|------|
+| knip | 未使用的导出、文件、依赖 | `npx knip` |
+| depcheck | 未使用的 npm 依赖 | `npx depcheck` |
+| ts-prune | 未使用的 TypeScript 导出 | `npx ts-prune` |
+| vulture | 未使用的 Python 代码 | `vulture src/` |
+| deadcode | 未使用的 Go 代码 | `deadcode ./...` |
+| cargo-udeps | 未使用的 Rust 依赖 | `cargo +nightly udeps` |
 
-If no tool is available, use Grep to find exports with zero imports:
+如果没有可用工具，使用 Grep 查找零导入的导出：
 ```
-# Find exports, then check if they're imported anywhere
+# 查找导出，然后检查它们是否在任何地方被导入
 ```
 
-## Step 2: Categorize Findings
+## 步骤 2：分类发现
 
-Sort findings into safety tiers:
+将发现按安全级别排序：
 
-| Tier | Examples | Action |
-|------|----------|--------|
-| **SAFE** | Unused utilities, test helpers, internal functions | Delete with confidence |
-| **CAUTION** | Components, API routes, middleware | Verify no dynamic imports or external consumers |
-| **DANGER** | Config files, entry points, type definitions | Investigate before touching |
+| 级别 | 示例 | 操作 |
+|-----|------|------|
+| **SAFE** | 未使用的工具函数、测试辅助函数、内部函数 | 放心删除 |
+| **CAUTION** | 组件、API 路由、中间件 | 验证没有动态导入或外部消费者 |
+| **DANGER** | 配置文件、入口点、类型定义 | 在触及之前进行调查 |
 
-## Step 3: Safe Deletion Loop
+## 步骤 3：安全删除循环
 
-For each SAFE item:
+对于每个 SAFE 项目：
 
-1. **Run full test suite** — Establish baseline (all green)
-2. **Delete the dead code** — Use Edit tool for surgical removal
-3. **Re-run test suite** — Verify nothing broke
-4. **If tests fail** — Immediately revert with `git checkout -- <file>` and skip this item
-5. **If tests pass** — Move to next item
+1. **运行完整测试套件** — 建立基线（全部通过）
+2. **删除死代码** — 使用 Edit 工具进行精准移除
+3. **重新运行测试套件** — 验证没有破坏任何东西
+4. **如果测试失败** — 立即使用 `git checkout -- <file>` 恢复并跳过此项目
+5. **如果测试通过** — 继续下一个项目
 
-## Step 4: Handle CAUTION Items
+## 步骤 4：处理 CAUTION 项目
 
-Before deleting CAUTION items:
-- Search for dynamic imports: `import()`, `require()`, `__import__`
-- Search for string references: route names, component names in configs
-- Check if exported from a public package API
-- Verify no external consumers (check dependents if published)
+在删除 CAUTION 项目之前：
+- 搜索动态导入：`import()`、`require()`、`__import__`
+- 搜索字符串引用：路由名称、配置中的组件名称
+- 检查是否从公共包 API 导出
+- 验证没有外部消费者（如果已发布，检查依赖项）
 
-## Step 5: Consolidate Duplicates
+## 步骤 5：合并重复项
 
-After removing dead code, look for:
-- Near-duplicate functions (>80% similar) — merge into one
-- Redundant type definitions — consolidate
-- Wrapper functions that add no value — inline them
-- Re-exports that serve no purpose — remove indirection
+删除死代码后，查找：
+- 近似重复的函数（>80% 相似）— 合并为一个
+- 冗余的类型定义 — 整合
+- 不增加价值的包装函数 — 内联它们
+- 无目的的重导出 — 移除间接层
 
-## Step 6: Summary
+## 步骤 6：总结
 
-Report results:
+报告结果：
 
 ```
-Dead Code Cleanup
+死代码清理
 ──────────────────────────────
-Deleted:   12 unused functions
-           3 unused files
-           5 unused dependencies
-Skipped:   2 items (tests failed)
-Saved:     ~450 lines removed
+已删除:   12 个未使用的函数
+          3 个未使用的文件
+          5 个未使用的依赖
+已跳过:   2 个项目（测试失败）
+节省:     ~450 行已移除
 ──────────────────────────────
-All tests passing ✅
+所有测试通过 ✅
 ```
 
-## Rules
+## 规则
 
-- **Never delete without running tests first**
-- **One deletion at a time** — Atomic changes make rollback easy
-- **Skip if uncertain** — Better to keep dead code than break production
-- **Don't refactor while cleaning** — Separate concerns (clean first, refactor later)
+- **永远不要在未先运行测试的情况下删除**
+- **一次删除一个** — 原子更改使回滚容易
+- **如果不确定则跳过** — 保留死代码比破坏生产环境好
+- **清理时不要重构** — 分离关注点（先清理，后重构）

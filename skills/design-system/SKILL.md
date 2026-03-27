@@ -1,76 +1,76 @@
-# Design System — Generate & Audit Visual Systems
+# 设计系统 — 生成与审计视觉系统
 
-## When to Use
+## 使用时机
 
-- Starting a new project that needs a design system
-- Auditing an existing codebase for visual consistency
-- Before a redesign — understand what you have
-- When the UI looks "off" but you can't pinpoint why
-- Reviewing PRs that touch styling
+- 启动需要设计系统的新项目
+- 审核现有代码库以实现视觉一致性
+- 在重新设计之前，先了解现状
+- 当界面看起来有问题但找不到具体原因时
+- 审查涉及样式的 PR
 
-## How It Works
+## 工作原理
 
-### Mode 1: Generate Design System
+### 模式 1：生成设计系统
 
-Analyzes your codebase and generates a cohesive design system:
+ 分析你的代码库并生成一个统一的设计系统：
 
 ```
-1. Scan CSS/Tailwind/styled-components for existing patterns
-2. Extract: colors, typography, spacing, border-radius, shadows, breakpoints
-3. Research 3 competitor sites for inspiration (via browser MCP)
-4. Propose a design token set (JSON + CSS custom properties)
-5. Generate DESIGN.md with rationale for each decision
-6. Create an interactive HTML preview page (self-contained, no deps)
+ 1. 扫描 CSS/Tailwind/styled-components 以查找现有模式
+ 2. 提取：颜色、排版、间距、圆角、阴影、断点
+ 3. 研究 3 个竞争对手的网站以获取灵感（通过浏览器 MCP）
+ 4. 提出一组设计令牌（JSON + CSS 自定义属性）
+ 5. 生成 DESIGN.md，给出每个决策的理由
+ 6. 创建一个交互式 HTML 预览页面（自包含，无依赖）
 ```
 
 Output: `DESIGN.md` + `design-tokens.json` + `design-preview.html`
 
-### Mode 2: Visual Audit
+### 模式 2：视觉审计
 
-Scores your UI across 10 dimensions (0-10 each):
-
-```
-1. Color consistency — are you using your palette or random hex values?
-2. Typography hierarchy — clear h1 > h2 > h3 > body > caption?
-3. Spacing rhythm — consistent scale (4px/8px/16px) or arbitrary?
-4. Component consistency — do similar elements look similar?
-5. Responsive behavior — fluid or broken at breakpoints?
-6. Dark mode — complete or half-done?
-7. Animation — purposeful or gratuitous?
-8. Accessibility — contrast ratios, focus states, touch targets
-9. Information density — cluttered or clean?
-10. Polish — hover states, transitions, loading states, empty states
-```
-
-Each dimension gets a score, specific examples, and a fix with exact file:line.
-
-### Mode 3: AI Slop Detection
-
-Identifies generic AI-generated design patterns:
+ 对 UI 在 10 个维度上进行评分（每项 0-10 分）
 
 ```
-- Gratuitous gradients on everything
-- Purple-to-blue defaults
-- "Glass morphism" cards with no purpose
-- Rounded corners on things that shouldn't be rounded
-- Excessive animations on scroll
-- Generic hero with centered text over stock gradient
-- Sans-serif font stack with no personality
+ 1. 颜色一致性 — 你是使用调色板中的颜色还是随机十六进制颜色？
+ 2. 排版层次 — 是否清晰地从 h1 到 h2、h3、body、caption？
+ 3. 间距节奏 — 使用一致的标度（4px/8px/16px）还是随意？
+ 4. 组件一致性 — 相似元素看起来是否相似？
+ 5. 响应行为 — 流畅还是在断点处中断？
+ 6. 暗色模式 — 完整实现还是半成品？
+ 7. 动画 — 目的性强还是多余？
+ 8. 可访问性 — 对比度、聚焦状态、触控目标
+ 9. 信息密度 — 杂乱还是整洁？
+ 10. 打磨度 — 悬停状态、过渡、加载状态、空状态
 ```
 
-## Examples
+每个维度给出分数、具体示例及精确到文件行的修复建议。
 
-**Generate for a SaaS app:**
+### 模式 3：AI 随意性检测
+
+ 识别通用的 AI 生成设计模式：
+
+```
+- 对所有元素使用过度渐变
+- 默认紫-蓝色调
+- 没有目的的“玻璃拟态”卡片
+- 不该圆角的对象使用圆角
+- 滚动时的过度动画
+- 带有居中文本覆盖现成渐变的通用横幅
+- 缺乏个性的无衬线字体栈
+```
+
+## 示例
+
+**为 SaaS 应用生成：**
 ```
 /design-system generate --style minimal --palette earth-tones
 ```
 
-**Audit existing UI:**
+**审计现有 UI：**
 ```
 /design-system audit --url http://localhost:3000 --pages / /pricing /docs
 ```
 
-**Check for AI slop:**
+**检查 AI 随意性：**
 ```
 /design-system slop-check
 ```

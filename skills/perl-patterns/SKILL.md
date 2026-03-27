@@ -1,40 +1,40 @@
 ---
 name: perl-patterns
-description: Modern Perl 5.36+ idioms, best practices, and conventions for building robust, maintainable Perl applications.
+description: 现代 Perl 5.36+ 惯用语、最佳实践和约定，用于构建健壮、可维护的 Perl 应用。
 origin: ECC
 ---
 
-# Modern Perl Development Patterns
+# 现代 Perl 开发模式
 
-Idiomatic Perl 5.36+ patterns and best practices for building robust, maintainable applications.
+用于构建健壮、可维护应用的惯用 Perl 5.36+ 模式和最佳实践。
 
-## When to Activate
+## 何时启用
 
-- Writing new Perl code or modules
-- Reviewing Perl code for idiom compliance
-- Refactoring legacy Perl to modern standards
-- Designing Perl module architecture
-- Migrating pre-5.36 code to modern Perl
+- 编写新的 Perl 代码或模块
+- 审查 Perl 代码是否符合惯用语规范
+- 将遗留 Perl 重构为现代标准
+- 设计 Perl 模块架构
+- 将 5.36 之前的代码迁移到现代 Perl
 
-## How It Works
+## 工作原理
 
-Apply these patterns as a bias toward modern Perl 5.36+ defaults: signatures, explicit modules, focused error handling, and testable boundaries. The examples below are meant to be copied as starting points, then tightened for the actual app, dependency stack, and deployment model in front of you.
+将这些模式作为偏向现代 Perl 5.36+ 默认设置的偏好：签名、显式模块、专注的错误处理和可测试边界。下面的示例旨在作为起点复制，然后根据你面前的实际应用、依赖栈和部署模型进行收紧。
 
-## Core Principles
+## 核心原则
 
-### 1. Use `v5.36` Pragma
+### 1. 使用 `v5.36` Pragma
 
-A single `use v5.36` replaces the old boilerplate and enables strict, warnings, and subroutine signatures.
+单个 `use v5.36` 替换旧的样板代码，启用 strict、warnings 和子程序签名。
 
 ```perl
-# Good: Modern preamble
+# 好：现代前言
 use v5.36;
 
 sub greet($name) {
     say "Hello, $name!";
 }
 
-# Bad: Legacy boilerplate
+# 坏：遗留样板代码
 use strict;
 use warnings;
 use feature 'say', 'signatures';
@@ -46,28 +46,28 @@ sub greet {
 }
 ```
 
-### 2. Subroutine Signatures
+### 2. 子程序签名
 
-Use signatures for clarity and automatic arity checking.
+使用签名以获得清晰性和自动参数数量检查。
 
 ```perl
 use v5.36;
 
-# Good: Signatures with defaults
+# 好：带默认值的签名
 sub connect_db($host, $port = 5432, $timeout = 30) {
-    # $host is required, others have defaults
+    # $host 必需，其他有默认值
     return DBI->connect("dbi:Pg:host=$host;port=$port", undef, undef, {
         RaiseError => 1,
         PrintError => 0,
     });
 }
 
-# Good: Slurpy parameter for variable args
+# 好：Slurpy 参数用于可变参数
 sub log_message($level, @details) {
     say "[$level] " . join(' ', @details);
 }
 
-# Bad: Manual argument unpacking
+# 坏：手动参数解包
 sub connect_db {
     my ($host, $port, $timeout) = @_;
     $port    //= 5432;
@@ -76,23 +76,23 @@ sub connect_db {
 }
 ```
 
-### 3. Context Sensitivity
+### 3. 上下文敏感性
 
-Understand scalar vs list context — a core Perl concept.
+理解标量 vs 列表上下文 — Perl 的核心概念。
 
 ```perl
 use v5.36;
 
 my @items = (1, 2, 3, 4, 5);
 
-my @copy  = @items;            # List context: all elements
-my $count = @items;            # Scalar context: count (5)
-say "Items: " . scalar @items; # Force scalar context
+my @copy  = @items;            # 列表上下文：所有元素
+my $count = @items;            # 标量上下文：计数（5）
+say "Items: " . scalar @items; # 强制标量上下文
 ```
 
-### 4. Postfix Dereferencing
+### 4. 后缀解引用
 
-Use postfix dereference syntax for readability with nested structures.
+使用后缀解引用语法提高嵌套结构的可读性。
 
 ```perl
 use v5.36;
@@ -104,28 +104,28 @@ my $data = {
     ],
 };
 
-# Good: Postfix dereferencing
+# 好：后缀解引用
 my @users = $data->{users}->@*;
 my @roles = $data->{users}[0]{roles}->@*;
 my %first = $data->{users}[0]->%*;
 
-# Bad: Circumfix dereferencing (harder to read in chains)
+# 坏：环绕解引用（在链中更难阅读）
 my @users = @{ $data->{users} };
 my @roles = @{ $data->{users}[0]{roles} };
 ```
 
-### 5. The `isa` Operator (5.32+)
+### 5. `isa` 操作符（5.32+）
 
-Infix type-check — replaces `blessed($o) && $o->isa('X')`.
+中缀类型检查 — 替换 `blessed($o) && $o->isa('X')`。
 
 ```perl
 use v5.36;
 if ($obj isa 'My::Class') { $obj->do_something }
 ```
 
-## Error Handling
+## 错误处理
 
-### eval/die Pattern
+### eval/die 模式
 
 ```perl
 use v5.36;
@@ -137,7 +137,7 @@ sub parse_config($path) {
 }
 ```
 
-### Try::Tiny (Reliable Exception Handling)
+### Try::Tiny（可靠的异常处理）
 
 ```perl
 use v5.36;
@@ -156,7 +156,7 @@ sub fetch_user($id) {
 }
 ```
 
-### Native try/catch (5.40+)
+### 原生 try/catch（5.40+）
 
 ```perl
 use v5.40;
@@ -173,12 +173,12 @@ sub divide($x, $y) {
 }
 ```
 
-## Modern OO with Moo
+## 使用 Moo 的现代 OO
 
-Prefer Moo for lightweight, modern OO. Use Moose only when its metaprotocol is needed.
+优先使用 Moo 进行轻量级现代 OO。仅在需要其元协议时使用 Moose。
 
 ```perl
-# Good: Moo class
+# 好：Moo 类
 package User;
 use Moo;
 use Types::Standard qw(Str Int ArrayRef);
@@ -199,14 +199,14 @@ sub greet($self) {
 
 1;
 
-# Usage
+# 用法
 my $user = User->new(
     name  => 'Alice',
     email => 'alice@example.com',
     roles => ['admin', 'user'],
 );
 
-# Bad: Blessed hashref (no validation, no accessors)
+# 坏：blessed hashref（无验证、无访问器）
 package User;
 sub new {
     my ($class, %args) = @_;
@@ -235,7 +235,7 @@ sub TO_HASH($self) { { name => $self->name, email => $self->email } }
 1;
 ```
 
-### Native `class` Keyword (5.38+, Corinna)
+### 原生 `class` 关键字（5.38+，Corinna）
 
 ```perl
 use v5.38;
@@ -252,14 +252,14 @@ my $p = Point->new(x => 3, y => 4);
 say $p->magnitude;  # 5
 ```
 
-## Regular Expressions
+## 正则表达式
 
-### Named Captures and `/x` Flag
+### 命名捕获和 `/x` 标志
 
 ```perl
 use v5.36;
 
-# Good: Named captures with /x for readability
+# 好：带 /x 的命名捕获以提高可读性
 my $log_re = qr{
     ^ (?<timestamp> \d{4}-\d{2}-\d{2} \s \d{2}:\d{2}:\d{2} )
     \s+ \[ (?<level> \w+ ) \]
@@ -271,18 +271,18 @@ if ($line =~ $log_re) {
     say "Message: $+{message}";
 }
 
-# Bad: Positional captures (hard to maintain)
+# 坏：位置捕获（难以维护）
 if ($line =~ /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+\[(\w+)\]\s+(.+)$/) {
     say "Time: $1, Level: $2";
 }
 ```
 
-### Precompiled Patterns
+### 预编译模式
 
 ```perl
 use v5.36;
 
-# Good: Compile once, use many
+# 好：编译一次，多次使用
 my $email_re = qr/^[A-Za-z0-9._%+-]+\@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
 sub validate_emails(@emails) {
@@ -290,14 +290,14 @@ sub validate_emails(@emails) {
 }
 ```
 
-## Data Structures
+## 数据结构
 
-### References and Safe Deep Access
+### 引用和安全深度访问
 
 ```perl
 use v5.36;
 
-# Hash and array references
+# 哈希和数组引用
 my $config = {
     database => {
         host => 'localhost',
@@ -306,18 +306,18 @@ my $config = {
     },
 };
 
-# Safe deep access (returns undef if any level missing)
+# 安全深度访问（如果任何级别缺失返回 undef）
 my $port = $config->{database}{port};           # 5432
-my $missing = $config->{cache}{host};           # undef, no error
+my $missing = $config->{cache}{host};           # undef，无错误
 
-# Hash slices
+# 哈希切片
 my %subset;
 @subset{qw(host port)} = @{$config->{database}}{qw(host port)};
 
-# Array slices
+# 数组切片
 my @first_two = $config->{database}{options}->@[0, 1];
 
-# Multi-variable for loop (experimental in 5.36, stable in 5.40)
+# 多变量 for 循环（5.36 实验性，5.40 稳定）
 use feature 'for_list';
 no warnings 'experimental::for_list';
 for my ($key, $val) (%$config) {
@@ -325,14 +325,14 @@ for my ($key, $val) (%$config) {
 }
 ```
 
-## File I/O
+## 文件 I/O
 
-### Three-Argument Open
+### 三参数 open
 
 ```perl
 use v5.36;
 
-# Good: Three-arg open with autodie (core module, eliminates 'or die')
+# 好：三参数 open 配合 autodie（核心模块，消除 'or die'）
 use autodie;
 
 sub read_file($path) {
@@ -343,12 +343,12 @@ sub read_file($path) {
     return $content;
 }
 
-# Bad: Two-arg open (shell injection risk, see perl-security)
-open FH, $path;            # NEVER do this
-open FH, "< $path";        # Still bad — user data in mode string
+# 坏：两参数 open（shell 注入风险，见 perl-security）
+open FH, $path;            # 绝不这样做
+open FH, "< $path";        # 仍然不好 — 用户数据在模式字符串中
 ```
 
-### Path::Tiny for File Operations
+### Path::Tiny 用于文件操作
 
 ```perl
 use v5.36;
@@ -358,36 +358,36 @@ my $file = path('config', 'app.json');
 my $content = $file->slurp_utf8;
 $file->spew_utf8($new_content);
 
-# Iterate directory
+# 迭代目录
 for my $child (path('src')->children(qr/\.pl$/)) {
     say $child->basename;
 }
 ```
 
-## Module Organization
+## 模块组织
 
-### Standard Project Layout
+### 标准项目布局
 
 ```text
 MyApp/
 ├── lib/
 │   └── MyApp/
-│       ├── App.pm           # Main module
-│       ├── Config.pm        # Configuration
-│       ├── DB.pm            # Database layer
-│       └── Util.pm          # Utilities
+│       ├── App.pm           # 主模块
+│       ├── Config.pm        # 配置
+│       ├── DB.pm            # 数据库层
+│       └── Util.pm          # 工具
 ├── bin/
-│   └── myapp                # Entry-point script
+│   └── myapp                # 入口脚本
 ├── t/
-│   ├── 00-load.t            # Compilation tests
-│   ├── unit/                # Unit tests
-│   └── integration/         # Integration tests
-├── cpanfile                 # Dependencies
-├── Makefile.PL              # Build system
-└── .perlcriticrc            # Linting config
+│   ├── 00-load.t            # 编译测试
+│   ├── unit/                # 单元测试
+│   └── integration/         # 集成测试
+├── cpanfile                 # 依赖
+├── Makefile.PL              # 构建系统
+└── .perlcriticrc            # Lint 配置
 ```
 
-### Exporter Patterns
+### Exporter 模式
 
 ```perl
 package MyApp::Util;
@@ -402,20 +402,20 @@ sub trim($str) { $str =~ s/^\s+|\s+$//gr }
 1;
 ```
 
-## Tooling
+## 工具
 
-### perltidy Configuration (.perltidyrc)
+### perltidy 配置（.perltidyrc）
 
 ```text
--i=4        # 4-space indent
--l=100      # 100-char line length
--ci=4       # continuation indent
+-i=4        # 4 空格缩进
+-l=100      # 100 字符行长度
+-ci=4       # 续行缩进
 -ce         # cuddled else
--bar        # opening brace on same line
--nolq       # don't outdent long quoted strings
+-bar        # 开括号在同一行
+-nolq       # 不要取消长引号字符串的缩进
 ```
 
-### perlcritic Configuration (.perlcriticrc)
+### perlcritic 配置（.perlcriticrc）
 
 ```ini
 severity = 3
@@ -432,12 +432,12 @@ severity = 4
 allowed_values = 0 1 2 -1
 ```
 
-### Dependency Management (cpanfile + carton)
+### 依赖管理（cpanfile + carton）
 
 ```bash
-cpanm App::cpanminus Carton   # Install tools
-carton install                 # Install deps from cpanfile
-carton exec -- perl bin/myapp  # Run with local deps
+cpanm App::cpanminus Carton   # 安装工具
+carton install                 # 从 cpanfile 安装依赖
+carton exec -- perl bin/myapp  # 使用本地依赖运行
 ```
 
 ```perl
@@ -453,52 +453,52 @@ on test => sub {
 };
 ```
 
-## Quick Reference: Modern Perl Idioms
+## 快速参考：现代 Perl 惯用语
 
-| Legacy Pattern | Modern Replacement |
+| 遗留模式 | 现代替代 |
 |---|---|
 | `use strict; use warnings;` | `use v5.36;` |
 | `my ($x, $y) = @_;` | `sub foo($x, $y) { ... }` |
 | `@{ $ref }` | `$ref->@*` |
 | `%{ $ref }` | `$ref->%*` |
 | `open FH, "< $file"` | `open my $fh, '<:encoding(UTF-8)', $file` |
-| `blessed hashref` | `Moo` class with types |
-| `$1, $2, $3` | `$+{name}` (named captures) |
-| `eval { }; if ($@)` | `Try::Tiny` or native `try/catch` (5.40+) |
+| `blessed hashref` | `Moo` 类带类型 |
+| `$1, $2, $3` | `$+{name}`（命名捕获） |
+| `eval { }; if ($@)` | `Try::Tiny` 或原生 `try/catch`（5.40+） |
 | `BEGIN { require Exporter; }` | `use Exporter 'import';` |
-| Manual file ops | `Path::Tiny` |
-| `blessed($o) && $o->isa('X')` | `$o isa 'X'` (5.32+) |
-| `builtin::true / false` | `use builtin 'true', 'false';` (5.36+, experimental) |
+| 手动文件操作 | `Path::Tiny` |
+| `blessed($o) && $o->isa('X')` | `$o isa 'X'`（5.32+） |
+| `builtin::true / false` | `use builtin 'true', 'false';`（5.36+，实验性） |
 
-## Anti-Patterns
+## 反模式
 
 ```perl
-# 1. Two-arg open (security risk)
-open FH, $filename;                     # NEVER
+# 1. 两参数 open（安全风险）
+open FH, $filename;                     # 绝不
 
-# 2. Indirect object syntax (ambiguous parsing)
-my $obj = new Foo(bar => 1);            # Bad
-my $obj = Foo->new(bar => 1);           # Good
+# 2. 间接对象语法（歧义解析）
+my $obj = new Foo(bar => 1);            # 坏
+my $obj = Foo->new(bar => 1);           # 好
 
-# 3. Excessive reliance on $_
-map { process($_) } grep { validate($_) } @items;  # Hard to follow
-my @valid = grep { validate($_) } @items;           # Better: break it up
+# 3. 过度依赖 $_
+map { process($_) } grep { validate($_) } @items;  # 难以理解
+my @valid = grep { validate($_) } @items;           # 更好：分开
 my @results = map { process($_) } @valid;
 
-# 4. Disabling strict refs
-no strict 'refs';                        # Almost always wrong
-${"My::Package::$var"} = $value;         # Use a hash instead
+# 4. 禁用严格引用
+no strict 'refs';                        # 几乎总是错的
+${"My::Package::$var"} = $value;         # 改用哈希
 
-# 5. Global variables as configuration
-our $TIMEOUT = 30;                       # Bad: mutable global
-use constant TIMEOUT => 30;              # Better: constant
-# Best: Moo attribute with default
+# 5. 全局变量作为配置
+our $TIMEOUT = 30;                       # 坏：可变全局
+use constant TIMEOUT => 30;              # 更好：常量
+# 最好：Moo 属性带默认值
 
-# 6. String eval for module loading
-eval "require $module";                  # Bad: code injection risk
-eval "use $module";                      # Bad
-use Module::Runtime 'require_module';    # Good: safe module loading
+# 6. 字符串 eval 加载模块
+eval "require $module";                  # 坏：代码注入风险
+eval "use $module";                      # 坏
+use Module::Runtime 'require_module';    # 好：安全模块加载
 require_module($module);
 ```
 
-**Remember**: Modern Perl is clean, readable, and safe. Let `use v5.36` handle the boilerplate, use Moo for objects, and prefer CPAN's battle-tested modules over hand-rolled solutions.
+**记住**：现代 Perl 是干净、可读和安全的。让 `use v5.36` 处理样板代码，使用 Moo 处理对象，优先使用 CPAN 经过实战检验的模块而非手工解决方案。

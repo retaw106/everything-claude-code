@@ -1,62 +1,62 @@
 # Build and Fix
 
-Incrementally fix build and type errors with minimal, safe changes.
+以最小、安全的更改增量修复构建和类型错误。
 
-## Step 1: Detect Build System
+## 步骤 1：检测构建系统
 
-Identify the project's build tool and run the build:
+识别项目的构建工具并运行构建：
 
-| Indicator | Build Command |
-|-----------|---------------|
-| `package.json` with `build` script | `npm run build` or `pnpm build` |
-| `tsconfig.json` (TypeScript only) | `npx tsc --noEmit` |
+| 指示器 | 构建命令 |
+|-------|---------|
+| `package.json` 有 `build` 脚本 | `npm run build` 或 `pnpm build` |
+| `tsconfig.json`（仅 TypeScript） | `npx tsc --noEmit` |
 | `Cargo.toml` | `cargo build 2>&1` |
 | `pom.xml` | `mvn compile` |
 | `build.gradle` | `./gradlew compileJava` |
 | `go.mod` | `go build ./...` |
-| `pyproject.toml` | `python -m compileall -q .` or `mypy .` |
+| `pyproject.toml` | `python -m compileall -q .` 或 `mypy .` |
 
-## Step 2: Parse and Group Errors
+## 步骤 2：解析和分组错误
 
-1. Run the build command and capture stderr
-2. Group errors by file path
-3. Sort by dependency order (fix imports/types before logic errors)
-4. Count total errors for progress tracking
+1. 运行构建命令并捕获 stderr
+2. 按文件路径分组错误
+3. 按依赖顺序排序（在逻辑错误之前修复导入/类型）
+4. 计算总错误数以进行进度跟踪
 
-## Step 3: Fix Loop (One Error at a Time)
+## 步骤 3：修复循环（一次一个错误）
 
-For each error:
+对于每个错误：
 
-1. **Read the file** — Use Read tool to see error context (10 lines around the error)
-2. **Diagnose** — Identify root cause (missing import, wrong type, syntax error)
-3. **Fix minimally** — Use Edit tool for the smallest change that resolves the error
-4. **Re-run build** — Verify the error is gone and no new errors introduced
-5. **Move to next** — Continue with remaining errors
+1. **读取文件** — 使用 Read 工具查看错误上下文（错误周围 10 行）
+2. **诊断** — 识别根本原因（缺少导入、类型错误、语法错误）
+3. **最小修复** — 使用 Edit 工具进行解决错误的最小更改
+4. **重新运行构建** — 验证错误已消失且未引入新错误
+5. **继续下一个** — 处理剩余错误
 
-## Step 4: Guardrails
+## 步骤 4：保护措施
 
-Stop and ask the user if:
-- A fix introduces **more errors than it resolves**
-- The **same error persists after 3 attempts** (likely a deeper issue)
-- The fix requires **architectural changes** (not just a build fix)
-- Build errors stem from **missing dependencies** (need `npm install`, `cargo add`, etc.)
+在以下情况下停止并询问用户：
+- 修复**引入的错误比解决的还多**
+- **同一错误在 3 次尝试后仍然存在**（可能是更深层的问题）
+- 修复需要**架构更改**（不仅仅是构建修复）
+- 构建错误源于**缺少依赖项**（需要 `npm install`、`cargo add` 等）
 
-## Step 5: Summary
+## 步骤 5：总结
 
-Show results:
-- Errors fixed (with file paths)
-- Errors remaining (if any)
-- New errors introduced (should be zero)
-- Suggested next steps for unresolved issues
+显示结果：
+- 已修复的错误（附文件路径）
+- 剩余错误（如果有）
+- 引入的新错误（应为零）
+- 针对未解决问题的建议后续步骤
 
-## Recovery Strategies
+## 恢复策略
 
-| Situation | Action |
-|-----------|--------|
-| Missing module/import | Check if package is installed; suggest install command |
-| Type mismatch | Read both type definitions; fix the narrower type |
-| Circular dependency | Identify cycle with import graph; suggest extraction |
-| Version conflict | Check `package.json` / `Cargo.toml` for version constraints |
-| Build tool misconfiguration | Read config file; compare with working defaults |
+| 情况 | 操作 |
+|-----|------|
+| 缺少模块/导入 | 检查包是否已安装；建议安装命令 |
+| 类型不匹配 | 读取两个类型定义；修复较窄的类型 |
+| 循环依赖 | 使用导入图识别循环；建议提取 |
+| 版本冲突 | 检查 `package.json` / `Cargo.toml` 的版本约束 |
+| 构建工具配置错误 | 读取配置文件；与工作默认值比较 |
 
-Fix one error at a time for safety. Prefer minimal diffs over refactoring.
+一次修复一个错误以确保安全。优先使用最小差异而非重构。

@@ -1,29 +1,31 @@
 ---
-description: Analyze context window usage across agents, skills, MCP servers, and rules to find optimization opportunities. Helps reduce token overhead and avoid performance warnings.
+description: 分析 agents、skills、MCP servers 和 rules 的上下文窗口使用情况，找到优化机会。帮助减少 token 开销并避免性能警告。
 ---
 
-# Context Budget Optimizer
+# 上下文预算优化器
 
-Analyze your Claude Code setup's context window consumption and produce actionable recommendations to reduce token overhead.
+分析你的 Claude Code 配置的上下文窗口消耗，并生成可操作的建议以减少 token 开销。
 
-## Usage
+## 用法
 
 ```
 /context-budget [--verbose]
 ```
 
-- Default: summary with top recommendations
-- `--verbose`: full breakdown per component
+- 默认：摘要和主要建议
+- `--verbose`：每个组件的完整细分
+
+## 参数
 
 $ARGUMENTS
 
-## What to Do
+## 做什么
 
-Run the **context-budget** skill (`skills/context-budget/SKILL.md`) with the following inputs:
+使用以下输入运行 **context-budget** skill (`skills/context-budget/SKILL.md`)：
 
-1. Pass `--verbose` flag if present in `$ARGUMENTS`
-2. Assume a 200K context window (Claude Sonnet default) unless the user specifies otherwise
-3. Follow the skill's four phases: Inventory → Classify → Detect Issues → Report
-4. Output the formatted Context Budget Report to the user
+1. 如果 `$ARGUMENTS` 中存在 `--verbose` 标志，则传递它
+2. 假设 200K 上下文窗口（Claude Sonnet 默认），除非用户另有指定
+3. 遵循 skill 的四个阶段：清单 → 分类 → 检测问题 → 报告
+4. 向用户输出格式化的上下文预算报告
 
-The skill handles all scanning logic, token estimation, issue detection, and report formatting.
+该 skill 处理所有扫描逻辑、token 估算、问题检测和报告格式化。

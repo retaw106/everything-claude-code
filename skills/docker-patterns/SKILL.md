@@ -1,24 +1,24 @@
 ---
 name: docker-patterns
-description: Docker and Docker Compose patterns for local development, container security, networking, volume strategies, and multi-service orchestration.
+description: Docker 与 Docker Compose 的本地开发模式、容器安全、网络、卷策略，以及多服务编排最佳实践。
 origin: ECC
 ---
 
 # Docker Patterns
 
-Docker and Docker Compose best practices for containerized development.
+Docker 与 Docker Compose 的本地开发最佳实践。
 
-## When to Activate
+## 何时启用
 
-- Setting up Docker Compose for local development
-- Designing multi-container architectures
-- Troubleshooting container networking or volume issues
-- Reviewing Dockerfiles for security and size
-- Migrating from local dev to containerized workflow
+- 为本地开发设置 Docker Compose
+- 设计多容器架构
+- 故障排查容器网络或卷问题
+- 审核 Dockerfile 的安全性与体积
+- 将本地开发迁移到容器化工作流
 
-## Docker Compose for Local Development
+## 本地开发的 Docker Compose
 
-### Standard Web App Stack
+### 标准 Web 应用栈
 
 ```yaml
 # docker-compose.yml
@@ -26,12 +26,12 @@ services:
   app:
     build:
       context: .
-      target: dev                     # Use dev stage of multi-stage Dockerfile
+      target: dev                     # 使用多阶段 Dockerfile 的 dev 阶段
     ports:
       - "3000:3000"
     volumes:
-      - .:/app                        # Bind mount for hot reload
-      - /app/node_modules             # Anonymous volume -- preserves container deps
+      - .:/app                        # 热重载绑定挂载
+      - /app/node_modules             # 匿名卷 — 保留容器依赖
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/app_dev
       - REDIS_URL=redis://redis:6379/0
@@ -67,7 +67,7 @@ services:
     volumes:
       - redisdata:/data
 
-  mailpit:                            # Local email testing
+  mailpit:                            # 本地邮件测试
     image: axllent/mailpit
     ports:
       - "8025:8025"                   # Web UI
@@ -78,7 +78,7 @@ volumes:
   redisdata:
 ```
 
-### Development vs Production Dockerfile
+### 本地开发与生产 Dockerfile
 
 ```dockerfile
 # Stage: dependencies
@@ -87,7 +87,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Stage: dev (hot reload, debug tools)
+# Stage: dev (热加载、调试工具)
 FROM node:22-alpine AS dev
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -102,7 +102,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build && npm prune --production
 
-# Stage: production (minimal image)
+# Stage: production (最小镜像)
 FROM node:22-alpine AS production
 WORKDIR /app
 RUN addgroup -g 1001 -S appgroup && adduser -S appuser -u 1001
@@ -116,19 +116,19 @@ HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://localhost:3000/heal
 CMD ["node", "dist/server.js"]
 ```
 
-### Override Files
+### Override 文件
 
 ```yaml
-# docker-compose.override.yml (auto-loaded, dev-only settings)
+# docker-compose.override.yml (自动加载，开发环境专用设置)
 services:
   app:
     environment:
       - DEBUG=app:*
       - LOG_LEVEL=debug
     ports:
-      - "9229:9229"                   # Node.js debugger
+      - "9229:9229"                   # Node.js 调试器
 
-# docker-compose.prod.yml (explicit for production)
+# docker-compose.prod.yml (生产环境用)
 services:
   app:
     build:
@@ -142,25 +142,25 @@ services:
 ```
 
 ```bash
-# Development (auto-loads override)
+# 开发环境（自动加载覆盖）
 docker compose up
 
-# Production
+# 生产环境
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-## Networking
+## 网络
 
-### Service Discovery
+### 服务发现
 
-Services in the same Compose network resolve by service name:
+在同一 Compose 网络中的服务按服务名解析：
 ```
-# From "app" container:
-postgres://postgres:postgres@db:5432/app_dev    # "db" resolves to the db container
-redis://redis:6379/0                             # "redis" resolves to the redis container
+# 来自 app 容器：
+postgres://postgres:postgres@db:5432/app_dev    # db 指向 db 容器
+redis://redis:6379/0                             # redis 指向 redis 容器
 ```
 
-### Custom Networks
+### 自定义网络
 
 ```yaml
 services:
@@ -175,71 +175,71 @@ services:
 
   db:
     networks:
-      - backend-net              # Only reachable from api, not frontend
+      - backend-net              # 仅从 api 访问，不直接暴露给前端
 
 networks:
   frontend-net:
   backend-net:
 ```
 
-### Exposing Only What's Needed
+### 仅暴露所需部分
 
 ```yaml
 services:
   db:
     ports:
-      - "127.0.0.1:5432:5432"   # Only accessible from host, not network
-    # Omit ports entirely in production -- accessible only within Docker network
+      - "127.0.0.1:5432:5432"   # 仅对主机可访问，不对网络暴露
+    # 生产环境中完全不暴露端口 -- 仅在 Docker 网络内可访问
 ```
 
-## Volume Strategies
+## 卷策略
 
 ```yaml
 volumes:
-  # Named volume: persists across container restarts, managed by Docker
+  # 命名卷：跨容器重启保持数据，由 Docker 管理
   pgdata:
 
-  # Bind mount: maps host directory into container (for development)
+  # 绑定挂载：将主机目录映射到容器（开发用）
   # - ./src:/app/src
 
-  # Anonymous volume: preserves container-generated content from bind mount override
+  # 匿名卷：保留绑定挂载覆盖下容器生成内容
   # - /app/node_modules
 ```
 
-### Common Patterns
+### 常用模式
 
 ```yaml
 services:
   app:
     volumes:
-      - .:/app                   # Source code (bind mount for hot reload)
-      - /app/node_modules        # Protect container's node_modules from host
-      - /app/.next               # Protect build cache
+      - .:/app                   # 源代码（绑定挂载便于热Reload）
+      - /app/node_modules        # 保护容器的 node_modules 免受主机覆盖
+      - /app/.next               # 保护构建缓存
 
   db:
     volumes:
-      - pgdata:/var/lib/postgresql/data          # Persistent data
-      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql  # Init scripts
+      - pgdata:/var/lib/postgresql/data          # 持久数据
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql  # 初始化脚本
 ```
 
-## Container Security
+## 容器安全
 
-### Dockerfile Hardening
+### Dockerfile 加固
 
 ```dockerfile
-# 1. Use specific tags (never :latest)
+# 1. 使用特定标签，而非 latest
 FROM node:22.12-alpine3.20
 
-# 2. Run as non-root
+# 2. 以非 root 用户运行
 RUN addgroup -g 1001 -S app && adduser -S app -u 1001
 USER app
 
-# 3. Drop capabilities (in compose)
-# 4. Read-only root filesystem where possible
-# 5. No secrets in image layers
+# 3. 在 compose 中降权
+# 4. 只读根文件系统（尽可能）
+# 5. 镜像层中不包含机密
 ```
 
-### Compose Security
+### Compose 安全性
 
 ```yaml
 services:
@@ -253,21 +253,21 @@ services:
     cap_drop:
       - ALL
     cap_add:
-      - NET_BIND_SERVICE          # Only if binding to ports < 1024
+      - NET_BIND_SERVICE          # 仅在绑定端口 < 1024 时使用
 ```
 
-### Secret Management
+### 秘密管理
 
 ```yaml
-# GOOD: Use environment variables (injected at runtime)
+# 好：使用环境变量（运行时注入）
 services:
   app:
     env_file:
-      - .env                     # Never commit .env to git
+      - .env                     # 不要将 .env 提交到 git
     environment:
-      - API_KEY                  # Inherits from host environment
+      - API_KEY                  # 继承自主机环境
 
-# GOOD: Docker secrets (Swarm mode)
+# 好：Docker secrets（Swarm 模式）
 secrets:
   db_password:
     file: ./secrets/db_password.txt
@@ -277,8 +277,8 @@ services:
     secrets:
       - db_password
 
-# BAD: Hardcoded in image
-# ENV API_KEY=sk-proj-xxxxx      # NEVER DO THIS
+# 不好：在镜像中硬编码
+# ENV API_KEY=sk-proj-xxxxx      # 绝不这样做
 ```
 
 ## .dockerignore
@@ -299,41 +299,41 @@ README.md
 tests/
 ```
 
-## Debugging
+## 调试
 
-### Common Commands
+### 常用命令
 
 ```bash
-# View logs
-docker compose logs -f app           # Follow app logs
-docker compose logs --tail=50 db     # Last 50 lines from db
+# 查看日志
+docker compose logs -f app
+docker compose logs --tail=50 db
 
-# Execute commands in running container
-docker compose exec app sh           # Shell into app
-docker compose exec db psql -U postgres  # Connect to postgres
+# 在容器中执行命令
+docker compose exec app sh
+docker compose exec db psql -U postgres
 
-# Inspect
-docker compose ps                     # Running services
-docker compose top                    # Processes in each container
-docker stats                          # Resource usage
+# 检查
+docker compose ps
+docker compose top
+docker stats
 
-# Rebuild
-docker compose up --build             # Rebuild images
-docker compose build --no-cache app   # Force full rebuild
+# 重建
+docker compose up --build
+docker compose build --no-cache app
 
-# Clean up
-docker compose down                   # Stop and remove containers
-docker compose down -v                # Also remove volumes (DESTRUCTIVE)
-docker system prune                   # Remove unused images/containers
+# 清理
+docker compose down
+docker compose down -v
+docker system prune
 ```
 
-### Debugging Network Issues
+### 调试网络问题
 
 ```bash
-# Check DNS resolution inside container
+# 检查容器内 DNS 解析
 docker compose exec app nslookup db
 
-# Check connectivity
+# 检查连通性
 docker compose exec app wget -qO- http://api:3000/health
 
 # Inspect network
@@ -341,24 +341,24 @@ docker network ls
 docker network inspect <project>_default
 ```
 
-## Anti-Patterns
+## 反模式
 
 ```
-# BAD: Using docker compose in production without orchestration
-# Use Kubernetes, ECS, or Docker Swarm for production multi-container workloads
+# BAD: 在生产环境中直接使用 docker compose 而不进行编排
+# 使用 Kubernetes、ECS、或 Docker Swarm 管理生产环境的多容器工作负载
 
-# BAD: Storing data in containers without volumes
-# Containers are ephemeral -- all data lost on restart without volumes
+# BAD: 将数据存放在容器中而不使用卷
+# 容器是临时的——没有卷数据将在重启时丢失
 
-# BAD: Running as root
-# Always create and use a non-root user
+# BAD: 以 root 用户运行
+# 始终创建并使用非 root 用户
 
-# BAD: Using :latest tag
-# Pin to specific versions for reproducible builds
+# BAD: 使用 latest 标签
+# 为可重复构建固定版本
 
-# BAD: One giant container with all services
-# Separate concerns: one process per container
+# BAD: 一个容器中承载所有服务
+# 将职责拆分成独立的容器
 
-# BAD: Putting secrets in docker-compose.yml
-# Use .env files (gitignored) or Docker secrets
+# BAD: 将机密写在 docker-compose.yml 中
+# 使用 .env 文件（gitignore 保护）或 Docker secrets
 ```

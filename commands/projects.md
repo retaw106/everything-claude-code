@@ -1,39 +1,39 @@
 ---
 name: projects
-description: List known projects and their instinct statistics
+description: 列出已知项目及其直觉统计信息
 command: true
 ---
 
-# Projects Command
+# Projects 命令
 
-List project registry entries and per-project instinct/observation counts for continuous-learning-v2.
+列出项目注册表条目和每个项目的直觉/观察计数，用于 continuous-learning-v2。
 
-## Implementation
+## 实现
 
-Run the instinct CLI using the plugin root path:
+使用插件根路径运行直觉 CLI：
 
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/skills/continuous-learning-v2/scripts/instinct-cli.py" projects
 ```
 
-Or if `CLAUDE_PLUGIN_ROOT` is not set (manual installation):
+如果未设置 `CLAUDE_PLUGIN_ROOT`（手动安装）：
 
 ```bash
 python3 ~/.claude/skills/continuous-learning-v2/scripts/instinct-cli.py projects
 ```
 
-## Usage
+## 用法
 
 ```bash
 /projects
 ```
 
-## What to Do
+## 做什么
 
-1. Read `~/.claude/homunculus/projects.json`
-2. For each project, display:
-   - Project name, id, root, remote
-   - Personal and inherited instinct counts
-   - Observation event count
-   - Last seen timestamp
-3. Also display global instinct totals
+1. 读取 `~/.claude/homunculus/projects.json`
+2. 对于每个项目，显示：
+   - 项目名称、id、root、remote
+   - 个人和继承的直觉计数
+   - 观察事件计数
+   - 最后见到的时间戳
+3. 同时显示全局直觉总数

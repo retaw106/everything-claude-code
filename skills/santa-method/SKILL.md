@@ -1,178 +1,178 @@
 ---
 name: santa-method
-description: "Multi-agent adversarial verification with convergence loop. Two independent review agents must both pass before output ships."
+description: "多代理对抗性验证与收敛循环。两个独立审查代理必须在输出发布前都通过。"
 origin: "Ronald Skelton - Founder, RapportScore.ai"
 ---
 
-# Santa Method
+# Santa 方法
 
-Multi-agent adversarial verification framework. Make a list, check it twice. If it's naughty, fix it until it's nice.
+多代理对抗性验证框架。列个清单，检查两次。如果是淘气的，修复到变乖为止。
 
-The core insight: a single agent reviewing its own output shares the same biases, knowledge gaps, and systematic errors that produced the output. Two independent reviewers with no shared context break this failure mode.
+核心洞察：单个代理审查自己的输出共享产生该输出的相同偏见、知识差距和系统性错误。两个没有共享上下文的独立审查者打破这种失败模式。
 
-## When to Activate
+## 何时启用
 
-Invoke this skill when:
-- Output will be published, deployed, or consumed by end users
-- Compliance, regulatory, or brand constraints must be enforced
-- Code ships to production without human review
-- Content accuracy matters (technical docs, educational material, customer-facing copy)
-- Batch generation at scale where spot-checking misses systemic patterns
-- Hallucination risk is elevated (claims, statistics, API references, legal language)
+在以下情况下调用此技能：
+- 输出将被发布、部署或被最终用户消费
+- 必须强制执行合规、监管或品牌约束
+- 代码在无人审查的情况下发布到生产
+- 内容准确性很重要（技术文档、教育材料、面向客户的文案）
+- 大规模批量生成，抽查会错过系统性模式
+- 幻觉风险升高（声明、统计数据、API 引用、法律语言）
 
-Do NOT use for internal drafts, exploratory research, or tasks with deterministic verification (use build/test/lint pipelines for those).
+不要用于内部草稿、探索性研究或具有确定性验证的任务（对这些使用构建/测试/lint 流水线）。
 
-## Architecture
+## 架构
 
 ```
 ┌─────────────┐
-│  GENERATOR   │  Phase 1: Make a List
-│  (Agent A)   │  Produce the deliverable
+│  生成器      │  阶段 1：列个清单
+│  (代理 A)    │  产生可交付物
 └──────┬───────┘
        │ output
        ▼
 ┌──────────────────────────────┐
-│     DUAL INDEPENDENT REVIEW   │  Phase 2: Check It Twice
+│     双重独立审查               │  阶段 2：检查两次
 │                                │
-│  ┌───────────┐ ┌───────────┐  │  Two agents, same rubric,
-│  │ Reviewer B │ │ Reviewer C │  │  no shared context
+│  ┌───────────┐ ┌───────────┐  │  两个代理，相同评分标准，
+│  │ 审查者 B  │ │ 审查者 C  │  │  无共享上下文
 │  └─────┬─────┘ └─────┬─────┘  │
 │        │              │        │
 └────────┼──────────────┼────────┘
          │              │
          ▼              ▼
 ┌──────────────────────────────┐
-│        VERDICT GATE           │  Phase 3: Naughty or Nice
+│        裁决门                  │  阶段 3：淘气还是乖
 │                                │
-│  B passes AND C passes → NICE  │  Both must pass.
-│  Otherwise → NAUGHTY           │  No exceptions.
+│  B 通过 且 C 通过 → 乖          │  两者都必须通过。
+│  否则 → 淘气                   │  无例外。
 └──────┬──────────────┬─────────┘
        │              │
-    NICE           NAUGHTY
+    乖              淘气
        │              │
        ▼              ▼
-   [ SHIP ]    ┌─────────────┐
-               │  FIX CYCLE   │  Phase 4: Fix Until Nice
+   [ 发布 ]    ┌─────────────┐
+               │  修复循环    │  阶段 4：修复到变乖
                │              │
-               │ iteration++  │  Collect all flags.
-               │ if i > MAX:  │  Fix all issues.
-               │   escalate   │  Re-run both reviewers.
-               │ else:        │  Loop until convergence.
+               │ iteration++  │  收集所有标记。
+               │ if i > MAX:  │  修复所有问题。
+               │   escalate   │  重新运行两个审查者。
+               │ else:        │  循环直到收敛。
                │   goto Ph.2  │
                └──────────────┘
 ```
 
-## Phase Details
+## 阶段详情
 
-### Phase 1: Make a List (Generate)
+### 阶段 1：列个清单（生成）
 
-Execute the primary task. No changes to your normal generation workflow. Santa Method is a post-generation verification layer, not a generation strategy.
+执行主要任务。不对你的正常生成工作流做任何更改。Santa 方法是生成后验证层，不是生成策略。
 
 ```python
-# The generator runs as normal
+# 生成器正常运行
 output = generate(task_spec)
 ```
 
-### Phase 2: Check It Twice (Independent Dual Review)
+### 阶段 2：检查两次（独立双重审查）
 
-Spawn two review agents in parallel. Critical invariants:
+并行生成两个审查代理。关键不变量：
 
-1. **Context isolation** — neither reviewer sees the other's assessment
-2. **Identical rubric** — both receive the same evaluation criteria
-3. **Same inputs** — both receive the original spec AND the generated output
-4. **Structured output** — each returns a typed verdict, not prose
+1. **上下文隔离** — 两个审查者都不看对方的评估
+2. **相同评分标准** — 两者接收相同的评估标准
+3. **相同输入** — 两者接收原始规格和生成的输出
+4. **结构化输出** — 每个返回类型化裁决，不是散文
 
 ```python
 REVIEWER_PROMPT = """
-You are an independent quality reviewer. You have NOT seen any other review of this output.
+你是一个独立的质量审查者。你还没有看到此输出的任何其他审查。
 
-## Task Specification
+## 任务规格
 {task_spec}
 
-## Output Under Review
+## 待审查输出
 {output}
 
-## Evaluation Rubric
+## 评分标准
 {rubric}
 
-## Instructions
-Evaluate the output against EACH rubric criterion. For each:
-- PASS: criterion fully met, no issues
-- FAIL: specific issue found (cite the exact problem)
+## 指示
+根据每个评分标准评估输出。对于每个：
+- PASS：标准完全满足，无问题
+- FAIL：发现具体问题（引用确切问题）
 
-Return your assessment as structured JSON:
+以结构化 JSON 返回你的评估：
 {
   "verdict": "PASS" | "FAIL",
   "checks": [
     {"criterion": "...", "result": "PASS|FAIL", "detail": "..."}
   ],
-  "critical_issues": ["..."],   // blockers that must be fixed
-  "suggestions": ["..."]         // non-blocking improvements
+  "critical_issues": ["..."],   // 必须修复的阻塞项
+  "suggestions": ["..."]         // 非阻塞改进
 }
 
-Be rigorous. Your job is to find problems, not to approve.
+要严格。你的工作是发现问题，不是批准。
 """
 ```
 
 ```python
-# Spawn reviewers in parallel (Claude Code subagents)
-review_b = Agent(prompt=REVIEWER_PROMPT.format(...), description="Santa Reviewer B")
-review_c = Agent(prompt=REVIEWER_PROMPT.format(...), description="Santa Reviewer C")
+# 并行生成审查者（Claude Code 子代理）
+review_b = Agent(prompt=REVIEWER_PROMPT.format(...), description="Santa 审查者 B")
+review_c = Agent(prompt=REVIEWER_PROMPT.format(...), description="Santa 审查者 C")
 
-# Both run concurrently — neither sees the other
+# 两者并发运行 — 彼此看不到对方
 ```
 
-### Rubric Design
+### 评分标准设计
 
-The rubric is the most important input. Vague rubrics produce vague reviews. Every criterion must have an objective pass/fail condition.
+评分标准是最重要的输入。模糊的标准产生模糊的审查。每个标准必须有客观的通过/失败条件。
 
-| Criterion | Pass Condition | Failure Signal |
-|-----------|---------------|----------------|
-| Factual accuracy | All claims verifiable against source material or common knowledge | Invented statistics, wrong version numbers, nonexistent APIs |
-| Hallucination-free | No fabricated entities, quotes, URLs, or references | Links to pages that don't exist, attributed quotes with no source |
-| Completeness | Every requirement in the spec is addressed | Missing sections, skipped edge cases, incomplete coverage |
-| Compliance | Passes all project-specific constraints | Banned terms used, tone violations, regulatory non-compliance |
-| Internal consistency | No contradictions within the output | Section A says X, section B says not-X |
-| Technical correctness | Code compiles/runs, algorithms are sound | Syntax errors, logic bugs, wrong complexity claims |
+| 标准 | 通过条件 | 失败信号 |
+|------|----------|----------|
+| 事实准确性 | 所有声明可对照源材料或常识验证 | 编造的统计数据、错误的版本号、不存在的 API |
+| 无幻觉 | 无虚构的实体、引言、URL 或引用 | 指向不存在页面的链接、无来源的归因引言 |
+| 完整性 | 规格中的每个要求都被处理 | 缺失章节、跳过的边缘情况、不完整的覆盖 |
+| 合规性 | 通过所有项目特定约束 | 使用了禁用术语、语气违规、监管不合规 |
+| 内部一致性 | 输出内无矛盾 | A 节说 X，B 节说非 X |
+| 技术正确性 | 代码编译/运行，算法合理 | 语法错误、逻辑 bug、错误的复杂度声明 |
 
-#### Domain-Specific Rubric Extensions
+#### 领域特定评分标准扩展
 
-**Content/Marketing:**
-- Brand voice adherence
-- SEO requirements met (keyword density, meta tags, structure)
-- No competitor trademark misuse
-- CTA present and correctly linked
+**内容/营销：**
+- 品牌语气符合
+- SEO 要求满足（关键词密度、meta 标签、结构）
+- 无竞争对手商标滥用
+- CTA 存在且正确链接
 
-**Code:**
-- Type safety (no `any` leaks, proper null handling)
-- Error handling coverage
-- Security (no secrets in code, input validation, injection prevention)
-- Test coverage for new paths
+**代码：**
+- 类型安全（无 `any` 泄漏，正确的 null 处理）
+- 错误处理覆盖
+- 安全性（代码中无机密、输入验证、注入防护）
+- 新路径的测试覆盖
 
-**Compliance-Sensitive (regulated, legal, financial):**
-- No outcome guarantees or unsubstantiated claims
-- Required disclaimers present
-- Approved terminology only
-- Jurisdiction-appropriate language
+**合规敏感（受监管、法律、金融）：**
+- 无结果保证或无根据的声明
+- 存在必需的免责声明
+- 仅使用批准的术语
+- 适当的管辖区域语言
 
-### Phase 3: Naughty or Nice (Verdict Gate)
+### 阶段 3：淘气还是乖（裁决门）
 
 ```python
 def santa_verdict(review_b, review_c):
-    """Both reviewers must pass. No partial credit."""
+    """两个审查者都必须通过。无部分学分。"""
     if review_b.verdict == "PASS" and review_c.verdict == "PASS":
-        return "NICE"  # Ship it
+        return "NICE"  # 发布它
 
-    # Merge flags from both reviewers, deduplicate
+    # 合并两个审查者的标记，去重
     all_issues = dedupe(review_b.critical_issues + review_c.critical_issues)
     all_suggestions = dedupe(review_b.suggestions + review_c.suggestions)
 
     return "NAUGHTY", all_issues, all_suggestions
 ```
 
-Why both must pass: if only one reviewer catches an issue, that issue is real. The other reviewer's blind spot is exactly the failure mode Santa Method exists to eliminate.
+为什么两者都必须通过：如果只有一个审查者发现问题，那个问题是真实的。另一个审查者的盲点正是 Santa 方法存在要消除的失败模式。
 
-### Phase 4: Fix Until Nice (Convergence Loop)
+### 阶段 4：修复到变乖（收敛循环）
 
 ```python
 MAX_ITERATIONS = 3
@@ -184,69 +184,69 @@ for iteration in range(MAX_ITERATIONS):
         log_santa_result(output, iteration, "passed")
         return ship(output)
 
-    # Fix all critical issues (suggestions are optional)
+    # 修复所有关键问题（建议是可选的）
     output = fix_agent.execute(
         output=output,
         issues=issues,
-        instruction="Fix ONLY the flagged issues. Do not refactor or add unrequested changes."
+        instruction="仅修复标记的问题。不要重构或添加未请求的更改。"
     )
 
-    # Re-run BOTH reviewers on fixed output (fresh agents, no memory of previous round)
+    # 在修复的输出上重新运行两个审查者（新鲜代理，无前几轮记忆）
     review_b = Agent(prompt=REVIEWER_PROMPT.format(output=output, ...))
     review_c = Agent(prompt=REVIEWER_PROMPT.format(output=output, ...))
 
-# Exhausted iterations — escalate
+# 耗尽迭代 — 升级
 log_santa_result(output, MAX_ITERATIONS, "escalated")
 escalate_to_human(output, issues)
 ```
 
-Critical: each review round uses **fresh agents**. Reviewers must not carry memory from previous rounds, as prior context creates anchoring bias.
+关键：每轮审查使用**新鲜代理**。审查者不能携带前几轮的记忆，因为先前的上下文会产生锚定偏见。
 
-## Implementation Patterns
+## 实现模式
 
-### Pattern A: Claude Code Subagents (Recommended)
+### 模式 A：Claude Code 子代理（推荐）
 
-Subagents provide true context isolation. Each reviewer is a separate process with no shared state.
+子代理提供真正的上下文隔离。每个审查者是具有无共享状态的独立进程。
 
 ```bash
-# In a Claude Code session, use the Agent tool to spawn reviewers
-# Both agents run in parallel for speed
+# 在 Claude Code 会话中，使用 Agent 工具生成审查者
+# 两个代理并行运行以提高速度
 ```
 
 ```python
-# Pseudocode for Agent tool invocation
+# Agent 工具调用的伪代码
 reviewer_b = Agent(
-    description="Santa Review B",
-    prompt=f"Review this output for quality...\n\nRUBRIC:\n{rubric}\n\nOUTPUT:\n{output}"
+    description="Santa 审查 B",
+    prompt=f"审查此输出的质量...\n\n评分标准：\n{rubric}\n\n输出：\n{output}"
 )
 reviewer_c = Agent(
-    description="Santa Review C",
-    prompt=f"Review this output for quality...\n\nRUBRIC:\n{rubric}\n\nOUTPUT:\n{output}"
+    description="Santa 审查 C",
+    prompt=f"审查此输出的质量...\n\n评分标准：\n{rubric}\n\n输出：\n{output}"
 )
 ```
 
-### Pattern B: Sequential Inline (Fallback)
+### 模式 B：顺序内联（后备）
 
-When subagents aren't available, simulate isolation with explicit context resets:
+当子代理不可用时，用显式上下文重置模拟隔离：
 
-1. Generate output
-2. New context: "You are Reviewer 1. Evaluate ONLY against this rubric. Find problems."
-3. Record findings verbatim
-4. Clear context completely
-5. New context: "You are Reviewer 2. Evaluate ONLY against this rubric. Find problems."
-6. Compare both reviews, fix, repeat
+1. 生成输出
+2. 新上下文："你是审查者 1。仅针对此评分标准评估。发现问题。"
+3. 逐字记录发现
+4. 完全清除上下文
+5. 新上下文："你是审查者 2。仅针对此评分标准评估。发现问题。"
+6. 比较两个审查，修复，重复
 
-The subagent pattern is strictly superior — inline simulation risks context bleed between reviewers.
+子代理模式严格优越 — 内联模拟有审查者之间上下文泄漏的风险。
 
-### Pattern C: Batch Sampling
+### 模式 C：批量抽样
 
-For large batches (100+ items), full Santa on every item is cost-prohibitive. Use stratified sampling:
+对于大批量（100+ 项），对每项完整 Santa 成本过高。使用分层抽样：
 
-1. Run Santa on a random sample (10-15% of batch, minimum 5 items)
-2. Categorize failures by type (hallucination, compliance, completeness, etc.)
-3. If systematic patterns emerge, apply targeted fixes to the entire batch
-4. Re-sample and re-verify the fixed batch
-5. Continue until a clean sample passes
+1. 在随机样本上运行 Santa（批量的 10-15%，最少 5 项）
+2. 按类型分类失败（幻觉、合规、完整性等）
+3. 如果出现系统性模式，对整个批量应用针对性修复
+4. 重新抽样并重新验证修复的批量
+5. 继续直到干净样本通过
 
 ```python
 import random
@@ -258,49 +258,49 @@ def santa_batch(items, rubric, sample_rate=0.15):
         result = santa_full(item, rubric)
         if result.verdict == "NAUGHTY":
             pattern = classify_failure(result.issues)
-            items = batch_fix(items, pattern)  # Fix all items matching pattern
-            return santa_batch(items, rubric)   # Re-sample
+            items = batch_fix(items, pattern)  # 修复所有匹配模式的项
+            return santa_batch(items, rubric)   # 重新抽样
 
-    return items  # Clean sample → ship batch
+    return items  # 干净样本 → 发布批量
 ```
 
-## Failure Modes and Mitigations
+## 失败模式与缓解
 
-| Failure Mode | Symptom | Mitigation |
-|-------------|---------|------------|
-| Infinite loop | Reviewers keep finding new issues after fixes | Max iteration cap (3). Escalate. |
-| Rubber stamping | Both reviewers pass everything | Adversarial prompt: "Your job is to find problems, not approve." |
-| Subjective drift | Reviewers flag style preferences, not errors | Tight rubric with objective pass/fail criteria only |
-| Fix regression | Fixing issue A introduces issue B | Fresh reviewers each round catch regressions |
-| Reviewer agreement bias | Both reviewers miss the same thing | Mitigated by independence, not eliminated. For critical output, add a third reviewer or human spot-check. |
-| Cost explosion | Too many iterations on large outputs | Batch sampling pattern. Budget caps per verification cycle. |
+| 失败模式 | 症状 | 缓解 |
+|---------|------|------|
+| 无限循环 | 修复后审查者不断发现新问题 | 最大迭代上限（3）。升级。 |
+| 橡皮图章 | 两个审查者通过一切 | 对抗性提示："你的工作是发现问题，不是批准。" |
+| 主观漂移 | 审查者标记风格偏好，而非错误 | 紧凑评分标准，仅客观通过/失败条件 |
+| 修复回归 | 修复问题 A 引入问题 B | 每轮新鲜审查者捕获回归 |
+| 审查者一致性偏见 | 两个审查者错过相同的东西 | 通过独立性缓解，未消除。对于关键输出，添加第三个审查者或人工抽查。 |
+| 成本爆炸 | 大输出上太多迭代 | 批量抽样模式。每个验证周期的预算上限。 |
 
-## Integration with Other Skills
+## 与其他技能的集成
 
-| Skill | Relationship |
-|-------|-------------|
-| Verification Loop | Use for deterministic checks (build, lint, test). Santa for semantic checks (accuracy, hallucinations). Run verification-loop first, Santa second. |
-| Eval Harness | Santa Method results feed eval metrics. Track pass@k across Santa runs to measure generator quality over time. |
-| Continuous Learning v2 | Santa findings become instincts. Repeated failures on the same criterion → learned behavior to avoid the pattern. |
-| Strategic Compact | Run Santa BEFORE compacting. Don't lose review context mid-verification. |
+| 技能 | 关系 |
+|------|------|
+| 验证循环 | 用于确定性检查（构建、lint、测试）。Santa 用于语义检查（准确性、幻觉）。先运行 verification-loop，再运行 Santa。 |
+| 评估框架 | Santa 方法结果输入评估指标。跟踪 Santa 运行的 pass@k 以随时间测量生成器质量。 |
+| 持续学习 v2 | Santa 发现成为直觉。同一标准的重复失败 → 学习行为以避免该模式。 |
+| 战略压缩 | 在压缩前运行 Santa。不要在验证中途丢失审查上下文。 |
 
-## Metrics
+## 指标
 
-Track these to measure Santa Method effectiveness:
+跟踪这些以测量 Santa 方法有效性：
 
-- **First-pass rate**: % of outputs that pass Santa on round 1 (target: >70%)
-- **Mean iterations to convergence**: average rounds to NICE (target: <1.5)
-- **Issue taxonomy**: distribution of failure types (hallucination vs. completeness vs. compliance)
-- **Reviewer agreement**: % of issues flagged by both reviewers vs. only one (low agreement = rubric needs tightening)
-- **Escape rate**: issues found post-ship that Santa should have caught (target: 0)
+- **首次通过率**：第 1 轮通过 Santa 的输出百分比（目标：>70%）
+- **收敛平均迭代**：到乖的平均轮数（目标：<1.5）
+- **问题分类**：失败类型分布（幻觉 vs 完整性 vs 合规）
+- **审查者一致性**：两个审查者都标记的问题 vs 只有一个标记的百分比（低一致性 = 评分标准需要收紧）
+- **逃逸率**：Santa 应该捕获但发布后发现的问题（目标：0）
 
-## Cost Analysis
+## 成本分析
 
-Santa Method costs approximately 2-3x the token cost of generation alone per verification cycle. For most high-stakes output, this is a bargain:
+Santa 方法每验证周期成本约为单独生成令牌成本的 2-3 倍。对于大多数高风险输出，这是划算的：
 
 ```
-Cost of Santa = (generation tokens) + 2×(review tokens per round) × (avg rounds)
-Cost of NOT Santa = (reputation damage) + (correction effort) + (trust erosion)
+Santa 成本 = (生成令牌) + 2×(每轮审查令牌) × (平均轮数)
+不 Santa 的成本 = (声誉损害) + (纠正努力) + (信任侵蚀)
 ```
 
-For batch operations, the sampling pattern reduces cost to ~15-20% of full verification while catching >90% of systematic issues.
+对于批量操作，抽样模式将成本降低到完整验证的约 15-20%，同时捕获 >90% 的系统性问题。

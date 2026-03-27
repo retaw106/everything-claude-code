@@ -1,59 +1,59 @@
-# Hooks
+# 钩子（Hooks）
 
-Hooks are event-driven automations that fire before or after Claude Code tool executions. They enforce code quality, catch mistakes early, and automate repetitive checks.
+钩子是一组事件驱动的自动化流程，在 Claude Code 工具执行之前或之后触发。它们用于强化代码质量、尽早发现错误，并自动化执行重复性检查。
 
-## How Hooks Work
+## 工作原理
 
 ```
-User request → Claude picks a tool → PreToolUse hook runs → Tool executes → PostToolUse hook runs
+用户请求 → Claude 选择一个工具 → PreToolUse 钩子运行 → 工具执行 → PostToolUse 钩子运行
 ```
 
-- **PreToolUse** hooks run before the tool executes. They can **block** (exit code 2) or **warn** (stderr without blocking).
-- **PostToolUse** hooks run after the tool completes. They can analyze output but cannot block.
-- **Stop** hooks run after each Claude response.
-- **SessionStart/SessionEnd** hooks run at session lifecycle boundaries.
-- **PreCompact** hooks run before context compaction, useful for saving state.
+- PreToolUse 钩子在工具执行之前运行。它们可以 **阻塞**（退出码为 2）或 **警告**（错误输出但不阻塞）。
+- PostToolUse 钩子在工具完成后运行。它们可以分析输出，但不能阻塞。 
+- Stop 钩子在每次 Claude 响应后运行。 
+- SessionStart/SessionEnd 钩子在会话生命周期边界处运行。 
+- PreCompact 钩子在上下文压缩之前运行，便于保存状态。
 
 ## Hooks in This Plugin
 
 ### PreToolUse Hooks
 
-| Hook | Matcher | Behavior | Exit Code |
+| 钩子 | 匹配器 | 行为 | 退出码 |
 |------|---------|----------|-----------|
-| **Dev server blocker** | `Bash` | Blocks `npm run dev` etc. outside tmux — ensures log access | 2 (blocks) |
-| **Tmux reminder** | `Bash` | Suggests tmux for long-running commands (npm test, cargo build, docker) | 0 (warns) |
-| **Git push reminder** | `Bash` | Reminds to review changes before `git push` | 0 (warns) |
-| **Doc file warning** | `Write` | Warns about non-standard `.md`/`.txt` files (allows README, CLAUDE, CONTRIBUTING, CHANGELOG, LICENSE, SKILL, docs/, skills/); cross-platform path handling | 0 (warns) |
-| **Strategic compact** | `Edit\|Write` | Suggests manual `/compact` at logical intervals (every ~50 tool calls) | 0 (warns) |
-| **InsAIts security monitor (opt-in)** | `Bash\|Write\|Edit\|MultiEdit` | Optional security scan for high-signal tool inputs. Disabled unless `ECC_ENABLE_INSAITS=1`. Blocks on critical findings, warns on non-critical, and writes audit log to `.insaits_audit_session.jsonl`. Requires `pip install insa-its`. [Details](../scripts/hooks/insaits-security-monitor.py) | 2 (blocks critical) / 0 (warns) |
+| **Dev server blocker** | `Bash` | 阻塞 tmux 之外的 `npm run dev` 等命令 — 确保日志可访问 | 2 (阻塞) |
+| **Tmux reminder** | `Bash` | 建议对耗时命令使用 tmux（如 npm test、cargo build、docker） | 0 (警告) |
+| **Git push reminder** | `Bash` | 在执行 git push 之前提醒审查修改 | 0 (警告) |
+| **Doc file warning** | `Write` | 警告非标准的 .md/.txt 文件（允许 README、CLAUDE、CONTRIBUTING、CHANGELOG、LICENSE、SKILL、docs/、skills/），并处理跨平台路径 | 0 (警告) |
+| **Strategic compact** | `Edit\|Write` | 在逻辑间隔处建议手动执行 `/compact` | 0 (警告) |
+| **InsAIts 安全监控（可选）** | `Bash\|Write\|Edit\|MultiEdit` | 针对高信号工具输入的可选安全扫描。除非 `ECC_ENABLE_INSAITS=1`，否则将禁用。对关键发现阻塞，对非关键发现发出警告，并将审计日志写入 `.insaits_audit_session.jsonl`。需要：`pip install insa-its`。 [Details](../scripts/hooks/insaits-security-monitor.py) | 2（阻塞关键）/ 0（警告） |
 
 ### PostToolUse Hooks
 
 | Hook | Matcher | What It Does |
 |------|---------|-------------|
-| **PR logger** | `Bash` | Logs PR URL and review command after `gh pr create` |
-| **Build analysis** | `Bash` | Background analysis after build commands (async, non-blocking) |
-| **Quality gate** | `Edit\|Write\|MultiEdit` | Runs fast quality checks after edits |
-| **Prettier format** | `Edit` | Auto-formats JS/TS files with Prettier after edits |
-| **TypeScript check** | `Edit` | Runs `tsc --noEmit` after editing `.ts`/`.tsx` files |
-| **console.log warning** | `Edit` | Warns about `console.log` statements in edited files |
+| **PR 日志记录器** | `Bash` | 记录 PR URL 并在创建 PR 之后提供审查命令 |
+| **Build analysis** | `Bash` | 构建命令完成后的后台分析（异步、非阻塞） |
+| **Quality gate** | `Edit\|Write\|MultiEdit` | 编辑后执行快速质量检查 |
+| **Prettier format** | `Edit` | 编辑后使用 Prettier 自动格式化 JS/TS 文件 |
+| **TypeScript check** | `Edit` | 编辑后运行 `tsc --noEmit` |
+| **console.log warning** | `Edit` | 提示已编辑文件中的 `console.log` 语句 |
 
 ### Lifecycle Hooks
 
 | Hook | Event | What It Does |
 |------|-------|-------------|
-| **Session start** | `SessionStart` | Loads previous context and detects package manager |
-| **Pre-compact** | `PreCompact` | Saves state before context compaction |
-| **Console.log audit** | `Stop` | Checks all modified files for `console.log` after each response |
-| **Session summary** | `Stop` | Persists session state when transcript path is available |
-| **Pattern extraction** | `Stop` | Evaluates session for extractable patterns (continuous learning) |
-| **Cost tracker** | `Stop` | Emits lightweight run-cost telemetry markers |
-| **Desktop notify** | `Stop` | Sends macOS desktop notification with task summary (standard+) |
-| **Session end marker** | `SessionEnd` | Lifecycle marker and cleanup log |
+| **Session start** | `SessionStart` | 加载先前上下文并检测包管理器 |
+| **Pre-compact** | `PreCompact` | 在上下文压缩前保存状态 |
+| **Console.log audit** | `Stop` | 检查每次响应后修改的文件中是否存在 `console.log` |
+| **Session summary** | `Stop` | 在 transcript 路径可用时持久化会话状态 |
+| **Pattern extraction** | `Stop` | 评估会话以提取可提取的模式（持续学习） |
+| **Cost tracker** | `Stop` | 发出轻量级运行成本遥测标记 |
+| **Desktop notify** | `Stop` | 在 Claude 回应时发送带任务摘要的 macOS 桌面通知（标准+） |
+| **Session end marker** | `SessionEnd` | 生命周期标记与清理日志 |
 
-## Customizing Hooks
+## 自定义钩子
 
-### Disabling a Hook
+### 禁用一个钩子
 
 Remove or comment out the hook entry in `hooks.json`. If installed as a plugin, override in your `~/.claude/settings.json`:
 
@@ -71,7 +71,7 @@ Remove or comment out the hook entry in `hooks.json`. If installed as a plugin, 
 }
 ```
 
-### Runtime Hook Controls (Recommended)
+### 运行时钩子控制（推荐）
 
 Use environment variables to control hook behavior without editing `hooks.json`:
 
@@ -79,16 +79,16 @@ Use environment variables to control hook behavior without editing `hooks.json`:
 # minimal | standard | strict (default: standard)
 export ECC_HOOK_PROFILE=standard
 
-# Disable specific hook IDs (comma-separated)
+# 禁用特定钩子ID（逗号分隔）
 export ECC_DISABLED_HOOKS="pre:bash:tmux-reminder,post:edit:typecheck"
 ```
 
 Profiles:
-- `minimal` — keep essential lifecycle and safety hooks only.
-- `standard` — default; balanced quality + safety checks.
-- `strict` — enables additional reminders and stricter guardrails.
+- `minimal` — 仅保留核心的生命周期和安全性钩子。
+- `standard` — 默认；在质量与安全检查之间取得平衡。
+- `strict` — 启用额外的提醒和更严格的防护机制。
 
-### Writing Your Own Hook
+### 编写你自己的钩子
 
 Hooks are shell commands that receive tool input as JSON on stdin and must output JSON on stdout.
 

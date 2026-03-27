@@ -1,50 +1,50 @@
 ---
 name: enterprise-agent-ops
-description: Operate long-lived agent workloads with observability, security boundaries, and lifecycle management.
+description: 操作长时间运行的 Agent 工作负载,具有可观测性、安全边界和生命周期管理。
 origin: ECC
 ---
 
-# Enterprise Agent Ops
+# 企业 Agent 运维
 
-Use this skill for cloud-hosted or continuously running agent systems that need operational controls beyond single CLI sessions.
+此技能用于需要超越单次 CLI 会话的操作控制的云托管或持续运行的 Agent 系统。
 
-## Operational Domains
+## 运维领域
 
-1. runtime lifecycle (start, pause, stop, restart)
-2. observability (logs, metrics, traces)
-3. safety controls (scopes, permissions, kill switches)
-4. change management (rollout, rollback, audit)
+1. 运行时生命周期(启动、暂停、停止、重启)
+2. 可观测性(日志、指标、追踪)
+3. 安全控制(范围、权限、熔断开关)
+4. 变更管理(上线、回滚、审计)
 
-## Baseline Controls
+## 基线控制
 
-- immutable deployment artifacts
-- least-privilege credentials
-- environment-level secret injection
-- hard timeout and retry budgets
-- audit log for high-risk actions
+- 不可变的部署制品
+- 最小权限凭证
+- 环境级密钥注入
+- 硬超时和重试预算
+- 高风险操作审计日志
 
-## Metrics to Track
+## 追踪指标
 
-- success rate
-- mean retries per task
-- time to recovery
-- cost per successful task
-- failure class distribution
+- 成功率
+- 每个任务的平均重试次数
+- 恢复时间
+- 每个成功任务的成本
+- 失败类别分布
 
-## Incident Pattern
+## 事故模式
 
-When failure spikes:
-1. freeze new rollout
-2. capture representative traces
-3. isolate failing route
-4. patch with smallest safe change
-5. run regression + security checks
-6. resume gradually
+当失败激增时:
+1. 冻结新的上线
+2. 捕获代表性追踪
+3. 隔离失败路由
+4. 使用最小安全更改进行补丁
+5. 运行回归 + 安全检查
+6. 逐步恢复
 
-## Deployment Integrations
+## 部署集成
 
-This skill pairs with:
-- PM2 workflows
-- systemd services
-- container orchestrators
-- CI/CD gates
+此技能配合使用:
+- PM2 工作流
+- systemd 服务
+- 容器编排器
+- CI/CD 门控
