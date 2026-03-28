@@ -1,73 +1,73 @@
 ---
 name: agent-harness-construction
-description: Design and optimize AI agent action spaces, tool definitions, and observation formatting for higher completion rates.
+description: 设计和优化 AI 代理的动作空间、工具定义以及观察格式，以获得更高的完成率。
 origin: ECC
 ---
 
 # Agent Harness Construction
 
-Use this skill when you are improving how an agent plans, calls tools, recovers from errors, and converges on completion.
+当你改进代理如何规划、调用工具、从错误中恢复以及收敛于完成时，使用此技能。
 
-## Core Model
+## 核心模型
 
-Agent output quality is constrained by:
-1. Action space quality
-2. Observation quality
-3. Recovery quality
-4. Context budget quality
+代理输出质量受限于：
+1. 动作空间质量
+2. 观察质量
+3. 恢复质量
+4. 上下文预算质量
 
-## Action Space Design
+## 动作空间设计
 
-1. Use stable, explicit tool names.
-2. Keep inputs schema-first and narrow.
-3. Return deterministic output shapes.
-4. Avoid catch-all tools unless isolation is impossible.
+1. 使用稳定、明确的工具名称。
+2. 保持输入优先模式优先且狭窄。
+3. 返回确定性输出形状。
+4. 避免使用捕获所有工具，除非无法隔离。
 
-## Granularity Rules
+## 粒度规则
 
-- Use micro-tools for high-risk operations (deploy, migration, permissions).
-- Use medium tools for common edit/read/search loops.
-- Use macro-tools only when round-trip overhead is the dominant cost.
+- 对高风险操作（部署、迁移、权限）使用微工具。
+- 对常见编辑/读取/搜索循环使用中等工具。
+- 仅当往返开销是主要成本时使用宏工具。
 
-## Observation Design
+## 观察设计
 
-Every tool response should include:
-- `status`: success|warning|error
-- `summary`: one-line result
-- `next_actions`: actionable follow-ups
-- `artifacts`: file paths / IDs
+每个工具响应应包括：
+- `status`：success|warning|error
+- `summary`：单行结果
+- `next_actions`：可操作的后续步骤
+- `artifacts`：文件路径 / ID
 
-## Error Recovery Contract
+## 错误恢复契约
 
-For every error path, include:
-- root cause hint
-- safe retry instruction
-- explicit stop condition
+对于每个错误路径，包括：
+- 根本原因提示
+- 安全重试指令
+- 明确的停止条件
 
-## Context Budgeting
+## 上下文预算
 
-1. Keep system prompt minimal and invariant.
-2. Move large guidance into skills loaded on demand.
-3. Prefer references to files over inlining long documents.
-4. Compact at phase boundaries, not arbitrary token thresholds.
+1. 保持系统提示最小和不变。
+2. 将大型指导移动到按需加载的技能中。
+3. 优先引用文件而不是内联长文档。
+4. 在阶段边界压缩，而不是任意的 token 阈值。
 
-## Architecture Pattern Guidance
+## 架构模式指导
 
-- ReAct: best for exploratory tasks with uncertain path.
-- Function-calling: best for structured deterministic flows.
-- Hybrid (recommended): ReAct planning + typed tool execution.
+- ReAct：最适合具有不确定路径的探索性任务。
+- Function-calling：最适合结构化确定性流程。
+- 混合（推荐）：ReAct 规划 + 类型化工具执行。
 
-## Benchmarking
+## 基准测试
 
-Track:
-- completion rate
-- retries per task
-- pass@1 and pass@3
-- cost per successful task
+跟踪：
+- 完成率
+- 每个任务的重试次数
+- pass@1 和 pass@3
+- 每个成功任务的成本
 
-## Anti-Patterns
+## 反模式
 
-- Too many tools with overlapping semantics.
-- Opaque tool output with no recovery hints.
-- Error-only output without next steps.
-- Context overloading with irrelevant references.
+- 具有重叠语义的过多工具。
+- 没有恢复提示的不透明工具输出。
+- 仅包含错误而没有后续步骤的输出。
+- 与无关引用的上下文过载。

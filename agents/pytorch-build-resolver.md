@@ -61,10 +61,10 @@ python -c "import torch; x = torch.randn(2,3).cuda(); print('CUDA tensor test: O
 When shapes are unclear, inject diagnostic prints:
 
 ```python
-# Add before the failing line:
+# 在失败行之前添加：
 print(f"tensor.shape = {tensor.shape}, dtype = {tensor.dtype}, device = {tensor.device}")
 
-# For full model shape tracing:
+# 用于完整模型形状追踪：
 from torchsummary import summary
 summary(model, input_size=(C, H, W))
 ```
@@ -72,7 +72,7 @@ summary(model, input_size=(C, H, W))
 ## Memory Debugging
 
 ```bash
-# Check GPU memory usage
+# 检查 GPU 内存使用
 python -c "
 import torch
 print(f'Allocated: {torch.cuda.memory_allocated()/1e9:.2f} GB')
