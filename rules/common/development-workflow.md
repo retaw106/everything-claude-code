@@ -1,38 +1,38 @@
-# Development Workflow
+# 开发工作流
 
-> This file extends [common/git-workflow.md](./git-workflow.md) with the full feature development process that happens before git operations.
+> 本文件扩展了 [common/git-workflow.md](./git-workflow.md)，添加了 git 操作之前的完整功能开发流程。
 
-The Feature Implementation Workflow describes the development pipeline: research, planning, TDD, code review, and then committing to git.
+功能实现工作流描述了开发管道：研究、规划、TDD、代码审查，然后提交到 git。
 
-## Feature Implementation Workflow
+## 功能实现工作流
 
-0. **Research & Reuse** _(mandatory before any new implementation)_
-   - **GitHub code search first:** Run `gh search repos` and `gh search code` to find existing implementations, templates, and patterns before writing anything new.
-   - **Library docs second:** Use Context7 or primary vendor docs to confirm API behavior, package usage, and version-specific details before implementing.
-   - **Exa only when the first two are insufficient:** Use Exa for broader web research or discovery after GitHub search and primary docs.
-   - **Check package registries:** Search npm, PyPI, crates.io, and other registries before writing utility code. Prefer battle-tested libraries over hand-rolled solutions.
-   - **Search for adaptable implementations:** Look for open-source projects that solve 80%+ of the problem and can be forked, ported, or wrapped.
-   - Prefer adopting or porting a proven approach over writing net-new code when it meets the requirement.
+0. **研究 & 复用** _(任何新实现前的强制步骤)_
+   - **优先搜索 GitHub 代码：** 在编写任何新代码之前，运行 `gh search repos` 和 `gh search code` 以查找现有实现、模板和模式。
+   - **其次查阅库文档：** 在实现之前，使用 Context7 或主要供应商文档确认 API 行为、包使用和版本特定细节。
+   - **仅在前两者不足时使用 Exa：** 在 GitHub 搜索和主要文档之后，使用 Exa 进行更广泛的网络研究或发现。
+   - **检查包注册表：** 在编写实用程序代码之前，搜索 npm、PyPI、crates.io 和其他注册表。优先选择经过实战测试的库，而不是手写的解决方案。
+   - **搜索可适应的实现：** 寻找解决 80% 以上问题的开源项目，可以 fork、移植或封装。
+   - 当满足要求时，优先采用或移植经过验证的方法，而不是编写全新的代码。
 
-1. **Plan First**
-   - Use **planner** agent to create implementation plan
-   - Generate planning docs before coding: PRD, architecture, system_design, tech_doc, task_list
-   - Identify dependencies and risks
-   - Break down into phases
+1. **先规划**
+   - 使用 **planner** agent 创建实现计划
+   - 在编码之前生成规划文档：PRD、架构设计、system_design、技术文档、任务列表
+   - 识别依赖关系和风险
+   - 分解为多个阶段
 
-2. **TDD Approach**
-   - Use **tdd-guide** agent
-   - Write tests first (RED)
-   - Implement to pass tests (GREEN)
-   - Refactor (IMPROVE)
-   - Verify 80%+ coverage
+2. **TDD 方法**
+   - 使用 **tdd-guide** agent
+   - 先编写测试 (RED)
+   - 实现代码以通过测试 (GREEN)
+   - 重构 (IMPROVE)
+   - 验证 80%+ 的覆盖率
 
-3. **Code Review**
-   - Use **code-reviewer** agent immediately after writing code
-   - Address CRITICAL and HIGH issues
-   - Fix MEDIUM issues when possible
+3. **代码审查**
+   - 在编写代码后立即使用 **code-reviewer** agent
+   - 解决 CRITICAL 和 HIGH 级别的问题
+   - 尽可能修复 MEDIUM 级别的问题
 
-4. **Commit & Push**
-   - Detailed commit messages
-   - Follow conventional commits format
-   - See [git-workflow.md](./git-workflow.md) for commit message format and PR process
+4. **提交 & 推送**
+   - 详细的提交信息
+   - 遵循 conventional commits 格式
+   - 参考 [git-workflow.md](./git-workflow.md) 了解提交信息格式和 PR 流程
