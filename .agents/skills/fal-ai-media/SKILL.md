@@ -1,24 +1,24 @@
 ---
 name: fal-ai-media
-description: Unified media generation via fal.ai MCP — image, video, and audio. Covers text-to-image (Nano Banana), text/image-to-video (Seedance, Kling, Veo 3), text-to-speech (CSM-1B), and video-to-audio (ThinkSound). Use when the user wants to generate images, videos, or audio with AI.
+description: 通过 fal.ai MCP 统一生成图像、视频和音频。涵盖文本生成图像（Nano Banana）、文本/图像生成视频（Seedance、Kling、Veo 3）、文本生成语音（CSM-1B）和视频生成音频（ThinkSound）。当用户想用 AI 生成图像、视频或音频时使用。
 origin: ECC
 ---
 
-# fal.ai Media Generation
+# fal.ai 媒体生成
 
-Generate images, videos, and audio using fal.ai models via MCP.
+通过 MCP 使用 fal.ai 模型生成图像、视频和音频。
 
-## When to Activate
+## 何时启用
 
-- User wants to generate images from text prompts
-- Creating videos from text or images
-- Generating speech, music, or sound effects
-- Any media generation task
-- User says "generate image", "create video", "text to speech", "make a thumbnail", or similar
+- 用户想从文本提示生成图像
+- 从文本或图像创建视频
+- 生成语音、音乐或音效
+- 任何媒体生成任务
+- 用户说"生成图像"、"创建视频"、"文本转语音"、"制作缩略图"或类似表达
 
-## MCP Requirement
+## MCP 要求
 
-fal.ai MCP server must be configured. Add to `~/.claude.json`:
+必须配置 fal.ai MCP 服务器。添加到 `~/.claude.json`：
 
 ```json
 "fal-ai": {
@@ -28,33 +28,33 @@ fal.ai MCP server must be configured. Add to `~/.claude.json`:
 }
 ```
 
-Get an API key at [fal.ai](https://fal.ai).
+在 [fal.ai](https://fal.ai) 获取 API 密钥。
 
-## MCP Tools
+## MCP 工具
 
-The fal.ai MCP provides these tools:
-- `search` — Find available models by keyword
-- `find` — Get model details and parameters
-- `generate` — Run a model with parameters
-- `result` — Check async generation status
-- `status` — Check job status
-- `cancel` — Cancel a running job
-- `estimate_cost` — Estimate generation cost
-- `models` — List popular models
-- `upload` — Upload files for use as inputs
+fal.ai MCP 提供以下工具：
+- `search` — 按关键词查找可用模型
+- `find` — 获取模型详情和参数
+- `generate` — 使用参数运行模型
+- `result` — 检查异步生成状态
+- `status` — 检查作业状态
+- `cancel` — 取消正在运行的作业
+- `estimate_cost` — 估算生成成本
+- `models` — 列出热门模型
+- `upload` — 上传文件用作输入
 
 ---
 
-## Image Generation
+## 图像生成
 
-### Nano Banana 2 (Fast)
-Best for: quick iterations, drafts, text-to-image, image editing.
+### Nano Banana 2（快速）
+适用于：快速迭代、草稿、文本生成图像、图像编辑。
 
 ```
 generate(
   model_name: "fal-ai/nano-banana-2",
   input: {
-    "prompt": "a futuristic cityscape at sunset, cyberpunk style",
+    "prompt": "日落时的未来城市景观，赛博朋克风格",
     "image_size": "landscape_16_9",
     "num_images": 1,
     "seed": 42
@@ -62,14 +62,14 @@ generate(
 )
 ```
 
-### Nano Banana Pro (High Fidelity)
-Best for: production images, realism, typography, detailed prompts.
+### Nano Banana Pro（高保真）
+适用于：生产级图像、写实、排版、详细提示。
 
 ```
 generate(
   model_name: "fal-ai/nano-banana-pro",
   input: {
-    "prompt": "professional product photo of wireless headphones on marble surface, studio lighting",
+    "prompt": "大理石表面上的无线耳机专业产品照片，影棚灯光",
     "image_size": "square",
     "num_images": 1,
     "guidance_scale": 7.5
@@ -77,28 +77,28 @@ generate(
 )
 ```
 
-### Common Image Parameters
+### 常用图像参数
 
-| Param | Type | Options | Notes |
-|-------|------|---------|-------|
-| `prompt` | string | required | Describe what you want |
-| `image_size` | string | `square`, `portrait_4_3`, `landscape_16_9`, `portrait_16_9`, `landscape_4_3` | Aspect ratio |
-| `num_images` | number | 1-4 | How many to generate |
-| `seed` | number | any integer | Reproducibility |
-| `guidance_scale` | number | 1-20 | How closely to follow the prompt (higher = more literal) |
+| 参数 | 类型 | 选项 | 说明 |
+|------|------|------|------|
+| `prompt` | string | 必需 | 描述你想要的内容 |
+| `image_size` | string | `square`、`portrait_4_3`、`landscape_16_9`、`portrait_16_9`、`landscape_4_3` | 宽高比 |
+| `num_images` | number | 1-4 | 生成数量 |
+| `seed` | number | 任意整数 | 可重复性 |
+| `guidance_scale` | number | 1-20 | 遵循提示的程度（越高越字面） |
 
-### Image Editing
-Use Nano Banana 2 with an input image for inpainting, outpainting, or style transfer:
+### 图像编辑
+使用 Nano Banana 2 配合输入图像进行重绘、扩展或风格迁移：
 
 ```
-# First upload the source image
+# 首先上传源图像
 upload(file_path: "/path/to/image.png")
 
-# Then generate with image input
+# 然后使用图像输入生成
 generate(
   model_name: "fal-ai/nano-banana-2",
   input: {
-    "prompt": "same scene but in watercolor style",
+    "prompt": "同样的场景但用水彩风格",
     "image_url": "<uploaded_url>",
     "image_size": "landscape_16_9"
   }
@@ -107,16 +107,16 @@ generate(
 
 ---
 
-## Video Generation
+## 视频生成
 
-### Seedance 1.0 Pro (ByteDance)
-Best for: text-to-video, image-to-video with high motion quality.
+### Seedance 1.0 Pro（ByteDance）
+适用于：文本生成视频、图像生成视频，高质量运动。
 
 ```
 generate(
   model_name: "fal-ai/seedance-1-0-pro",
   input: {
-    "prompt": "a drone flyover of a mountain lake at golden hour, cinematic",
+    "prompt": "金色时刻无人机飞越山间湖泊，电影质感",
     "duration": "5s",
     "aspect_ratio": "16:9",
     "seed": 42
@@ -125,88 +125,88 @@ generate(
 ```
 
 ### Kling Video v3 Pro
-Best for: text/image-to-video with native audio generation.
+适用于：带原生音频生成的文本/图像生成视频。
 
 ```
 generate(
   model_name: "fal-ai/kling-video/v3/pro",
   input: {
-    "prompt": "ocean waves crashing on a rocky coast, dramatic clouds",
+    "prompt": "海浪拍打岩石海岸，戏剧性云层",
     "duration": "5s",
     "aspect_ratio": "16:9"
   }
 )
 ```
 
-### Veo 3 (Google DeepMind)
-Best for: video with generated sound, high visual quality.
+### Veo 3（Google DeepMind）
+适用于：带生成音频的视频，高视觉质量。
 
 ```
 generate(
   model_name: "fal-ai/veo-3",
   input: {
-    "prompt": "a bustling Tokyo street market at night, neon signs, crowd noise",
+    "prompt": "夜晚繁忙的东京街头市场，霓虹招牌，人群嘈杂",
     "aspect_ratio": "16:9"
   }
 )
 ```
 
-### Image-to-Video
-Start from an existing image:
+### 图像生成视频
+从现有图像开始：
 
 ```
 generate(
   model_name: "fal-ai/seedance-1-0-pro",
   input: {
-    "prompt": "camera slowly zooms out, gentle wind moves the trees",
+    "prompt": "镜头缓慢拉远，微风吹动树木",
     "image_url": "<uploaded_image_url>",
     "duration": "5s"
   }
 )
 ```
 
-### Video Parameters
+### 视频参数
 
-| Param | Type | Options | Notes |
-|-------|------|---------|-------|
-| `prompt` | string | required | Describe the video |
-| `duration` | string | `"5s"`, `"10s"` | Video length |
-| `aspect_ratio` | string | `"16:9"`, `"9:16"`, `"1:1"` | Frame ratio |
-| `seed` | number | any integer | Reproducibility |
-| `image_url` | string | URL | Source image for image-to-video |
+| 参数 | 类型 | 选项 | 说明 |
+|------|------|------|------|
+| `prompt` | string | 必需 | 描述视频内容 |
+| `duration` | string | `"5s"`、`"10s"` | 视频长度 |
+| `aspect_ratio` | string | `"16:9"`、`"9:16"`、`"1:1"` | 画面比例 |
+| `seed` | number | 任意整数 | 可重复性 |
+| `image_url` | string | URL | 图像生成视频的源图像 |
 
 ---
 
-## Audio Generation
+## 音频生成
 
-### CSM-1B (Conversational Speech)
-Text-to-speech with natural, conversational quality.
+### CSM-1B（对话式语音）
+自然、对话式质量的文本转语音。
 
 ```
 generate(
   model_name: "fal-ai/csm-1b",
   input: {
-    "text": "Hello, welcome to the demo. Let me show you how this works.",
+    "text": "你好，欢迎来到演示。让我展示一下这个怎么用。",
     "speaker_id": 0
   }
 )
 ```
 
-### ThinkSound (Video-to-Audio)
-Generate matching audio from video content.
+### ThinkSound（视频生成音频）
+从视频内容生成匹配的音频。
 
 ```
 generate(
   model_name: "fal-ai/thinksound",
   input: {
     "video_url": "<video_url>",
-    "prompt": "ambient forest sounds with birds chirping"
+    "prompt": "森林环境音，鸟鸣"
   }
 )
 ```
 
-### ElevenLabs (via API, no MCP)
-For professional voice synthesis, use ElevenLabs directly:
+### ElevenLabs（通过 API，无 MCP）
+对于专业语音合成，直接使用 ElevenLabs：
 
 ```python
 import os
@@ -219,7 +219,7 @@ resp = requests.post(
         "Content-Type": "application/json"
     },
     json={
-        "text": "Your text here",
+        "text": "你的文本",
         "model_id": "eleven_turbo_v2_5",
         "voice_settings": {"stability": 0.5, "similarity_boost": 0.75}
     }
@@ -228,33 +228,33 @@ with open("output.mp3", "wb") as f:
     f.write(resp.content)
 ```
 
-### VideoDB Generative Audio
-If VideoDB is configured, use its generative audio:
+### VideoDB 生成式音频
+如果配置了 VideoDB，使用其生成式音频：
 
 ```python
-# Voice generation
-audio = coll.generate_voice(text="Your narration here", voice="alloy")
+# 语音生成
+audio = coll.generate_voice(text="你的旁白", voice="alloy")
 
-# Music generation
-music = coll.generate_music(prompt="upbeat electronic background music", duration=30)
+# 音乐生成
+music = coll.generate_music(prompt="欢快的电子背景音乐", duration=30)
 
-# Sound effects
-sfx = coll.generate_sound_effect(prompt="thunder crack followed by rain")
+# 音效
+sfx = coll.generate_sound_effect(prompt="雷声后下雨")
 ```
 
 ---
 
-## Cost Estimation
+## 成本估算
 
-Before generating, check estimated cost:
+生成前检查估算成本：
 
 ```
 estimate_cost(model_name: "fal-ai/nano-banana-pro", input: {...})
 ```
 
-## Model Discovery
+## 模型发现
 
-Find models for specific tasks:
+查找特定任务的模型：
 
 ```
 search(query: "text to video")
@@ -262,16 +262,16 @@ find(model_name: "fal-ai/seedance-1-0-pro")
 models()
 ```
 
-## Tips
+## 提示
 
-- Use `seed` for reproducible results when iterating on prompts
-- Start with lower-cost models (Nano Banana 2) for prompt iteration, then switch to Pro for finals
-- For video, keep prompts descriptive but concise — focus on motion and scene
-- Image-to-video produces more controlled results than pure text-to-video
-- Check `estimate_cost` before running expensive video generations
+- 使用 `seed` 在迭代提示时获得可重复结果
+- 提示迭代时从低成本模型（Nano Banana 2）开始，然后切换到 Pro 生成最终版
+- 对于视频，保持提示描述性强但简洁 — 关注运动和场景
+- 图像生成视频比纯文本生成视频产生更可控的结果
+- 在运行昂贵的视频生成前检查 `estimate_cost`
 
-## Related Skills
+## 相关技能
 
-- `videodb` — Video processing, editing, and streaming
-- `video-editing` — AI-powered video editing workflows
-- `content-engine` — Content creation for social platforms
+- `videodb` — 视频处理、编辑和流媒体
+- `video-editing` — AI 驱动的视频编辑工作流
+- `content-engine` — 社交平台内容创作

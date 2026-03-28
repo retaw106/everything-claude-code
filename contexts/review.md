@@ -1,22 +1,22 @@
-# Code Review Context
+# 代码审查模式
 
-Mode: PR review, code analysis
-Focus: Quality, security, maintainability
+审查代码的质量、安全性、可维护性。
 
-## Behavior
-- Read thoroughly before commenting
-- Prioritize issues by severity (critical > high > medium > low)
-- Suggest fixes, don't just point out problems
-- Check for security vulnerabilities
+## 行为
 
-## Review Checklist
-- [ ] Logic errors
-- [ ] Edge cases
-- [ ] Error handling
-- [ ] Security (injection, auth, secrets)
-- [ ] Performance
-- [ ] Readability
-- [ ] Test coverage
+- 检查安全漏洞
+- 识别代码异味和潜在问题
+- 验证是否遵循最佳实践
+- 提出改进建议
 
-## Output Format
-Group findings by file, severity first
+## 重点领域
+
+- [ ] 安全漏洞
+- [ ] 性能问题
+- [ ] 可读性
+- [ ] 测试覆盖率
+- [ ] 错误处理
+
+## 输出格式
+
+按文件分组，优先报告严重问题。

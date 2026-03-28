@@ -1,30 +1,30 @@
 ---
 name: x-api
-description: X/Twitter API integration for posting tweets, threads, reading timelines, search, and analytics. Covers OAuth auth patterns, rate limits, and platform-native content posting. Use when the user wants to interact with X programmatically.
+description: X/Twitter API 集成，用于发布推文、推文串、阅读时间线、搜索和分析。涵盖 OAuth 认证模式、速率限制和原生平台内容发布。当用户想要程序化地与 X 交互时使用。
 origin: ECC
 ---
 
 # X API
 
-Programmatic interaction with X (Twitter) for posting, reading, searching, and analytics.
+程序化地与 X (Twitter) 交互，用于发布、阅读、搜索和分析。
 
-## When to Activate
+## 何时启用
 
-- User wants to post tweets or threads programmatically
-- Reading timeline, mentions, or user data from X
-- Searching X for content, trends, or conversations
-- Building X integrations or bots
-- Analytics and engagement tracking
-- User says "post to X", "tweet", "X API", or "Twitter API"
+- 用户想要程序化地发布推文或推文串
+- 从 X 读取时间线、提及或用户数据
+- 在 X 上搜索内容、趋势或对话
+- 构建 X 集成或机器人
+- 分析和互动追踪
+- 用户说"发布到 X"、"发推"、"X API"或"Twitter API"
 
-## Authentication
+## 认证
 
-### OAuth 2.0 (App-Only / User Context)
+### OAuth 2.0（仅应用 / 用户上下文）
 
-Best for: read-heavy operations, search, public data.
+适用于：读密集型操作、搜索、公共数据。
 
 ```bash
-# Environment setup
+# 环境设置
 export X_BEARER_TOKEN="your-bearer-token"
 ```
 
@@ -35,7 +35,7 @@ import requests
 bearer = os.environ["X_BEARER_TOKEN"]
 headers = {"Authorization": f"Bearer {bearer}"}
 
-# Search recent tweets
+# 搜索最近推文
 resp = requests.get(
     "https://api.x.com/2/tweets/search/recent",
     headers=headers,
@@ -44,12 +44,12 @@ resp = requests.get(
 tweets = resp.json()
 ```
 
-### OAuth 1.0a (User Context)
+### OAuth 1.0a（用户上下文）
 
-Required for: posting tweets, managing account, DMs.
+必需用于：发布推文、管理账户、私信。
 
 ```bash
-# Environment setup — source before use
+# 环境设置 — 使用前先 source
 export X_API_KEY="your-api-key"
 export X_API_SECRET="your-api-secret"
 export X_ACCESS_TOKEN="your-access-token"
@@ -68,20 +68,20 @@ oauth = OAuth1Session(
 )
 ```
 
-## Core Operations
+## 核心操作
 
-### Post a Tweet
+### 发布推文
 
 ```python
 resp = oauth.post(
     "https://api.x.com/2/tweets",
-    json={"text": "Hello from Claude Code"}
+    json={"text": "来自 Claude Code 的问候"}
 )
 resp.raise_for_status()
 tweet_id = resp.json()["data"]["id"]
 ```
 
-### Post a Thread
+### 发布推文串
 
 ```python
 def post_thread(oauth, tweets: list[str]) -> list[str]:
@@ -99,7 +99,7 @@ def post_thread(oauth, tweets: list[str]) -> list[str]:
     return ids
 ```
 
-### Read User Timeline
+### 读取用户时间线
 
 ```python
 resp = requests.get(
@@ -112,7 +112,7 @@ resp = requests.get(
 )
 ```
 
-### Search Tweets
+### 搜索推文
 
 ```python
 resp = requests.get(
@@ -126,7 +126,7 @@ resp = requests.get(
 )
 ```
 
-### Get User by Username
+### 通过用户名获取用户
 
 ```python
 resp = requests.get(
@@ -136,36 +136,36 @@ resp = requests.get(
 )
 ```
 
-### Upload Media and Post
+### 上传媒体并发布
 
 ```python
-# Media upload uses v1.1 endpoint
+# 媒体上传使用 v1.1 端点
 
-# Step 1: Upload media
+# 步骤 1：上传媒体
 media_resp = oauth.post(
     "https://upload.twitter.com/1.1/media/upload.json",
     files={"media": open("image.png", "rb")}
 )
 media_id = media_resp.json()["media_id_string"]
 
-# Step 2: Post with media
+# 步骤 2：带媒体发布
 resp = oauth.post(
     "https://api.x.com/2/tweets",
-    json={"text": "Check this out", "media": {"media_ids": [media_id]}}
+    json={"text": "看看这个", "media": {"media_ids": [media_id]}}
 )
 ```
 
-## Rate Limits Reference
+## 速率限制参考
 
-| Endpoint | Limit | Window |
-|----------|-------|--------|
-| POST /2/tweets | 200 | 15 min |
-| GET /2/tweets/search/recent | 450 | 15 min |
-| GET /2/users/:id/tweets | 1500 | 15 min |
-| GET /2/users/by/username | 300 | 15 min |
-| POST media/upload | 415 | 15 min |
+| 端点 | 限制 | 时间窗口 |
+|------|------|----------|
+| POST /2/tweets | 200 | 15 分钟 |
+| GET /2/tweets/search/recent | 450 | 15 分钟 |
+| GET /2/users/:id/tweets | 1500 | 15 分钟 |
+| GET /2/users/by/username | 300 | 15 分钟 |
+| POST media/upload | 415 | 15 分钟 |
 
-Always check `x-rate-limit-remaining` and `x-rate-limit-reset` headers.
+始终检查 `x-rate-limit-remaining` 和 `x-rate-limit-reset` 响应头。
 
 ```python
 import time
@@ -174,10 +174,10 @@ remaining = int(resp.headers.get("x-rate-limit-remaining", 0))
 if remaining < 5:
     reset = int(resp.headers.get("x-rate-limit-reset", 0))
     wait = max(0, reset - int(time.time()))
-    print(f"Rate limit approaching. Resets in {wait}s")
+    print(f"接近速率限制。{wait} 秒后重置")
 ```
 
-## Error Handling
+## 错误处理
 
 ```python
 resp = oauth.post("https://api.x.com/2/tweets", json={"text": content})
@@ -185,30 +185,30 @@ if resp.status_code == 201:
     return resp.json()["data"]["id"]
 elif resp.status_code == 429:
     reset = int(resp.headers["x-rate-limit-reset"])
-    raise Exception(f"Rate limited. Resets at {reset}")
+    raise Exception(f"速率限制。在 {reset} 重置")
 elif resp.status_code == 403:
-    raise Exception(f"Forbidden: {resp.json().get('detail', 'check permissions')}")
+    raise Exception(f"禁止：{resp.json().get('detail', '检查权限')}")
 else:
-    raise Exception(f"X API error {resp.status_code}: {resp.text}")
+    raise Exception(f"X API 错误 {resp.status_code}: {resp.text}")
 ```
 
-## Security
+## 安全
 
-- **Never hardcode tokens.** Use environment variables or `.env` files.
-- **Never commit `.env` files.** Add to `.gitignore`.
-- **Rotate tokens** if exposed. Regenerate at developer.x.com.
-- **Use read-only tokens** when write access is not needed.
-- **Store OAuth secrets securely** — not in source code or logs.
+- **绝不要硬编码 token。** 使用环境变量或 `.env` 文件。
+- **绝不要提交 `.env` 文件。** 添加到 `.gitignore`。
+- **如果暴露则轮换 token。** 在 developer.x.com 重新生成。
+- **当不需要写权限时使用只读 token。**
+- **安全存储 OAuth 机密** — 不要放在源代码或日志中。
 
-## Integration with Content Engine
+## 与内容引擎集成
 
-Use `content-engine` skill to generate platform-native content, then post via X API:
-1. Generate content with content-engine (X platform format)
-2. Validate length (280 chars for single tweet)
-3. Post via X API using patterns above
-4. Track engagement via public_metrics
+使用 `content-engine` 技能生成原生平台内容，然后通过 X API 发布：
+1. 用 content-engine 生成内容（X 平台格式）
+2. 验证长度（单条推文 280 字符）
+3. 使用上面的模式通过 X API 发布
+4. 通过 public_metrics 追踪互动
 
-## Related Skills
+## 相关技能
 
-- `content-engine` — Generate platform-native content for X
-- `crosspost` — Distribute content across X, LinkedIn, and other platforms
+- `content-engine` — 为 X 生成原生平台内容
+- `crosspost` — 跨 X、LinkedIn 和其他平台分发内容

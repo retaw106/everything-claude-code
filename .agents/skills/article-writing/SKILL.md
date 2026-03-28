@@ -1,85 +1,85 @@
 ---
 name: article-writing
-description: Write articles, guides, blog posts, tutorials, newsletter issues, and other long-form content in a distinctive voice derived from supplied examples or brand guidance. Use when the user wants polished written content longer than a paragraph, especially when voice consistency, structure, and credibility matter.
+description: 撰写文章、指南、博客文章、教程、通讯等长篇内容，根据提供的示例或品牌指南形成独特风格。当用户需要超过一段的精炼书面内容时使用，特别适合需要保持语调一致性、结构完整性和可信度的场景。
 origin: ECC
 ---
 
-# Article Writing
+# 文章写作
 
-Write long-form content that sounds like a real person or brand, not generic AI output.
+撰写听起来像真人或品牌的长篇内容，而非泛泛的 AI 输出。
 
-## When to Activate
+## 何时启用
 
-- drafting blog posts, essays, launch posts, guides, tutorials, or newsletter issues
-- turning notes, transcripts, or research into polished articles
-- matching an existing founder, operator, or brand voice from examples
-- tightening structure, pacing, and evidence in already-written long-form copy
+- 起草博客文章、论文、发布帖、指南、教程或通讯
+- 将笔记、转录或研究转化为精炼文章
+- 根据示例匹配现有的创始人、运营者或品牌语调
+- 润色已写长篇文案的结构、节奏和论据
 
-## Core Rules
+## 核心规则
 
-1. Lead with the concrete thing: example, output, anecdote, number, screenshot description, or code block.
-2. Explain after the example, not before.
-3. Prefer short, direct sentences over padded ones.
-4. Use specific numbers when available and sourced.
-5. Never invent biographical facts, company metrics, or customer evidence.
+1. 以具体内容开头：示例、输出、轶事、数字、截图描述或代码块。
+2. 先展示示例，再解释。
+3. 偏好简短直接的句子，而非冗长的表达。
+4. 使用具体数字时需有来源支持。
+5. 绝不编造传记事实、公司指标或客户证据。
 
-## Voice Capture Workflow
+## 语调捕捉工作流
 
-If the user wants a specific voice, collect one or more of:
-- published articles
-- newsletters
-- X / LinkedIn posts
-- docs or memos
-- a short style guide
+如果用户需要特定语调，收集以下一项或多项：
+- 已发表的文章
+- 通讯
+- X / LinkedIn 帖子
+- 文档或备忘录
+- 简短的风格指南
 
-Then extract:
-- sentence length and rhythm
-- whether the voice is formal, conversational, or sharp
-- favored rhetorical devices such as parentheses, lists, fragments, or questions
-- tolerance for humor, opinion, and contrarian framing
-- formatting habits such as headers, bullets, code blocks, and pull quotes
+然后提取：
+- 句子长度和节奏
+- 语调是正式、口语化还是犀利
+- 偏好的修辞手法，如括号、列表、片段或问句
+- 对幽默、观点和反直觉框架的容忍度
+- 格式习惯，如标题、项目符号、代码块和引用
 
-If no voice references are given, default to a direct, operator-style voice: concrete, practical, and low on hype.
+如果没有提供语调参考，默认使用直接、运营者风格的语调：具体、实用、不浮夸。
 
-## Banned Patterns
+## 禁用模式
 
-Delete and rewrite any of these:
-- generic openings like "In today's rapidly evolving landscape"
-- filler transitions such as "Moreover" and "Furthermore"
-- hype phrases like "game-changer", "cutting-edge", or "revolutionary"
-- vague claims without evidence
-- biography or credibility claims not backed by provided context
+删除并重写以下内容：
+- 泛泛的开场白，如"在当今快速发展的环境中"
+- 填充性过渡词，如"此外"、"而且"
+- 浮夸短语，如"游戏规则改变者"、"前沿"或"革命性"
+- 没有证据支撑的模糊声明
+- 没有提供上下文支撑的传记或可信度声明
 
-## Writing Process
+## 写作流程
 
-1. Clarify the audience and purpose.
-2. Build a skeletal outline with one purpose per section.
-3. Start each section with evidence, example, or scene.
-4. Expand only where the next sentence earns its place.
-5. Remove anything that sounds templated or self-congratulatory.
+1. 明确受众和目的。
+2. 构建骨架大纲，每节一个目的。
+3. 每节以证据、示例或场景开头。
+4. 只在下一句有必要时才扩展。
+5. 删除任何模板化或自我吹嘘的内容。
 
-## Structure Guidance
+## 结构指导
 
-### Technical Guides
-- open with what the reader gets
-- use code or terminal examples in every major section
-- end with concrete takeaways, not a soft summary
+### 技术指南
+- 以读者能获得什么开头
+- 每个主要章节使用代码或终端示例
+- 以具体要点结尾，而非软性总结
 
-### Essays / Opinion Pieces
-- start with tension, contradiction, or a sharp observation
-- keep one argument thread per section
-- use examples that earn the opinion
+### 论文 / 观点文章
+- 以冲突、矛盾或犀利观察开头
+- 每节保持一个论点主线
+- 使用能支撑观点的示例
 
-### Newsletters
-- keep the first screen strong
-- mix insight with updates, not diary filler
-- use clear section labels and easy skim structure
+### 通讯
+- 保持首屏内容有吸引力
+- 混合洞察和更新，而非日记式填充
+- 使用清晰的章节标签和易于浏览的结构
 
-## Quality Gate
+## 质量关卡
 
-Before delivering:
-- verify factual claims against provided sources
-- remove filler and corporate language
-- confirm the voice matches the supplied examples
-- ensure every section adds new information
-- check formatting for the intended platform
+交付前：
+- 根据提供的来源验证事实声明
+- 删除填充词和套话
+- 确认语调与提供的示例匹配
+- 确保每节都增加新信息
+- 检查目标平台的格式

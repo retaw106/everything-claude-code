@@ -1,14 +1,14 @@
 ---
 name: e2e-testing
-description: Playwright E2E testing patterns, Page Object Model, configuration, CI/CD integration, artifact management, and flaky test strategies.
+description: Playwright E2E 测试模式、页面对象模型、配置、CI/CD 集成、产物管理和不稳定测试策略。
 origin: ECC
 ---
 
-# E2E Testing Patterns
+# E2E 测试模式
 
-Comprehensive Playwright patterns for building stable, fast, and maintainable E2E test suites.
+用于构建稳定、快速和可维护 E2E 测试套件的全面 Playwright 模式。
 
-## Test File Organization
+## 测试文件组织
 
 ```
 tests/
@@ -29,7 +29,7 @@ tests/
 └── playwright.config.ts
 ```
 
-## Page Object Model (POM)
+## 页面对象模型 (POM)
 
 ```typescript
 import { Page, Locator } from '@playwright/test'
@@ -64,13 +64,13 @@ export class ItemsPage {
 }
 ```
 
-## Test Structure
+## 测试结构
 
 ```typescript
 import { test, expect } from '@playwright/test'
 import { ItemsPage } from '../../pages/ItemsPage'
 
-test.describe('Item Search', () => {
+test.describe('项目搜索', () => {
   let itemsPage: ItemsPage
 
   test.beforeEach(async ({ page }) => {
@@ -78,7 +78,7 @@ test.describe('Item Search', () => {
     await itemsPage.goto()
   })
 
-  test('should search by keyword', async ({ page }) => {
+  test('应能按关键词搜索', async ({ page }) => {
     await itemsPage.search('test')
 
     const count = await itemsPage.getItemCount()
@@ -88,7 +88,7 @@ test.describe('Item Search', () => {
     await page.screenshot({ path: 'artifacts/search-results.png' })
   })
 
-  test('should handle no results', async ({ page }) => {
+  test('应能处理无结果情况', async ({ page }) => {
     await itemsPage.search('xyznonexistent123')
 
     await expect(page.locator('[data-testid="no-results"]')).toBeVisible()
@@ -97,7 +97,7 @@ test.describe('Item Search', () => {
 })
 ```
 
-## Playwright Configuration
+## Playwright 配置
 
 ```typescript
 import { defineConfig, devices } from '@playwright/test'
@@ -136,63 +136,63 @@ export default defineConfig({
 })
 ```
 
-## Flaky Test Patterns
+## 不稳定测试模式
 
-### Quarantine
+### 隔离
 
 ```typescript
-test('flaky: complex search', async ({ page }) => {
-  test.fixme(true, 'Flaky - Issue #123')
-  // test code...
+test('不稳定：复杂搜索', async ({ page }) => {
+  test.fixme(true, '不稳定 - Issue #123')
+  // 测试代码...
 })
 
-test('conditional skip', async ({ page }) => {
-  test.skip(process.env.CI, 'Flaky in CI - Issue #123')
-  // test code...
+test('条件跳过', async ({ page }) => {
+  test.skip(process.env.CI, 'CI 中不稳定 - Issue #123')
+  // 测试代码...
 })
 ```
 
-### Identify Flakiness
+### 识别不稳定性
 
 ```bash
 npx playwright test tests/search.spec.ts --repeat-each=10
 npx playwright test tests/search.spec.ts --retries=3
 ```
 
-### Common Causes & Fixes
+### 常见原因与修复
 
-**Race conditions:**
+**竞态条件：**
 ```typescript
-// Bad: assumes element is ready
+// 坏：假设元素已就绪
 await page.click('[data-testid="button"]')
 
-// Good: auto-wait locator
+// 好：自动等待的 locator
 await page.locator('[data-testid="button"]').click()
 ```
 
-**Network timing:**
+**网络时序：**
 ```typescript
-// Bad: arbitrary timeout
+// 坏：任意超时
 await page.waitForTimeout(5000)
 
-// Good: wait for specific condition
+// 好：等待特定条件
 await page.waitForResponse(resp => resp.url().includes('/api/data'))
 ```
 
-**Animation timing:**
+**动画时序：**
 ```typescript
-// Bad: click during animation
+// 坏：动画期间点击
 await page.click('[data-testid="menu-item"]')
 
-// Good: wait for stability
+// 好：等待稳定
 await page.locator('[data-testid="menu-item"]').waitFor({ state: 'visible' })
 await page.waitForLoadState('networkidle')
 await page.locator('[data-testid="menu-item"]').click()
 ```
 
-## Artifact Management
+## 产物管理
 
-### Screenshots
+### 截图
 
 ```typescript
 await page.screenshot({ path: 'artifacts/after-login.png' })
@@ -200,7 +200,7 @@ await page.screenshot({ path: 'artifacts/full-page.png', fullPage: true })
 await page.locator('[data-testid="chart"]').screenshot({ path: 'artifacts/chart.png' })
 ```
 
-### Traces
+### 追踪
 
 ```typescript
 await browser.startTracing(page, {
@@ -208,25 +208,25 @@ await browser.startTracing(page, {
   screenshots: true,
   snapshots: true,
 })
-// ... test actions ...
+// ... 测试操作 ...
 await browser.stopTracing()
 ```
 
-### Video
+### 视频
 
 ```typescript
-// In playwright.config.ts
+// 在 playwright.config.ts 中
 use: {
   video: 'retain-on-failure',
   videosPath: 'artifacts/videos/'
 }
 ```
 
-## CI/CD Integration
+## CI/CD 集成
 
 ```yaml
 # .github/workflows/e2e.yml
-name: E2E Tests
+name: E2E 测试
 on: [push, pull_request]
 
 jobs:
@@ -250,38 +250,38 @@ jobs:
           retention-days: 30
 ```
 
-## Test Report Template
+## 测试报告模板
 
 ```markdown
-# E2E Test Report
+# E2E 测试报告
 
-**Date:** YYYY-MM-DD HH:MM
-**Duration:** Xm Ys
-**Status:** PASSING / FAILING
+**日期：** YYYY-MM-DD HH:MM
+**时长：** Xm Ys
+**状态：** 通过 / 失败
 
-## Summary
-- Total: X | Passed: Y (Z%) | Failed: A | Flaky: B | Skipped: C
+## 摘要
+- 总计：X | 通过：Y (Z%) | 失败：A | 不稳定：B | 跳过：C
 
-## Failed Tests
+## 失败测试
 
 ### test-name
-**File:** `tests/e2e/feature.spec.ts:45`
-**Error:** Expected element to be visible
-**Screenshot:** artifacts/failed.png
-**Recommended Fix:** [description]
+**文件：** `tests/e2e/feature.spec.ts:45`
+**错误：** 期望元素可见
+**截图：** artifacts/failed.png
+**建议修复：** [描述]
 
-## Artifacts
-- HTML Report: playwright-report/index.html
-- Screenshots: artifacts/*.png
-- Videos: artifacts/videos/*.webm
-- Traces: artifacts/*.zip
+## 产物
+- HTML 报告：playwright-report/index.html
+- 截图：artifacts/*.png
+- 视频：artifacts/videos/*.webm
+- 追踪：artifacts/*.zip
 ```
 
-## Wallet / Web3 Testing
+## 钱包 / Web3 测试
 
 ```typescript
-test('wallet connection', async ({ page, context }) => {
-  // Mock wallet provider
+test('钱包连接', async ({ page, context }) => {
+  // 模拟钱包提供者
   await context.addInitScript(() => {
     window.ethereum = {
       isMetaMask: true,
@@ -299,22 +299,22 @@ test('wallet connection', async ({ page, context }) => {
 })
 ```
 
-## Financial / Critical Flow Testing
+## 金融 / 关键流程测试
 
 ```typescript
-test('trade execution', async ({ page }) => {
-  // Skip on production — real money
-  test.skip(process.env.NODE_ENV === 'production', 'Skip on production')
+test('交易执行', async ({ page }) => {
+  // 在生产环境跳过 — 真实资金
+  test.skip(process.env.NODE_ENV === 'production', '生产环境跳过')
 
   await page.goto('/markets/test-market')
   await page.locator('[data-testid="position-yes"]').click()
   await page.locator('[data-testid="trade-amount"]').fill('1.0')
 
-  // Verify preview
+  // 验证预览
   const preview = page.locator('[data-testid="trade-preview"]')
   await expect(preview).toContainText('1.0')
 
-  // Confirm and wait for blockchain
+  // 确认并等待区块链
   await page.locator('[data-testid="confirm-trade"]').click()
   await page.waitForResponse(
     resp => resp.url().includes('/api/trade') && resp.status() === 200,

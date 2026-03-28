@@ -1,96 +1,96 @@
 ---
 name: investor-materials
-description: Create and update pitch decks, one-pagers, investor memos, accelerator applications, financial models, and fundraising materials. Use when the user needs investor-facing documents, projections, use-of-funds tables, milestone plans, or materials that must stay internally consistent across multiple fundraising assets.
+description: 创建和更新融资演示文稿、单页介绍、投资者备忘录、加速器申请、财务模型和融资材料。当用户需要面向投资者的文档、预测、资金用途表、里程碑计划，或需要在多个融资资产之间保持内部一致的材料时使用。
 origin: ECC
 ---
 
-# Investor Materials
+# 投资者材料
 
-Build investor-facing materials that are consistent, credible, and easy to defend.
+构建一致、可信且易于辩护的面向投资者的材料。
 
-## When to Activate
+## 何时启用
 
-- creating or revising a pitch deck
-- writing an investor memo or one-pager
-- building a financial model, milestone plan, or use-of-funds table
-- answering accelerator or incubator application questions
-- aligning multiple fundraising docs around one source of truth
+- 创建或修订融资演示文稿
+- 撰写投资者备忘录或单页介绍
+- 构建财务模型、里程碑计划或资金用途表
+- 回答加速器或孵化器申请问题
+- 围绕一个真相来源协调多个融资文档
 
-## Golden Rule
+## 黄金法则
 
-All investor materials must agree with each other.
+所有投资者材料必须相互一致。
 
-Create or confirm a single source of truth before writing:
-- traction metrics
-- pricing and revenue assumptions
-- raise size and instrument
-- use of funds
-- team bios and titles
-- milestones and timelines
+在撰写之前创建或确认唯一的真相来源：
+- 关键指标
+- 定价和收入假设
+- 融资金额和工具
+- 资金用途
+- 团队简介和头衔
+- 里程碑和时间线
 
-If conflicting numbers appear, stop and resolve them before drafting.
+如果出现冲突的数字，在起草前停下来解决。
 
-## Core Workflow
+## 核心工作流
 
-1. inventory the canonical facts
-2. identify missing assumptions
-3. choose the asset type
-4. draft the asset with explicit logic
-5. cross-check every number against the source of truth
+1. 盘点权威事实
+2. 识别缺失的假设
+3. 选择资产类型
+4. 用明确的逻辑起草资产
+5. 根据真相来源交叉检查每个数字
 
-## Asset Guidance
+## 资产指导
 
-### Pitch Deck
-Recommended flow:
-1. company + wedge
-2. problem
-3. solution
-4. product / demo
-5. market
-6. business model
-7. traction
-8. team
-9. competition / differentiation
-10. ask
-11. use of funds / milestones
-12. appendix
+### 融资演示文稿
+推荐流程：
+1. 公司 + 切入点
+2. 问题
+3. 解决方案
+4. 产品 / 演示
+5. 市场
+6. 商业模式
+7. 关键指标
+8. 团队
+9. 竞争 / 差异化
+10. 融资需求
+11. 资金用途 / 里程碑
+12. 附录
 
-If the user wants a web-native deck, pair this skill with `frontend-slides`.
+如果用户想要原生网页演示文稿，将此技能与 `frontend-slides` 配对使用。
 
-### One-Pager / Memo
-- state what the company does in one clean sentence
-- show why now
-- include traction and proof points early
-- make the ask precise
-- keep claims easy to verify
+### 单页介绍 / 备忘录
+- 用一个干净的句子说明公司做什么
+- 展示为什么是现在
+- 早期包含关键指标和证明点
+- 使融资需求精确
+- 保持声明易于验证
 
-### Financial Model
-Include:
-- explicit assumptions
-- bear / base / bull cases when useful
-- clean layer-by-layer revenue logic
-- milestone-linked spending
-- sensitivity analysis where the decision hinges on assumptions
+### 财务模型
+包含：
+- 明确的假设
+- 有需要时包含熊市/基准/牛市情况
+- 清晰的分层收入逻辑
+- 与里程碑关联的支出
+- 在决策依赖假设的地方进行敏感性分析
 
-### Accelerator Applications
-- answer the exact question asked
-- prioritize traction, insight, and team advantage
-- avoid puffery
-- keep internal metrics consistent with the deck and model
+### 加速器申请
+- 回答被问到的确切问题
+- 优先展示关键指标、洞察和团队优势
+- 避免虚夸
+- 保持内部指标与演示文稿和模型一致
 
-## Red Flags to Avoid
+## 需要避免的红旗
 
-- unverifiable claims
-- fuzzy market sizing without assumptions
-- inconsistent team roles or titles
-- revenue math that does not sum cleanly
-- inflated certainty where assumptions are fragile
+- 无法验证的声明
+- 没有假设的模糊市场规模
+- 不一致的团队角色或头衔
+- 收入计算不清
+- 在假设脆弱的地方过度确信
 
-## Quality Gate
+## 质量关卡
 
-Before delivering:
-- every number matches the current source of truth
-- use of funds and revenue layers sum correctly
-- assumptions are visible, not buried
-- the story is clear without hype language
-- the final asset is defensible in a partner meeting
+交付前：
+- 每个数字与当前真相来源匹配
+- 资金用途和收入层次计算正确
+- 假设可见，不被隐藏
+- 故事清晰，无浮夸语言
+- 最终资产在合伙人会议上可以辩护

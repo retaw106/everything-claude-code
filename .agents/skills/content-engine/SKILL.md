@@ -1,88 +1,88 @@
 ---
 name: content-engine
-description: Create platform-native content systems for X, LinkedIn, TikTok, YouTube, newsletters, and repurposed multi-platform campaigns. Use when the user wants social posts, threads, scripts, content calendars, or one source asset adapted cleanly across platforms.
+description: 为 X、LinkedIn、TikTok、YouTube、通讯和跨平台活动创建原生内容系统。当用户需要社交媒体帖子、推文串、脚本、内容日历或将一个素材干净地适配到多个平台时使用。
 origin: ECC
 ---
 
-# Content Engine
+# 内容引擎
 
-Turn one idea into strong, platform-native content instead of posting the same thing everywhere.
+将一个想法转化为强大的、原生平台内容，而不是到处发布相同的东西。
 
-## When to Activate
+## 何时启用
 
-- writing X posts or threads
-- drafting LinkedIn posts or launch updates
-- scripting short-form video or YouTube explainers
-- repurposing articles, podcasts, demos, or docs into social content
-- building a lightweight content plan around a launch, milestone, or theme
+- 撰写 X 帖子或推文串
+- 起草 LinkedIn 帖子或发布更新
+- 编写短视频或 YouTube 解释性脚本
+- 将文章、播客、演示或文档转化为社交媒体内容
+- 围绕发布、里程碑或主题构建轻量级内容计划
 
-## First Questions
+## 首要问题
 
-Clarify:
-- source asset: what are we adapting from
-- audience: builders, investors, customers, operators, or general audience
-- platform: X, LinkedIn, TikTok, YouTube, newsletter, or multi-platform
-- goal: awareness, conversion, recruiting, authority, launch support, or engagement
+明确：
+- 源素材：我们要改编什么
+- 受众：开发者、投资者、客户、运营者，还是普通受众
+- 平台：X、LinkedIn、TikTok、YouTube、通讯，还是多平台
+- 目标：认知、转化、招聘、权威、发布支持，还是互动
 
-## Core Rules
+## 核心规则
 
-1. Adapt for the platform. Do not cross-post the same copy.
-2. Hooks matter more than summaries.
-3. Every post should carry one clear idea.
-4. Use specifics over slogans.
-5. Keep the ask small and clear.
+1. 适配平台。不要跨平台发布相同的文案。
+2. 钩子比摘要更重要。
+3. 每个帖子应该传达一个清晰的想法。
+4. 使用具体内容而非口号。
+5. 保持请求小而清晰。
 
-## Platform Guidance
+## 平台指导
 
 ### X
-- open fast
-- one idea per post or per tweet in a thread
-- keep links out of the main body unless necessary
-- avoid hashtag spam
+- 快速开场
+- 每个帖子或推文串中的每条推文一个想法
+- 除非必要，链接不要放在正文
+- 避免滥用标签
 
 ### LinkedIn
-- strong first line
-- short paragraphs
-- more explicit framing around lessons, results, and takeaways
+- 强有力的首行
+- 短段落
+- 围绕经验教训、结果和要点进行更明确的框架化
 
-### TikTok / Short Video
-- first 3 seconds must interrupt attention
-- script around visuals, not just narration
-- one demo, one claim, one CTA
+### TikTok / 短视频
+- 前 3 秒必须抓住注意力
+- 围绕视觉效果编写脚本，不仅仅是旁白
+- 一个演示、一个主张、一个 CTA
 
 ### YouTube
-- show the result early
-- structure by chapter
-- refresh the visual every 20-30 seconds
+- 尽早展示结果
+- 按章节组织结构
+- 每 20-30 秒刷新视觉效果
 
-### Newsletter
-- deliver one clear lens, not a bundle of unrelated items
-- make section titles skimmable
-- keep the opening paragraph doing real work
+### 通讯
+- 传递一个清晰的视角，不是一堆不相关的项目
+- 使章节标题可浏览
+- 让开篇段落发挥真正作用
 
-## Repurposing Flow
+## 复用流程
 
-Default cascade:
-1. anchor asset: article, video, demo, memo, or launch doc
-2. extract 3-7 atomic ideas
-3. write platform-native variants
-4. trim repetition across outputs
-5. align CTAs with platform intent
+默认级联：
+1. 锚定素材：文章、视频、演示、备忘录或发布文档
+2. 提取 3-7 个原子想法
+3. 编写原生平台变体
+4. 裁剪输出间的重复
+5. 将 CTA 与平台意图对齐
 
-## Deliverables
+## 交付物
 
-When asked for a campaign, return:
-- the core angle
-- platform-specific drafts
-- optional posting order
-- optional CTA variants
-- any missing inputs needed before publishing
+当被要求提供活动方案时，返回：
+- 核心角度
+- 特定平台草稿
+- 可选的发布顺序
+- 可选的 CTA 变体
+- 发布前需要的任何缺失输入
 
-## Quality Gate
+## 质量关卡
 
-Before delivering:
-- each draft reads natively for its platform
-- hooks are strong and specific
-- no generic hype language
-- no duplicated copy across platforms unless requested
-- the CTA matches the content and audience
+交付前：
+- 每个草稿对其平台读起来自然
+- 钩子强大且具体
+- 没有通用的浮夸语言
+- 除非要求，否则跨平台没有重复的文案
+- CTA 与内容和受众匹配

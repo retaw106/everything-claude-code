@@ -1,76 +1,76 @@
 ---
 name: investor-outreach
-description: Draft cold emails, warm intro blurbs, follow-ups, update emails, and investor communications for fundraising. Use when the user wants outreach to angels, VCs, strategic investors, or accelerators and needs concise, personalized, investor-facing messaging.
+description: 起草融资的冷邮件、温介绍简介、跟进邮件、更新邮件和投资者沟通。当用户想要联系天使投资人、VC、战略投资者或加速器，需要简洁、个性化的面向投资者的信息时使用。
 origin: ECC
 ---
 
-# Investor Outreach
+# 投资者外联
 
-Write investor communication that is short, personalized, and easy to act on.
+撰写简短、个性化且易于行动的投资者沟通内容。
 
-## When to Activate
+## 何时启用
 
-- writing a cold email to an investor
-- drafting a warm intro request
-- sending follow-ups after a meeting or no response
-- writing investor updates during a process
-- tailoring outreach based on fund thesis or partner fit
+- 给投资者写冷邮件
+- 起草温介绍请求
+- 在会议或无回应后发送跟进
+- 在融资过程中撰写投资者更新
+- 根据基金理念或合伙人匹配度定制外联
 
-## Core Rules
+## 核心规则
 
-1. Personalize every outbound message.
-2. Keep the ask low-friction.
-3. Use proof, not adjectives.
-4. Stay concise.
-5. Never send generic copy that could go to any investor.
+1. 个性化每条外联消息。
+2. 保持请求低阻力。
+3. 用证据，不用形容词。
+4. 保持简洁。
+5. 绝不发送可以发给任何投资者的通用文案。
 
-## Cold Email Structure
+## 冷邮件结构
 
-1. subject line: short and specific
-2. opener: why this investor specifically
-3. pitch: what the company does, why now, what proof matters
-4. ask: one concrete next step
-5. sign-off: name, role, one credibility anchor if needed
+1. 主题行：简短且具体
+2. 开场：为什么选择这位投资者
+3. 推销：公司做什么、为什么是现在、什么证明重要
+4. 请求：一个具体的下一步
+5. 结尾：姓名、职位、如需要一个可信度锚点
 
-## Personalization Sources
+## 个性化来源
 
-Reference one or more of:
-- relevant portfolio companies
-- a public thesis, talk, post, or article
-- a mutual connection
-- a clear market or product fit with the investor's focus
+参考以下一个或多个：
+- 相关的被投公司
+- 公开的理念、演讲、帖子或文章
+- 共同联系人
+- 与投资者关注点明确的市场或产品契合
 
-If that context is missing, ask for it or state that the draft is a template awaiting personalization.
+如果缺少这些背景，询问或说明草稿是等待个性化的模板。
 
-## Follow-Up Cadence
+## 跟进节奏
 
-Default:
-- day 0: initial outbound
-- day 4-5: short follow-up with one new data point
-- day 10-12: final follow-up with a clean close
+默认：
+- 第 0 天：初始外联
+- 第 4-5 天：带一个新数据点的简短跟进
+- 第 10-12 天：干净收尾的最终跟进
 
-Do not keep nudging after that unless the user wants a longer sequence.
+除非用户想要更长的序列，否则之后不要再催促。
 
-## Warm Intro Requests
+## 温介绍请求
 
-Make life easy for the connector:
-- explain why the intro is a fit
-- include a forwardable blurb
-- keep the forwardable blurb under 100 words
+让介绍人的生活轻松：
+- 解释为什么这个介绍合适
+- 包含可转发的简介
+- 保持可转发简介在 100 字以内
 
-## Post-Meeting Updates
+## 会后更新
 
-Include:
-- the specific thing discussed
-- the answer or update promised
-- one new proof point if available
-- the next step
+包含：
+- 讨论的具体内容
+- 承诺的回答或更新
+- 如有可用的一个新证明点
+- 下一步
 
-## Quality Gate
+## 质量关卡
 
-Before delivering:
-- message is personalized
-- the ask is explicit
-- there is no fluff or begging language
-- the proof point is concrete
-- word count stays tight
+交付前：
+- 消息已个性化
+- 请求明确
+- 没有废话或乞求语言
+- 证明点具体
+- 字数保持紧凑

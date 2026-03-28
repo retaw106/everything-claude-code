@@ -1,151 +1,151 @@
 ---
 name: crosspost
-description: Multi-platform content distribution across X, LinkedIn, Threads, and Bluesky. Adapts content per platform using content-engine patterns. Never posts identical content cross-platform. Use when the user wants to distribute content across social platforms.
+description: 跨 X、LinkedIn、Threads 和 Bluesky 的多平台内容分发。使用内容引擎模式为每个平台适配内容。绝不跨平台发布相同内容。当用户想要在社交平台上分发内容时使用。
 origin: ECC
 ---
 
-# Crosspost
+# 跨平台发布
 
-Distribute content across multiple social platforms with platform-native adaptation.
+将内容分发到多个社交平台，并进行原生平台适配。
 
-## When to Activate
+## 何时启用
 
-- User wants to post content to multiple platforms
-- Publishing announcements, launches, or updates across social media
-- Repurposing a post from one platform to others
-- User says "crosspost", "post everywhere", "share on all platforms", or "distribute this"
+- 用户想要将内容发布到多个平台
+- 在社交媒体上发布公告、发布或更新
+- 将一个平台的帖子改编到其他平台
+- 用户说"跨平台发布"、"到处发布"、"在所有平台分享"或"分发这个"
 
-## Core Rules
+## 核心规则
 
-1. **Never post identical content cross-platform.** Each platform gets a native adaptation.
-2. **Primary platform first.** Post to the main platform, then adapt for others.
-3. **Respect platform conventions.** Length limits, formatting, link handling all differ.
-4. **One idea per post.** If the source content has multiple ideas, split across posts.
-5. **Attribution matters.** If crossposting someone else's content, credit the source.
+1. **绝不要跨平台发布相同内容。** 每个平台获得原生适配版本。
+2. **主平台优先。** 先发布到主要平台，然后为其他平台适配。
+3. **尊重平台约定。** 长度限制、格式、链接处理都不同。
+4. **每个帖子一个想法。** 如果源内容有多个想法，拆分到多个帖子。
+5. **归属很重要。** 如果跨发他人内容，注明来源。
 
-## Platform Specifications
+## 平台规格
 
-| Platform | Max Length | Link Handling | Hashtags | Media |
-|----------|-----------|---------------|----------|-------|
-| X | 280 chars (4000 for Premium) | Counted in length | Minimal (1-2 max) | Images, video, GIFs |
-| LinkedIn | 3000 chars | Not counted in length | 3-5 relevant | Images, video, docs, carousels |
-| Threads | 500 chars | Separate link attachment | None typical | Images, video |
-| Bluesky | 300 chars | Via facets (rich text) | None (use feeds) | Images |
+| 平台 | 最大长度 | 链接处理 | 标签 | 媒体 |
+|------|---------|----------|------|------|
+| X | 280 字符（Premium 4000） | 计入长度 | 最少（最多 1-2 个） | 图片、视频、GIF |
+| LinkedIn | 3000 字符 | 不计入长度 | 3-5 个相关 | 图片、视频、文档、轮播 |
+| Threads | 500 字符 | 单独的链接附件 | 通常不用 | 图片、视频 |
+| Bluesky | 300 字符 | 通过 facets（富文本） | 无（使用 feeds） | 图片 |
 
-## Workflow
+## 工作流程
 
-### Step 1: Create Source Content
+### 步骤 1：创建源内容
 
-Start with the core idea. Use `content-engine` skill for high-quality drafts:
-- Identify the single core message
-- Determine the primary platform (where the audience is biggest)
-- Draft the primary platform version first
+从核心想法开始。使用 `content-engine` 技能获取高质量草稿：
+- 识别单一核心信息
+- 确定主要平台（受众最大的地方）
+- 先起草主要平台版本
 
-### Step 2: Identify Target Platforms
+### 步骤 2：确定目标平台
 
-Ask the user or determine from context:
-- Which platforms to target
-- Priority order (primary gets the best version)
-- Any platform-specific requirements (e.g., LinkedIn needs professional tone)
+询问用户或从上下文判断：
+- 目标平台有哪些
+- 优先顺序（主要平台获得最佳版本）
+- 任何平台特定要求（如 LinkedIn 需要专业语调）
 
-### Step 3: Adapt Per Platform
+### 步骤 3：逐平台适配
 
-For each target platform, transform the content:
+为每个目标平台转换内容：
 
-**X adaptation:**
-- Open with a hook, not a summary
-- Cut to the core insight fast
-- Keep links out of main body when possible
-- Use thread format for longer content
+**X 适配：**
+- 用钩子开场，不是摘要
+- 快速切入核心洞察
+- 尽可能将链接放在正文外
+- 对较长内容使用推文串格式
 
-**LinkedIn adaptation:**
-- Strong first line (visible before "see more")
-- Short paragraphs with line breaks
-- Frame around lessons, results, or professional takeaways
-- More explicit context than X (LinkedIn audience needs framing)
+**LinkedIn 适配：**
+- 强有力的首行（在"查看更多"前可见）
+- 带换行的短段落
+- 围绕经验教训、结果或专业要点进行框架化
+- 比 X 需要更明确的上下文（LinkedIn 受众需要背景）
 
-**Threads adaptation:**
-- Conversational, casual tone
-- Shorter than LinkedIn, less compressed than X
-- Visual-first if possible
+**Threads 适配：**
+- 口语化、随意的语调
+- 比 LinkedIn 短，比 X 不那么压缩
+- 如果可能，视觉优先
 
-**Bluesky adaptation:**
-- Direct and concise (300 char limit)
-- Community-oriented tone
-- Use feeds/lists for topic targeting instead of hashtags
+**Bluesky 适配：**
+- 直接且简洁（300 字符限制）
+- 面向社区的语调
+- 使用 feeds/列表进行主题定位而非标签
 
-### Step 4: Post Primary Platform
+### 步骤 4：发布到主平台
 
-Post to the primary platform first:
-- Use `x-api` skill for X
-- Use platform-specific APIs or tools for others
-- Capture the post URL for cross-referencing
+先发布到主要平台：
+- 对 X 使用 `x-api` 技能
+- 对其他平台使用特定平台 API 或工具
+- 捕获帖子 URL 用于交叉引用
 
-### Step 5: Post to Secondary Platforms
+### 步骤 5：发布到次要平台
 
-Post adapted versions to remaining platforms:
-- Stagger timing (not all at once — 30-60 min gaps)
-- Include cross-platform references where appropriate ("longer thread on X" etc.)
+将适配版本发布到其余平台：
+- 错开时间（不要同时发 — 间隔 30-60 分钟）
+- 在适当的地方包含跨平台引用（"X 上有更长的推文串"等）
 
-## Content Adaptation Examples
+## 内容适配示例
 
-### Source: Product Launch
+### 源：产品发布
 
-**X version:**
+**X 版本：**
 ```
-We just shipped [feature].
+我们刚刚发布了 [功能]。
 
-[One specific thing it does that's impressive]
+[它做的一件令人印象深刻的事]
 
-[Link]
-```
-
-**LinkedIn version:**
-```
-Excited to share: we just launched [feature] at [Company].
-
-Here's why it matters:
-
-[2-3 short paragraphs with context]
-
-[Takeaway for the audience]
-
-[Link]
+[链接]
 ```
 
-**Threads version:**
+**LinkedIn 版本：**
 ```
-just shipped something cool — [feature]
+很高兴分享：我们在 [公司] 刚刚推出了 [功能]。
 
-[casual explanation of what it does]
+为什么这很重要：
 
-link in bio
-```
+[2-3 段带上下文的短段落]
 
-### Source: Technical Insight
+[对受众的要点]
 
-**X version:**
-```
-TIL: [specific technical insight]
-
-[Why it matters in one sentence]
+[链接]
 ```
 
-**LinkedIn version:**
+**Threads 版本：**
 ```
-A pattern I've been using that's made a real difference:
+刚发布了个很酷的东西 — [功能]
 
-[Technical insight with professional framing]
+[关于它做什么的随意解释]
 
-[How it applies to teams/orgs]
-
-#relevantHashtag
+链接在简介
 ```
 
-## API Integration
+### 源：技术洞察
 
-### Batch Crossposting Service (Example Pattern)
-If using a crossposting service (e.g., Postbridge, Buffer, or a custom API), the pattern looks like:
+**X 版本：**
+```
+TIL：[具体技术洞察]
+
+[为什么重要的一句话]
+```
+
+**LinkedIn 版本：**
+```
+我一直在使用的一个模式，真的带来了改变：
+
+[带专业框架的技术洞察]
+
+[如何应用于团队/组织]
+
+#相关标签
+```
+
+## API 集成
+
+### 批量跨发服务（示例模式）
+如果使用跨发服务（如 Postbridge、Buffer 或自定义 API），模式如下：
 
 ```python
 import os
@@ -165,24 +165,24 @@ resp = requests.post(
 )
 ```
 
-### Manual Posting
-Without Postbridge, post to each platform using its native API:
-- X: Use `x-api` skill patterns
-- LinkedIn: LinkedIn API v2 with OAuth 2.0
-- Threads: Threads API (Meta)
-- Bluesky: AT Protocol API
+### 手动发布
+没有 Postbridge 时，使用各平台原生 API 发布：
+- X：使用 `x-api` 技能模式
+- LinkedIn：LinkedIn API v2 with OAuth 2.0
+- Threads：Threads API (Meta)
+- Bluesky：AT Protocol API
 
-## Quality Gate
+## 质量关卡
 
-Before posting:
-- [ ] Each platform version reads naturally for that platform
-- [ ] No identical content across platforms
-- [ ] Length limits respected
-- [ ] Links work and are placed appropriately
-- [ ] Tone matches platform conventions
-- [ ] Media is sized correctly for each platform
+发布前：
+- [ ] 每个平台版本对该平台读起来自然
+- [ ] 跨平台没有相同内容
+- [ ] 遵守长度限制
+- [ ] 链接可用且放置适当
+- [ ] 语调符合平台约定
+- [ ] 媒体尺寸适合各平台
 
-## Related Skills
+## 相关技能
 
-- `content-engine` — Generate platform-native content
-- `x-api` — X/Twitter API integration
+- `content-engine` — 生成原生平台内容
+- `x-api` — X/Twitter API 集成
